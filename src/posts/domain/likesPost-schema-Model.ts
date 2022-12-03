@@ -7,15 +7,19 @@ export enum LikeStatusType {
   Dislike = 'Dislike',
 }
 
-export type LikeStatusDocument = HydratedDocument<LikeStatus>;
+export type LikesPostsStatusDocument = HydratedDocument<LikesPostsStatus>;
 
 @Schema()
-export class LikeStatus {
+export class LikesPostsStatus {
+  @Prop({ type: String, required: true })
+  createdAt: string;
   @Prop({ type: String, required: true })
   userId: string;
   @Prop({ type: String, required: true })
   parentId: string;
+  @Prop({ type: String, required: true })
+  login: string;
   @Prop({ type: String, default: 'None', enum: LikeStatusType })
   likeStatus: string;
 }
-export const LikeStatusSchema = SchemaFactory.createForClass(LikeStatus);
+export const likesPostsStatusSchema = SchemaFactory.createForClass(LikesPostsStatus);

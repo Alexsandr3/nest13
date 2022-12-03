@@ -1,35 +1,56 @@
-import { Body, Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Query, Post, Param, Delete, Put } from "@nestjs/common";
+import { BlogsService } from "../domain/blogs.service";
+import { CreateBlogDto } from "./input-Dtos/create-Blog-Dto-Model";
+import { BlogsQueryRepositories } from "../infrastructure/blogs-query.repositories";
+import { BlogViewModel } from "../infrastructure/blog-View-Model";
+import { PaginationDto } from "./input-Dtos/pagination-Dto-Model";
+import { UpdateBlogDto } from "./input-Dtos/update-Blog-Dto-Model";
+import { PaginationViewType } from "../infrastructure/pagination-type";
+import { CreatePostByBlogIdDto } from "./input-Dtos/create-Post-By-BlogId-Dto-Model";
+import { PostsQueryRepositories } from "../../posts/infrastructure/posts-query.reposit";
 
-@Controller(`users`)
-export class UsersController {
+@Controller(`blogs`)
+export class BlogsController {
+  constructor(protected blogsService: BlogsService,
+              protected blogsQueryRepositories: BlogsQueryRepositories,
+              private postsQueryRepositories: PostsQueryRepositories) {
+  }
+
   @Get()
-  getBlogs() {}
+  async findAll(@Query() pagination: PaginationDto): Promise<PaginationViewType<BlogViewModel[]>> {
+    return await this.blogsQueryRepositories.findBlogs(pagination);
+  }
 
-  @Post
-  createBlog(@Body() BlogInputModel: BodyParams_BlogInputModel) {}
-  /* @Get
-  findBlogs() {}
-  @Get
-  findPostsByIdBlog() {}
-  @Post
-  createPostsByIdBlog() {}
-  @Put
-  updateBlogs() {}
-  @Delete
-  deleteBlog() {}*/
+  @Post()
+  async createBlog(@Body() blogInputModel: CreateBlogDto): Promise<BlogViewModel | null> {
+    const id = await this.blogsService.createBlog(blogInputModel);
+    return this.blogsQueryRepositories.findBlog(id);
+  }
+
+  @Get(`:blogId/posts`)
+  async findPosts(@Param("blogId") blogId: string, @Query() pagination: PaginationDto) {
+    await this.blogsQueryRepositories.findBlog(blogId);
+    return this.postsQueryRepositories.findPosts(pagination, blogId);
+  }
+
+  @Post(`:blogId/posts`)
+  async createPost(@Param("blogId") blogId: string, @Body() postInputModel: CreatePostByBlogIdDto) {
+    const blog = await this.blogsQueryRepositories.findBlog(blogId);
+    return this.blogsService.createPost(postInputModel, blogId, blog.name);
+  }
+
+  @Get(":id")
+  async findOne(@Param("id") id: string): Promise<BlogViewModel | null> {
+    return await this.blogsQueryRepositories.findBlog(id);
+  }
+
+  @Put(`:id`)
+  async updateBlog(@Param("id") id: string, @Query() blogInputModel: UpdateBlogDto): Promise<boolean> {
+    return await this.blogsService.updateBlog(id, blogInputModel);
+  }
+
+  @Delete(":id")
+  async remove(@Param("id") id: string): Promise<boolean> {
+    return await this.blogsService.removeBlog(id);
+  }
 }
-
-type BodyParams_BlogInputModel = {
-  /**
-   * name: Blog name
-   */
-  name: string;
-  /**
-   * description
-   */
-  description: string;
-  /**
-   * websiteUrl: Blog website Url
-   */
-  websiteUrl: string;
-};

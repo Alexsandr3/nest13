@@ -1,42 +1,72 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Post, PostDocument } from "../domain/post-schema-Model";
 import {
-  BlogsDBType,
-  CreateBlogDBModel,
-  CreatePostDBModel,
-} from '../models/postViewModel';
-import { ObjectId } from 'mongodb';
-import { CreateBlogDto } from '../dto/create-Post-Dto-Model';
-import { Post, PostDocument } from '../models/post-schema';
+  ExtendedLikesInfoViewModel
+} from "./likes-Info-View-Model";
+import { PreparationPostForDB } from "../domain/post-preparation-for-DB";
+import { PostViewModel } from "./post-View-Model";
+import { LikeStatusType } from "../domain/likesPost-schema-Model";
+import { ObjectId } from "mongodb";
+import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
 
 @Injectable()
 export class PostsRepositories {
   constructor(
-    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
-  ) {}
-  async createPost(newPost: CreatePostDBModel): Promise<BlogsDBType> {
-    const createdBlog = new this.postModel(newBlog);
-    return createdBlog.save();
+    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>
+  ) /* @InjectModel(LikesPostsStatus.name)
+    private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>,
+  */ {
   }
 
-  async deleteBlog(id: string): Promise<boolean> {
-    const result = await this.blogsModel
+  /*  private _LikeDetailsView(object: LikesPostsDBType): LikeDetailsViewModel {
+      return new LikeDetailsViewModel(
+        object.addedAt,
+        object.userId,
+        object.login,
+      );
+    }*/
+  async createPost(newPost: PreparationPostForDB): Promise<PostViewModel> {
+    const post = await this.postModel.create(newPost);
+    if (!post) return null;
+    const extendedLikesInfo = new ExtendedLikesInfoViewModel(
+      0,
+      0,
+      LikeStatusType.None,
+      []
+    );
+    return new PostViewModel(
+      post._id.toString(),
+      post.title,
+      post.shortDescription,
+      post.content,
+      post.blogId,
+      post.blogName,
+      post.createdAt,
+      extendedLikesInfo
+    );
+  }
+
+  async deletePost(id: string): Promise<boolean> {
+    const result = await this.postModel
       .deleteOne({ _id: new ObjectId(id) })
       .exec();
     return result.deletedCount === 1;
   }
-  async updateBlog(id: string, data: CreateBlogDto): Promise<boolean> {
-    const result = await this.blogsModel.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          name: data.name,
-          description: data.description,
-          websiteUrl: data.websiteUrl,
-        },
-      },
-    );
-    return result.matchedCount === 1;
+
+  async updatePost(id: string, data: CreatePostDto): Promise<boolean> {
+    if (!ObjectId.isValid(id)) {
+      return false
+    }
+    const result = await this.postModel.updateOne({_id: new ObjectId(id)}, {
+      $set: {
+        title: data.title,
+        shortDescription: data.shortDescription,
+        content: data.content,
+        blogId: id
+      }
+    })
+    return result.matchedCount === 1
   }
 }

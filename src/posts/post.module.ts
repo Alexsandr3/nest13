@@ -1,22 +1,35 @@
 import { Module } from '@nestjs/common';
-import { BlogsService } from './application/blogs.service';
-import { BlogsReposit } from './infrastructure/blogs.reposit';
-import { BlogsController } from './api/blogs.controller';
+import { PostsService } from './domain/posts.service';
+import { PostsRepositories } from './infrastructure/posts-repositories';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Blog, BlogSchema } from './models/blog-schema';
-import { BlogsQueryRepositories } from './infrastructure/blogs.query.reposit';
-import { PaginationRepositories } from '../for-pagination/pagination.repositories';
+import { Post, PostSchema } from "./domain/post-schema-Model";
+import { PostsController } from './api/posts.controller';
+import { PostsQueryRepositories } from './infrastructure/posts-query.reposit';
+import {
+  LikesPostsStatus,
+  likesPostsStatusSchema,
+} from './domain/likesPost-schema-Model';
+import { BlogsQueryRepositories } from '../blogs/infrastructure/blogs-query.repositories';
+import { Blog, BlogSchema } from '../blogs/domain/blog-schema-Model';
+import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
+import { CommentsQueryRepositories } from "../comments/infrastructure/comments-query.repositories";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+    MongooseModule.forFeature([
+      { name: Blog.name, schema: BlogSchema },
+      { name: Post.name, schema: PostSchema },
+      { name: LikesPostsStatus.name, schema: likesPostsStatusSchema },
+      { name: Comment.name, schema: CommentSchema },
+    ]),
   ],
-  controllers: [BlogsController],
+  controllers: [PostsController],
   providers: [
-    BlogsService,
-    BlogsReposit,
+    PostsService,
+    PostsRepositories,
+    PostsQueryRepositories,
     BlogsQueryRepositories,
-    PaginationRepositories,
+    CommentsQueryRepositories
   ],
 })
-export class BlogModule {}
+export class PostModule {}

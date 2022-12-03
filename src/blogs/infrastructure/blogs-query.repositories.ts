@@ -1,50 +1,55 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { BlogDocument, Blog } from '../domain/blog-schema-Model';
-import { BlogsDBType } from './blog-View-Model';
-import { PaginationDto } from '../dto/pagination-Dto-Model';
-import { ObjectId } from 'mongodb';
-import { PostsController } from '../../posts/api/posts.controller';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { BlogDocument, Blog } from "../domain/blog-schema-Model";
+import { BlogViewModel } from "./blog-View-Model";
+import { ObjectId } from "mongodb";
+import { PaginationViewType } from "./pagination-type";
+import { BlogsDBType } from "../domain/blog-DB-Type";
+import { PaginationDto } from "../api/input-Dtos/pagination-Dto-Model";
 
 @Injectable()
 export class BlogsQueryRepositories {
-  constructor(
-    /*  @Inject(forwardRef(() => PostsController))
-    private postsController: PostsController,*/
-    @InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>,
-  ) {}
+  constructor(@InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>
+  ) {
+  }
 
-  async findBlogs(data: PaginationDto): Promise<BlogsDBType[]> {
-    const fondBlogs = await this.blogsModel
-      .find(
-        data.searchNameTerm
-          ? { name: { $regex: data.searchNameTerm, $options: 'i' } }
-          : {},
-      )
+  private mapperForBlogView(object: BlogsDBType): BlogViewModel {
+    return new BlogViewModel(
+      object._id.toString(),
+      object.name,
+      object.description,
+      object.websiteUrl,
+      object.createdAt
+    );
+  }
+
+  async findBlogs(data: PaginationDto): Promise<PaginationViewType<BlogViewModel[]>> {
+    const foundBlogs = await this.blogsModel
+      .find(data.searchNameTerm ? { name: { $regex: data.searchNameTerm, $options: "i" } } : {})
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection })
       .lean();
-    return fondBlogs;
-  }
-
-  async countDocuments(data: PaginationDto): Promise<number> {
-    const count = this.blogsModel.countDocuments(
-      data.searchNameTerm
-        ? {
-            name: {
-              $regex: data.searchNameTerm,
-              $options: 'i',
-            },
-          }
-        : {},
+    const mappedBlogs = foundBlogs.map((blog) => this.mapperForBlogView(blog));
+    const totalCount = await this.blogsModel
+      .countDocuments(data.searchNameTerm ? { name: { $regex: data.searchNameTerm, $options: "i" } } : {});
+    const pagesCountRes = Math.ceil(totalCount / data.pageSize);
+    return new PaginationViewType(
+      pagesCountRes,
+      data.pageNumber,
+      data.pageSize,
+      totalCount,
+      mappedBlogs
     );
-    return count;
   }
 
-  async findBlog(id: string): Promise<BlogsDBType | null> {
+  async findBlog(id: string): Promise<BlogViewModel | null> {
+    if (!ObjectId.isValid(id)) {
+      return null
+    }
     const blog = await this.blogsModel.findOne({ _id: new ObjectId(id) });
-    return blog;
+    if (!blog) return null;
+    return this.mapperForBlogView(blog);
   }
 }

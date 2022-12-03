@@ -1,8 +1,11 @@
-export class PreparationBlogForDB {
+export class PreparationPostForDB {
   constructor(
-    public name: string,
-    public description: string,
-    public websiteUrl: string,
-    public createdAt: string,
-  ) {}
+    public title: string,
+    public shortDescription: string,
+    public content: string,
+    public blogId: string,
+    public blogName: string,
+    public createdAt: string
+  ) {
+  }
 }

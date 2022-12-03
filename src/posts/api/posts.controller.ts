@@ -1,70 +1,58 @@
 import {
   Body,
   Controller,
-  Get,
-  Query,
-  Post,
-  Param,
   Delete,
-  Put,
-} from '@nestjs/common';
-import { BlogsService } from '../application/blogs.service';
-import { CreateBlogDto } from '../dto/create-Blog-Dto-Model';
-import { BlogsQueryRepositories } from '../infrastructure/blogs.query.reposit';
-import { mapperForBlogViewModel } from '../models/blogViewModel';
-import { PaginationDto } from '../dto/pagination-Dto-Model';
-import { PaginationRepositories } from '../../for-pagination/pagination.repositories';
-import { BlogsViewType } from '../entities/blogViewModel';
-import { UpdateBlogDto } from '../dto/update-Blog-Dto-Model';
+  Get,
+  Param,
+  Post, Put,
+  Query
+} from "@nestjs/common";
+import { PostsService } from "../domain/posts.service";
+import { PostsQueryRepositories } from "../infrastructure/posts-query.reposit";
+import { CreatePostDto } from "./input-Dtos/create-Post-Dto-Model";
+import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
+import { PaginationViewType } from "../../blogs/infrastructure/pagination-type";
+import { PostViewModel } from "../infrastructure/post-View-Model";
+import { CommentsQueryRepositories } from "../../comments/infrastructure/comments-query.repositories";
+import { CommentsViewType } from "../../comments/infrastructure/comments-View-Model";
 
-@Controller(`blogs`)
-export class BlogsController {
-  constructor(
-    protected blogsService: BlogsService,
-    protected blogsQueryRepositories: BlogsQueryRepositories,
-    protected paginationRepositories: PaginationRepositories,
-  ) {}
 
-  @Post()
-  async createBlog(
-    @Body() blogInputModel: CreateBlogDto,
-  ): Promise<mapperForBlogViewModel> {
-    return this.blogsService.createBlog(blogInputModel);
+@Controller(`posts`)
+export class PostsController {
+  constructor(protected postsService: PostsService,
+              protected postsQueryRepositories: PostsQueryRepositories,
+              protected commentsQueryRepositories: CommentsQueryRepositories) {
+  }
+
+  @Get(":id/comments")
+  async findComments(@Param("id") id: string, @Query() pagination: PaginationDto): Promise<PaginationViewType<CommentsViewType[]>>{
+    const foundPost = await this.postsQueryRepositories.findPost(id);
+    if(!foundPost) return null
+    return this.commentsQueryRepositories.findCommentsWithPagination(id, pagination)
   }
 
   @Get()
-  async findAll(@Query() pagination: PaginationDto) {
-    const foundBlogs = await this.blogsQueryRepositories.findBlogs(pagination);
-    const countDocuments = await this.blogsQueryRepositories.countDocuments(
-      pagination,
-    );
-    const mappedBlogs = foundBlogs.map(
-      (blog) => new mapperForBlogViewModel(blog),
-    );
-    const withPagination = await this.paginationRepositories.withPagination(
-      pagination,
-      mappedBlogs,
-      countDocuments,
-    );
-    return withPagination;
+  async findAll(@Query() pagination: PaginationDto): Promise<PaginationViewType<PostViewModel[]>> {
+    return  await this.postsQueryRepositories.findPosts(pagination);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<BlogsViewType | null> {
-    const foundBlog = await this.blogsQueryRepositories.findBlog(id);
-    return new mapperForBlogViewModel(foundBlog);
+  @Post()
+  async createPost(@Body() postInputModel: CreatePostDto) {
+    return this.postsService.createPost(postInputModel);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string): Promise<boolean> {
-    return await this.blogsService.removeBlog(id);
+  @Get(":id")
+  async findOne(@Param("id") id: string): Promise<PostViewModel | null> {
+    return  await this.postsQueryRepositories.findPost(id);
   }
 
   @Put(`:id`)
-  async updateBlog(
-    @Param('id') id: string,
-    @Query() blogInputModel: UpdateBlogDto,
-  ): Promise<boolean> {
-    return await this.blogsService.updateBlog(id, blogInputModel);
+  async updateBlog(@Param("id") id: string, @Query() blogInputModel: CreatePostDto): Promise<boolean> {
+    return await this.postsService.updatePost(id, blogInputModel);
+  }
+
+  @Delete(":id")
+  async remove(@Param("id") id: string): Promise<boolean> {
+    return await this.postsService.removePost(id);
   }
 }

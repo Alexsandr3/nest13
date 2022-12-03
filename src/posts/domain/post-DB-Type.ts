@@ -1,9 +1,11 @@
 import { ObjectId } from 'mongodb';
 
-export interface BlogDBType {
+export interface PostDBType {
   _id: ObjectId;
-  name: string;
-  description: string;
-  websiteUrl: string;
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+  blogName: string;
   createdAt: string;
 }
