@@ -2,14 +2,14 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { MongooseModule } from "@nestjs/mongoose";
-import { BlogModule } from "./blogs/blog.module";
-import { PostModule } from "./posts/post.module";
-import { CommentModule } from "./comments/comment.module";
-import { UserModule } from "./users/user.module";
-import { MailModule } from "./mail/mail.module";
-import { AuthModule } from "./auth/auth.module";
+import { BlogModule } from "./modules/blogs/blog.module";
+import { PostModule } from "./modules/posts/post.module";
+import { CommentModule } from "./modules/comments/comment.module";
+import { UserModule } from "./modules/users/user.module";
+import { MailModule } from "./modules/mail/mail.module";
+import { AuthModule } from "./modules/auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
-import { TestingModule } from "./testing/testing.module";
+import { TestingModule } from "./modules/testing/testing.module";
 
 @Module({
   imports: [

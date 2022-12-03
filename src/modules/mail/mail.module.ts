@@ -3,6 +3,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MailService } from "./mail.service";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 
+
 @Global() // 👈 global module
 @Module({
   imports: [
@@ -15,14 +16,15 @@ import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handleba
         secure: false,
         auth: {
           user: 'forexperienceinincubatore@gmail.com',
-          pass: 'nbhygxjlzivnxxjh',
+          pass: 'leutohnbwdhbvfvn', //for nest.js
         },
       },
       defaults: {
-        from: '"No Reply" <noreply@example.com>',
+        from: '"Free help 🔐" <forexperienceinincubatore@gmail.com>', // sender address
       },
       template: {
-        //dir: join(__dirname, 'templates'),
+        //dir: join(__dirname, `templates`),
+        dir: __dirname + '/templates',
         adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
         options: {
           strict: true,
