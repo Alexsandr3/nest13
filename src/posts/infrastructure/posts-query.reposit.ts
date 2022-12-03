@@ -5,16 +5,15 @@ import { Post, PostDocument } from "../domain/post-schema-Model";
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
 import { PostDBType } from "../domain/post-DB-Type";
 import { PostViewModel } from "./post-View-Model";
-import { LikesPostsStatus, LikesPostsStatusDocument, LikeStatusType } from "../domain/likesPost-schema-Model";
-import { ExtendedLikesInfoViewModel, LikeDetailsViewModel } from "./likes-Info-View-Model";
-import { LikesPostsDBType } from "../domain/likesPosts-DB-Type";
+import { LikeStatusType } from "../domain/likesPost-schema-Model";
+import { ExtendedLikesInfoViewModel } from "./likes-Info-View-Model";
 import { PaginationViewType } from "../../blogs/infrastructure/pagination-type";
 import { ObjectId } from "mongodb";
 
 @Injectable()
 export class PostsQueryRepositories {
-  constructor(@InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
-              @InjectModel(LikesPostsStatus.name) private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>) {
+  constructor(@InjectModel(Post.name) private readonly postModel: Model<PostDocument>
+              /* @InjectModel(LikesPostsStatus.name) private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>*/) {
   }
 
   /*private async LikeDetailsView(object: LikesPostsDBType): Promise<LikeDetailsViewModel> {
@@ -88,13 +87,13 @@ export class PostsQueryRepositories {
 
   async findPost(id: string): Promise<PostViewModel | null> {
     if (!ObjectId.isValid(id)) {
-      return null
+      return null;
     }
-    const post = await this.postModel.findOne({_id: new ObjectId(id)})
+    const post = await this.postModel.findOne({ _id: new ObjectId(id) });
     if (!post) {
-      return null
+      return null;
     } else {
-      return this._postForView(post)
+      return this._postForView(post);
     }
   }
 

@@ -8,14 +8,15 @@ import { BlogsQueryRepositories } from './infrastructure/blogs-query.repositorie
 import { PostsRepositories } from '../posts/infrastructure/posts-repositories';
 import { Post, PostSchema } from "../posts/domain/post-schema-Model";
 import { PostsQueryRepositories } from "../posts/infrastructure/posts-query.reposit";
-import { LikesPostsStatus, likesPostsStatusSchema } from "../posts/domain/likesPost-schema-Model";
+import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
-      { name: LikesPostsStatus.name, schema: likesPostsStatusSchema }
+      { name: Comment.name, schema: CommentSchema },
+      //{ name: LikesPostsStatus.name, schema: likesPostsStatusSchema }
     ]),
   ],
   controllers: [BlogsController],

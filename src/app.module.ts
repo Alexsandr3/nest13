@@ -9,6 +9,7 @@ import { UserModule } from "./users/user.module";
 import { MailModule } from './mail/mail.module';
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
+import { TestingModule } from "./testing/testing.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ConfigModule } from "@nestjs/config";
     ConfigModule.forRoot({
       isGlobal: true, // no need to import into other modules
     }),
+    TestingModule
   ],
   controllers: [AppController],
   providers: [AppService],

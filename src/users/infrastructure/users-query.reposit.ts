@@ -5,6 +5,8 @@ import { User, UserDocument } from "../domain/users-schema-Model";
 import { ObjectId } from "mongodb";
 import { UsersDBType } from "../domain/user-DB-Type";
 import { UsersViewType } from "./user-View-Model";
+import { PaginationUsersDto } from "../api/input-Dto/pagination-Users-Dto-Model";
+import { PaginationViewType } from "../../blogs/infrastructure/pagination-type";
 
 @Injectable()
 export class UsersQueryRepositories {
@@ -26,6 +28,34 @@ export class UsersQueryRepositories {
       return null;
     } else {
       return this._mappedForUser(result);
+    }
+  }
+
+  async findUsers(data: PaginationUsersDto): Promise<PaginationViewType<UsersViewType[]>> {
+    const foundsUsers = await this.userModel
+      .find({$or: [
+          {"accountData.email": {$regex: data.searchEmailTerm, $options: 'i'}},
+          {"accountData.login": {$regex: data.searchLoginTerm, $options: 'i'}}
+        ]
+      })
+      .skip((data.pageNumber - 1) * data.pageSize)
+      .limit(data.pageSize)
+      .sort({[data.sortBy]: data.sortDirection})
+      .lean()
+      const mappedUsers = foundsUsers.map(user => this._mappedForUser(user))
+    const totalCount = await this.userModel.countDocuments({
+      $or: [
+        {"accountData.email": {$regex: data.searchEmailTerm, $options: 'i'}},
+        {"accountData.login": {$regex: data.searchLoginTerm, $options: 'i'}}
+      ]
+    })
+    const pagesCountRes = Math.ceil(totalCount / data.pageSize)
+    return {
+      pagesCount: pagesCountRes,
+      page: data.pageNumber,
+      pageSize: data.pageSize,
+      totalCount: totalCount,
+      items: mappedUsers
     }
   }
 
