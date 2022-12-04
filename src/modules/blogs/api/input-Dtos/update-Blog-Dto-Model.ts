@@ -5,23 +5,23 @@ export class UpdateBlogDto {
   /**
    * name: Blog name
    */
-  @IsString()
   @Transform(({ value }) => value.trim())
+  @IsString()
   @Length(1, 15)
   name: string;
   /**
    * description
    */
-  @IsString()
   @Transform(({ value }) => value.trim())
+  @IsString()
   @Length(1, 500)
   description: string;
   /**
    * websiteUrl: Blog website Url
    */
+  @Transform(({ value }) => value.trim())
   @IsString()
   @IsUrl()
-  @Transform(({ value }) => value.trim())
   @Length(1, 100)
   websiteUrl: string;
 }

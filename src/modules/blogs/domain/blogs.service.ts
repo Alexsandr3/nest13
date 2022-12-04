@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, Injectable } from "@nestjs/common";
 import { BlogsRepositories } from "../infrastructure/blogs.repositories";
 import { CreateBlogDto } from "../api/input-Dtos/create-Blog-Dto-Model";
 import { CreatePostByBlogIdDto } from "../api/input-Dtos/create-Post-By-BlogId-Dto-Model";
@@ -15,6 +15,7 @@ export class BlogsService {
   }
 
   async createBlog(blogInputModel: CreateBlogDto): Promise<string> {
+    //preparation Blog for save in DB
     const newBlog = new PreparationBlogForDB(
       blogInputModel.name,
       blogInputModel.description,
@@ -25,14 +26,19 @@ export class BlogsService {
   }
 
   async removeBlog(id: string): Promise<boolean> {
-    return await this.blogsRepositories.deleteBlog(id);
+    const res = await this.blogsRepositories.deleteBlog(id);
+    if(!res) throw new HttpException("Incorrect id,  please enter a valid one", 404);
+    return true
   }
 
   async updateBlog(id: string, blogInputModel: UpdateBlogDto): Promise<boolean> {
-    return await this.blogsRepositories.updateBlog(id, blogInputModel);
+    const res =  await this.blogsRepositories.updateBlog(id, blogInputModel);
+    if(!res) throw new HttpException("Incorrect id,  please enter a valid one", 404);
+    return true
   }
 
   async createPost(postInputModel: CreatePostByBlogIdDto, blogId: string, blogName: string): Promise<PostViewModel> {
+    //preparation Post for save in DB
     const newPost = new PreparationPostForDB(
       postInputModel.title,
       postInputModel.shortDescription,

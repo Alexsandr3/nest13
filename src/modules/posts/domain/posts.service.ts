@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, Injectable } from "@nestjs/common";
 import { PostsRepositories } from "../infrastructure/posts-repositories";
 import { BlogsQueryRepositories } from "../../blogs/infrastructure/blogs-query.repositories";
 import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
@@ -12,7 +12,9 @@ export class PostsService {
   }
 
   async createPost(postInputModel: CreatePostDto): Promise<PostViewModel> {
+    //find Blog
     const blog = await this.blogsQueryRepositories.findBlog(postInputModel.blogId);
+    //preparation Post for save in DB
     const newPost = new PreparationPostForDB(
       postInputModel.title,
       postInputModel.shortDescription,
@@ -25,10 +27,14 @@ export class PostsService {
   }
 
   async removePost(id: string): Promise<boolean> {
-    return await this.postsRepositories.deletePost(id);
+    const res = await this.postsRepositories.deletePost(id);
+    if(!res) throw new HttpException("Incorrect id,  please enter a valid one", 404);
+    return true
   }
 
   async updatePost(id: string, blogInputModel: CreatePostDto): Promise<boolean> {
-    return await this.postsRepositories.updatePost(id, blogInputModel);
+    const res = await this.postsRepositories.updatePost(id, blogInputModel);
+    if(!res) throw new HttpException("Incorrect id,  please enter a valid one", 404);
+    return true
   }
 }

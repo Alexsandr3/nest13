@@ -12,7 +12,7 @@ export class MailService {
     await this.mailerService.sendMail({
       to: user.email,
       // from: '"Support Team" <support@example.com>', // override default from
-      from: '"Free help 🔐" <forexperienceinincubatore@gmail.com>', // sender address
+      from: '"Free help - 🅱🅻🅰🅲🅺 🅵🆁🅸🅳🅰🆈 🔐" <forexperienceinincubatore@gmail.com>', // sender address
       subject: "Finish registration",
       template: `./confirmation.hbs`, // `.hbs` extension is appended automatically
       context: { // ✏️ filling curly brackets with content

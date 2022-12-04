@@ -12,8 +12,8 @@ export class BlogsRepositories {
   }
 
   async createBlog(newBlog: PreparationBlogForDB): Promise<string> {
-    const createdBlog = new this.blogsModel(newBlog);
-    const blog = await createdBlog.save();
+    const smartBlog = new this.blogsModel(newBlog);
+    const blog = await smartBlog.save();
     return blog._id.toString();
   }
 

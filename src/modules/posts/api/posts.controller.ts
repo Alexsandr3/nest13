@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, HttpCode,
   Param,
   Post, Put,
   Query
@@ -37,7 +37,7 @@ export class PostsController {
   }
 
   @Post()
-  async createPost(@Body() postInputModel: CreatePostDto) {
+  async createPost(@Body() postInputModel: CreatePostDto): Promise<PostViewModel> {
     return this.postsService.createPost(postInputModel);
   }
 
@@ -47,11 +47,13 @@ export class PostsController {
   }
 
   @Put(`:id`)
+  @HttpCode(204)
   async updateBlog(@Param("id") id: string, @Query() blogInputModel: CreatePostDto): Promise<boolean> {
     return await this.postsService.updatePost(id, blogInputModel);
   }
 
   @Delete(":id")
+  @HttpCode(204)
   async remove(@Param("id") id: string): Promise<boolean> {
     return await this.postsService.removePost(id);
   }

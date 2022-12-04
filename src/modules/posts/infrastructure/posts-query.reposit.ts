@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Post, PostDocument } from "../domain/post-schema-Model";
@@ -86,12 +86,12 @@ export class PostsQueryRepositories {
   }
 
   async findPost(id: string): Promise<PostViewModel | null> {
-    if (!ObjectId.isValid(id)) {
+   /* if (!ObjectId.isValid(id)) {
       return null;
-    }
+    }*/
     const post = await this.postModel.findOne({ _id: new ObjectId(id) });
     if (!post) {
-      return null;
+      throw new HttpException("Not Found", 404);
     } else {
       return this._postForView(post);
     }

@@ -1,4 +1,4 @@
-import { Controller, Delete } from "@nestjs/common";
+import { Controller, Delete, HttpCode } from "@nestjs/common";
 import { TestingService } from "./testing.service";
 
 @Controller(`testing`)
@@ -8,6 +8,7 @@ export class TestingController {
 
 
   @Delete(`/all-data`)
+  @HttpCode(204)
   async deleteDB() {
     return await this.testingService.deleteAll()
 
