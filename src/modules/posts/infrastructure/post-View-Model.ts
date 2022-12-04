@@ -9,6 +9,6 @@ export class PostViewModel {
     public blogId: string,
     public blogName: string,
     public createdAt: string,
-   // public extendedLikesInfo: ExtendedLikesInfoViewModel,
+    public extendedLikesInfo: ExtendedLikesInfoViewModel,
   ) {}
 }
