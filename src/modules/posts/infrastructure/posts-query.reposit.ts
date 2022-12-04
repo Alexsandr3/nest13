@@ -62,7 +62,7 @@ export class PostsQueryRepositories {
       post.blogId,
       post.blogName,
       post.createdAt,
-      extendedLikesInfo
+      //extendedLikesInfo
     );
   }
 
