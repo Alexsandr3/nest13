@@ -40,11 +40,11 @@ export class PaginationUsersDto {
    */
   @IsString()
   @IsOptional()
-  searchLoginTerm: string = null;
+  searchLoginTerm: string = '';
   /**
    *  Search term for user Email: Email should contains this term in any position
    */
   @IsString()
   @IsOptional()
-  searchEmailTerm: string = null;
+  searchEmailTerm: string = '';
 }

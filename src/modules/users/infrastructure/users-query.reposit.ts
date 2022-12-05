@@ -51,8 +51,8 @@ export class UsersQueryRepositories {
     })*/
     const foundsUsers = await this.userModel
       .find({$or: [
-          {email: {$regex: data.searchEmailTerm, $options: 'i'}},
-          {login: {$regex: data.searchLoginTerm, $options: 'i'}}
+          {"email": {$regex: data.searchEmailTerm, $options: 'i'}},
+          {"login": {$regex: data.searchLoginTerm, $options: 'i'}}
         ]
       })
       .skip((data.pageNumber - 1) * data.pageSize)
@@ -62,8 +62,8 @@ export class UsersQueryRepositories {
       const mappedUsers = foundsUsers.map(user => this._mappedForUser(user))
     const totalCount = await this.userModel.countDocuments({
       $or: [
-        {email: {$regex: data.searchEmailTerm, $options: 'i'}},
-        {login: {$regex: data.searchLoginTerm, $options: 'i'}}
+        {"email": {$regex: data.searchEmailTerm, $options: 'i'}},
+        {"login": {$regex: data.searchLoginTerm, $options: 'i'}}
       ]
     })
     const pagesCountRes = Math.ceil(totalCount / data.pageSize)
