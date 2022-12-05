@@ -32,7 +32,7 @@ export class UsersQueryRepositories {
   }
 
   async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
-    const foundsUsers = await this.userModel
+    /*const foundsUsers = await this.userModel
       .find({$or: [
           {"accountData.email": {$regex: data.searchEmailTerm, $options: 'i'}},
           {"accountData.login": {$regex: data.searchLoginTerm, $options: 'i'}}
@@ -47,6 +47,23 @@ export class UsersQueryRepositories {
       $or: [
         {"accountData.email": {$regex: data.searchEmailTerm, $options: 'i'}},
         {"accountData.login": {$regex: data.searchLoginTerm, $options: 'i'}}
+      ]
+    })*/
+    const foundsUsers = await this.userModel
+      .find({$or: [
+          {email: {$regex: data.searchEmailTerm, $options: 'i'}},
+          {login: {$regex: data.searchLoginTerm, $options: 'i'}}
+        ]
+      })
+      .skip((data.pageNumber - 1) * data.pageSize)
+      .limit(data.pageSize)
+      .sort({[data.sortBy]: data.sortDirection})
+      .lean()
+      const mappedUsers = foundsUsers.map(user => this._mappedForUser(user))
+    const totalCount = await this.userModel.countDocuments({
+      $or: [
+        {email: {$regex: data.searchEmailTerm, $options: 'i'}},
+        {login: {$regex: data.searchLoginTerm, $options: 'i'}}
       ]
     })
     const pagesCountRes = Math.ceil(totalCount / data.pageSize)
