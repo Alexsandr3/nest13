@@ -1,4 +1,4 @@
-import {  Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Post, PostDocument } from "../../domain/post-schema-Model";
@@ -68,9 +68,11 @@ export class PostsQueryRepositories {
   }
 
   async findPosts(data: PaginationDto, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
+    let filter = {};
+    if (blogId) { filter = { blogId: blogId }}
     //search all posts with pagination
     const foundPosts = await this.postModel
-      .find({blogId: blogId})
+      .find(filter)
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection })
