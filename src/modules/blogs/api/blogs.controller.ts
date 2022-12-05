@@ -16,7 +16,7 @@ import { BlogViewModel } from "../infrastructure/query-repository/blog-View-Mode
 import { PaginationDto } from "./input-Dtos/pagination-Dto-Model";
 import { UpdateBlogDto } from "./input-Dtos/update-Blog-Dto-Model";
 import { PaginationViewModel } from "../infrastructure/query-repository/pagination-View-Model";
-import { CreatePostByBlogIdDto } from "./input-Dtos/create-Post-By-BlogId-Dto-Model";
+import { CreatePostByBlogIdDto } from "../../posts/api/input-Dtos/create-Post-By-BlogId-Dto-Model";
 import { PostsQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-query.reposit";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
@@ -59,7 +59,8 @@ export class BlogsController {
 
   @Put(`:id`)
   @HttpCode(204)
-  async updateBlog(@Param(`id`, IdValidationPipe) id: string, @Body() blogInputModel: UpdateBlogDto): Promise<boolean> {
+  async updateBlog(@Param(`id`, IdValidationPipe) id: string,
+                   @Body() blogInputModel: UpdateBlogDto): Promise<boolean> {
     return await this.blogsService.updateBlog(id, blogInputModel);
   }
 

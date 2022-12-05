@@ -50,11 +50,11 @@ export class PostsController {
   @Put(`:id`)
   @HttpCode(204)
   async updateBlog(@Param(`id`, IdValidationPipe) id: string,
-                   @Query() blogInputModel: CreatePostDto): Promise<boolean> {
-    return await this.postsService.updatePost(id, blogInputModel);
+                   @Body() postInputModel: CreatePostDto): Promise<boolean> {
+    return await this.postsService.updatePost(id, postInputModel);
   }
 
-  @Delete(":id")
+  @Delete(`:id`)
   @HttpCode(204)
   async remove(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
     return await this.postsService.removePost(id);

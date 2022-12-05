@@ -56,9 +56,6 @@ export class PostsRepositories {
   }
 
   async updatePost(id: string, data: CreatePostDto): Promise<boolean> {
-   /* if (!ObjectId.isValid(id)) {
-      return false
-    }*/
     const result = await this.postModel.updateOne({_id: new ObjectId(id)}, {
       $set: {
         title: data.title,

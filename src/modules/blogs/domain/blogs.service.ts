@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { BlogsRepositories } from "../infrastructure/blogs.repositories";
 import { CreateBlogDto } from "../api/input-Dtos/create-Blog-Dto-Model";
-import { CreatePostByBlogIdDto } from "../api/input-Dtos/create-Post-By-BlogId-Dto-Model";
+import { CreatePostByBlogIdDto } from "../../posts/api/input-Dtos/create-Post-By-BlogId-Dto-Model";
 import { PostsRepositories } from "../../posts/infrastructure/posts-repositories";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
 import { PreparationBlogForDB } from "./blog-preparation-for-DB";

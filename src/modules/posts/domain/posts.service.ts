@@ -33,8 +33,9 @@ export class PostsService {
     return true;
   }
 
-  async updatePost(id: string, blogInputModel: CreatePostDto): Promise<boolean> {
-    const res = await this.postsRepositories.updatePost(id, blogInputModel);
+  async updatePost(id: string, postInputModel: CreatePostDto): Promise<boolean> {
+    const res = await this.postsRepositories.updatePost(id, postInputModel);
+    console.log("res", res);
     if (!res) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     return true;
   }
