@@ -7,6 +7,7 @@ import { UsersQueryRepositories } from "../infrastructure/users-query.reposit";
 import { UsersViewType } from "../infrastructure/user-View-Model";
 import { MailService } from "../../mail/mail.service";
 import { randomUUID } from "crypto";
+import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 
 
 @Injectable()
@@ -51,9 +52,8 @@ export class UsersService {
        }]
      })*/
     const userId = await this.usersRepositories.createUser(user);
-    //checking if it is saved user !!
+    //finding user for View
     const foundUser = await this.usersQueryRepositories.findUser(userId);
-    if (!foundUser) throw new HttpException("Incorrect id,  please enter a valid one", 404);
     try {
       //send mail for confirmation
       await this.mailService.sendUserConfirmation(foundUser, randomUUID());
@@ -69,7 +69,7 @@ export class UsersService {
   async deleteUser(id: string): Promise<boolean> {
     const res = this.usersRepositories.deleteUser(id);
     if (!res) {
-      throw new HttpException("Incorrect id,  please enter a valid one", 404);
+      throw new NotFoundExceptionMY(`Not found for id:${id}`)
     }
     return true;
   }

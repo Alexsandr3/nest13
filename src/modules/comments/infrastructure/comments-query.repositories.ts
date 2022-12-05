@@ -7,7 +7,8 @@ import { CommentsViewType, LikesInfoViewModel } from "./comments-View-Model";
 import { LikeStatusType } from "../../posts/domain/likesPost-schema-Model";
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
 import { CommentsDBType } from "../domain/comment-DB-Type";
-import { PaginationViewType } from "../../blogs/infrastructure/pagination-type";
+import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
+import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 
 @Injectable()
 export class CommentsQueryRepositories {
@@ -15,10 +16,7 @@ export class CommentsQueryRepositories {
   }
 
 
-  async findComments(commentId: string): Promise<CommentsViewType | null> {
-    if (!ObjectId.isValid(commentId)) {
-      return null;
-    }
+  async findComments(commentId: string): Promise<CommentsViewType> {
     /*
     let myStatus: string = LikeStatusType.None
     if (userId) {
@@ -38,10 +36,12 @@ export class CommentsQueryRepositories {
       0,
       0,
       LikeStatusType.None);
+    //search comment
     const result = await this.commentsModel.findOne({ _id: new ObjectId(commentId) });
     if (!result) {
-      return null;
+      throw new NotFoundExceptionMY(`Not found for commentId${commentId}`)
     } else {
+      //mapped comment for View
       return new CommentsViewType(
         result._id.toString(),
         result.content,
@@ -66,6 +66,7 @@ export class CommentsQueryRepositories {
       0,
       0,
       LikeStatusType.None);
+    //mapped comment for View
     return new CommentsViewType(
       comment._id.toString(),
       comment.content,
@@ -75,18 +76,20 @@ export class CommentsQueryRepositories {
       likesInfo);
   }
 
-  async findCommentsWithPagination(postId: string, data: PaginationDto): Promise<PaginationViewType<CommentsViewType[]>> {
-
+  async findCommentsWithPagination(postId: string, data: PaginationDto): Promise<PaginationViewModel<CommentsViewType[]>> {
+    //search all comments for post by postId with pagination
     const comments = await this.commentsModel.find({ postId: postId })
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection }).lean();
-
+    //mapped comments for view
     const mappedComments = comments.map(comment => this.commentWithNewId(comment));
-    //const itemsComments = await Promise.all(mappedComments)
+    //counting comments
     const totalCountComments = await this.commentsModel.countDocuments(postId ? { postId } : {});
+    //pages count
     const pagesCountRes = Math.ceil(totalCountComments / data.pageSize);
-    return new PaginationViewType(
+    // Found comments with pagination
+    return new PaginationViewModel(
       pagesCountRes,
       data.pageNumber,
       data.pageSize,

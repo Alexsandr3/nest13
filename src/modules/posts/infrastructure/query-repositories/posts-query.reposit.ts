@@ -1,14 +1,15 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import {  Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Post, PostDocument } from "../domain/post-schema-Model";
-import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
-import { PostDBType } from "../domain/post-DB-Type";
+import { Post, PostDocument } from "../../domain/post-schema-Model";
+import { PaginationDto } from "../../../blogs/api/input-Dtos/pagination-Dto-Model";
+import { PostDBType } from "../../domain/post-DB-Type";
 import { PostViewModel } from "./post-View-Model";
-import { LikeStatusType } from "../domain/likesPost-schema-Model";
+import { LikeStatusType } from "../../domain/likesPost-schema-Model";
 import { ExtendedLikesInfoViewModel } from "./likes-Info-View-Model";
-import { PaginationViewType } from "../../blogs/infrastructure/pagination-type";
+import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { ObjectId } from "mongodb";
+import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
 
 @Injectable()
 export class PostsQueryRepositories {
@@ -66,17 +67,22 @@ export class PostsQueryRepositories {
     );
   }
 
-  async findPosts(data: PaginationDto, blogId?: string): Promise<PaginationViewType<PostViewModel[]>> {
+  async findPosts(data: PaginationDto, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
+    //search all posts with pagination
     const foundPosts = await this.postModel
       .find({})
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection })
       .lean();
+    //mapped posts for view
     const mappedPosts = foundPosts.map(post => this._postForView(post));
+    //counting posts for blogId
     const totalCount = await this.postModel.countDocuments(blogId ? { blogId } : {});
+    //pages count
     const pagesCountRes = Math.ceil(totalCount / data.pageSize);
-    return new PaginationViewType(
+    // Found posts with pagination
+    return new PaginationViewModel(
       pagesCountRes,
       data.pageNumber,
       data.pageSize,
@@ -85,14 +91,12 @@ export class PostsQueryRepositories {
     );
   }
 
-  async findPost(id: string): Promise<PostViewModel | null> {
-   /* if (!ObjectId.isValid(id)) {
-      return null;
-    }*/
+  async findPost(id: string): Promise<PostViewModel> {
     const post = await this.postModel.findOne({ _id: new ObjectId(id) });
     if (!post) {
-      throw new HttpException("Not Found", 404);
+      throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     } else {
+      //return post for View
       return this._postForView(post);
     }
   }

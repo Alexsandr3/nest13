@@ -1,4 +1,4 @@
-export class PaginationViewType<T> {
+export class PaginationViewModel<T> {
   constructor(
     public pagesCount: number,
     public page: number,

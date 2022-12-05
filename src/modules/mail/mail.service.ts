@@ -7,7 +7,7 @@ export class MailService {
   constructor(private mailerService: MailerService) {}
 
   async sendUserConfirmation(user: UsersViewType, code: string) {
-    const url = `${process.env.CLIENT_URL}example.com/registration-confirmation?code=${code}`;
+    const url = `${process.env.CLIENT_URL}/registration-confirmation?code=${code}`;
 
     await this.mailerService.sendMail({
       to: user.email,

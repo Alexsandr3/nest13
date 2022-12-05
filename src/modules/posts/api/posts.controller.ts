@@ -8,13 +8,14 @@ import {
   Query
 } from "@nestjs/common";
 import { PostsService } from "../domain/posts.service";
-import { PostsQueryRepositories } from "../infrastructure/posts-query.reposit";
+import { PostsQueryRepositories } from "../infrastructure/query-repositories/posts-query.reposit";
 import { CreatePostDto } from "./input-Dtos/create-Post-Dto-Model";
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
-import { PaginationViewType } from "../../blogs/infrastructure/pagination-type";
-import { PostViewModel } from "../infrastructure/post-View-Model";
+import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
+import { PostViewModel } from "../infrastructure/query-repositories/post-View-Model";
 import { CommentsQueryRepositories } from "../../comments/infrastructure/comments-query.repositories";
 import { CommentsViewType } from "../../comments/infrastructure/comments-View-Model";
+import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 
 
 @Controller(`posts`)
@@ -24,16 +25,16 @@ export class PostsController {
               protected commentsQueryRepositories: CommentsQueryRepositories) {
   }
 
-  @Get(":id/comments")
-  async findComments(@Param("id") id: string, @Query() pagination: PaginationDto): Promise<PaginationViewType<CommentsViewType[]>>{
-    const foundPost = await this.postsQueryRepositories.findPost(id);
-    if(!foundPost) return null
-    return this.commentsQueryRepositories.findCommentsWithPagination(id, pagination)
+  @Get(`:postId/comments`)
+  async findComments(@Param(`postId`, IdValidationPipe) id: string,
+                     @Query() pagination: PaginationDto): Promise<PaginationViewModel<CommentsViewType[]>> {
+    await this.postsQueryRepositories.findPost(id);
+    return this.commentsQueryRepositories.findCommentsWithPagination(id, pagination);
   }
 
   @Get()
-  async findAll(@Query() pagination: PaginationDto): Promise<PaginationViewType<PostViewModel[]>> {
-    return  await this.postsQueryRepositories.findPosts(pagination);
+  async findAll(@Query() pagination: PaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
+    return await this.postsQueryRepositories.findPosts(pagination);
   }
 
   @Post()
@@ -41,20 +42,21 @@ export class PostsController {
     return this.postsService.createPost(postInputModel);
   }
 
-  @Get(":id")
-  async findOne(@Param("id") id: string): Promise<PostViewModel | null> {
-    return  await this.postsQueryRepositories.findPost(id);
+  @Get(`:id`)
+  async findOne(@Param(`id`, IdValidationPipe) id: string): Promise<PostViewModel> {
+    return await this.postsQueryRepositories.findPost(id);
   }
 
   @Put(`:id`)
   @HttpCode(204)
-  async updateBlog(@Param("id") id: string, @Query() blogInputModel: CreatePostDto): Promise<boolean> {
+  async updateBlog(@Param(`id`, IdValidationPipe) id: string,
+                   @Query() blogInputModel: CreatePostDto): Promise<boolean> {
     return await this.postsService.updatePost(id, blogInputModel);
   }
 
   @Delete(":id")
   @HttpCode(204)
-  async remove(@Param("id") id: string): Promise<boolean> {
+  async remove(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
     return await this.postsService.removePost(id);
   }
 }

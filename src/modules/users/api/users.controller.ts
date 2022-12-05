@@ -4,7 +4,8 @@ import { UsersService } from "../domain/users.service";
 import { UsersViewType } from "../infrastructure/user-View-Model";
 import { PaginationUsersDto } from "./input-Dto/pagination-Users-Dto-Model";
 import { UsersQueryRepositories } from "../infrastructure/users-query.reposit";
-import { PaginationViewType } from "../../blogs/infrastructure/pagination-type";
+import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
+import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 
 
 @Controller(`users`)
@@ -19,13 +20,13 @@ export class UsersController {
   }
 
   @Get()
-  async findUsers(@Query() pagination: PaginationUsersDto): Promise<PaginationViewType<UsersViewType[]>> {
+  async findUsers(@Query() pagination: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
     return this.usersQueryRepositories.findUsers(pagination);
   }
 
-  @Delete(":id")
+  @Delete(`:id`)
   @HttpCode(204)
-  async deleteUser(@Param("id") id: string): Promise<boolean> {
+  async deleteUser(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
     return await this.usersService.deleteUser(id);
   }
 

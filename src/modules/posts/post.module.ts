@@ -4,12 +4,12 @@ import { PostsRepositories } from './infrastructure/posts-repositories';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from "./domain/post-schema-Model";
 import { PostsController } from './api/posts.controller';
-import { PostsQueryRepositories } from './infrastructure/posts-query.reposit';
+import { PostsQueryRepositories } from './infrastructure/query-repositories/posts-query.reposit';
 import {
   LikesPostsStatus,
   likesPostsStatusSchema,
 } from './domain/likesPost-schema-Model';
-import { BlogsQueryRepositories } from '../blogs/infrastructure/blogs-query.repositories';
+import { BlogsQueryRepositories } from '../blogs/infrastructure/query-repository/blogs-query.repositories';
 import { Blog, BlogSchema } from '../blogs/domain/blog-schema-Model';
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
 import { CommentsQueryRepositories } from "../comments/infrastructure/comments-query.repositories";

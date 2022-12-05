@@ -4,9 +4,9 @@ import { Model } from "mongoose";
 import { Post, PostDocument } from "../domain/post-schema-Model";
 import {
   ExtendedLikesInfoViewModel
-} from "./likes-Info-View-Model";
+} from "./query-repositories/likes-Info-View-Model";
 import { PreparationPostForDB } from "../domain/post-preparation-for-DB";
-import { PostViewModel } from "./post-View-Model";
+import { PostViewModel } from "./query-repositories/post-View-Model";
 import { LikeStatusType } from "../domain/likesPost-schema-Model";
 import { ObjectId } from "mongodb";
 import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";

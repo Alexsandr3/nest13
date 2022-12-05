@@ -6,7 +6,7 @@ import { ObjectId } from "mongodb";
 import { UsersDBType } from "../domain/user-DB-Type";
 import { UsersViewType } from "./user-View-Model";
 import { PaginationUsersDto } from "../api/input-Dto/pagination-Users-Dto-Model";
-import { PaginationViewType } from "../../blogs/infrastructure/pagination-type";
+import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
 
 @Injectable()
 export class UsersQueryRepositories {
@@ -31,7 +31,7 @@ export class UsersQueryRepositories {
     }
   }
 
-  async findUsers(data: PaginationUsersDto): Promise<PaginationViewType<UsersViewType[]>> {
+  async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
     const foundsUsers = await this.userModel
       .find({$or: [
           {"accountData.email": {$regex: data.searchEmailTerm, $options: 'i'}},
