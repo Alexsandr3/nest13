@@ -51,12 +51,12 @@ export class User {
   passwordHash: string;
   @Prop({ type: String, required: true })
   createdAt: string;
- /* @Prop()
-  accountData: AccountData;
-  @Prop()
-  emailConfirmation: EmailConfirmation;
-  @Prop()
-  emailRecovery: EmailRecovery;*/
+  /* @Prop()
+   accountData: AccountData;
+   @Prop()
+   emailConfirmation: EmailConfirmation;
+   @Prop()
+   emailRecovery: EmailRecovery;*/
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
