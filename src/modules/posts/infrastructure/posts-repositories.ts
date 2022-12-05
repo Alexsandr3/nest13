@@ -61,7 +61,7 @@ export class PostsRepositories {
         title: data.title,
         shortDescription: data.shortDescription,
         content: data.content,
-        blogId: id
+        blogId: data.blogId
       }
     })
     return result.matchedCount === 1

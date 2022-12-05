@@ -68,11 +68,11 @@ export class PostsQueryRepositories {
   }
 
   async findPosts(data: PaginationDto, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
-    let filter = {};
-    if (blogId) { filter = { blogId: blogId }}
+   /* let filter = {};
+    if (blogId) { filter = { blogId: blogId }}*/
     //search all posts with pagination
     const foundPosts = await this.postModel
-      .find(filter)
+      .find(blogId ? { blogId } : {})
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection })
