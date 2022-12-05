@@ -35,7 +35,6 @@ export class PostsService {
 
   async updatePost(id: string, postInputModel: CreatePostDto): Promise<boolean> {
     const res = await this.postsRepositories.updatePost(id, postInputModel);
-    console.log("res", res);
     if (!res) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     return true;
   }
