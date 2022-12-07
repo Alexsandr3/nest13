@@ -19,7 +19,6 @@ export function IsMongoIdObject(validationOptions?: ValidationOptions) {
 }
 
 export class OnlyIDParamDTO {
-
   @IsMongoIdObject()
   id: string;
 }

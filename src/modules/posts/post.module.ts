@@ -13,6 +13,7 @@ import { BlogsQueryRepositories } from '../blogs/infrastructure/query-repository
 import { Blog, BlogSchema } from '../blogs/domain/blog-schema-Model';
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
 import { CommentsQueryRepositories } from "../comments/infrastructure/comments-query.repositories";
+import { LikeDetailsViewModel } from "./infrastructure/query-repositories/likes-Info-View-Model";
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { CommentsQueryRepositories } from "../comments/infrastructure/comments-q
     PostsRepositories,
     PostsQueryRepositories,
     BlogsQueryRepositories,
-    CommentsQueryRepositories
+    CommentsQueryRepositories,
+    LikeDetailsViewModel
   ],
 })
 export class PostModule {}

@@ -11,15 +11,6 @@ import { PostsQueryRepositories } from "../posts/infrastructure/query-repositori
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
 
 
-
-//TODO 1.для репозиториев квери где нужно формировать ошибку?
-//TODO 2.валидация ид
-//TODO 3.kофигурации нужны?
-//TODO 4.по тестам 13 домашки!
-//TODO 5.тесты !?
-//TODO 6.формируем ошибки в 13 домашке в форме нужной тех заданием!?
-
-
 @Module({
   imports: [
     MongooseModule.forFeature([

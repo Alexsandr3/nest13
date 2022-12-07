@@ -25,6 +25,19 @@ export class PostsController {
               protected commentsQueryRepositories: CommentsQueryRepositories) {
   }
 
+
+  /* @Put(`:postId/like-status`)
+   async updateLikeStatus(@Param(`postId`, IdValidationPipe) id: string,
+                          @Body() updateLikeStatusInputModel: UpdateLikeStatusDto) {
+     return await this.postsService.updateLikeStatus(id, updateLikeStatusInputModel);
+   }*/
+
+  /* @Post(`:postId/comments`)
+   async createComment(@Param(`postId`, IdValidationPipe) id: string,
+                       @Body() inputCommentModel: CreateCommentDto){
+     return await this.postsService.createComment(id, inputCommentModel)
+   }*/
+
   @Get(`:postId/comments`)
   async findComments(@Param(`postId`, IdValidationPipe) id: string,
                      @Query() pagination: PaginationDto): Promise<PaginationViewModel<CommentsViewType[]>> {

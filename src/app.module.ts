@@ -5,11 +5,12 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { BlogModule } from "./modules/blogs/blog.module";
 import { PostModule } from "./modules/posts/post.module";
 import { CommentModule } from "./modules/comments/comment.module";
-import { UserModule } from "./modules/users/user.module";
+import { UsersModule } from "./modules/users/usersModule";
 import { MailModule } from "./modules/mail/mail.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 import { TestingModule } from "./modules/testing/testing.module";
+import { DeviceModule } from "./modules/security/device.module";
 
 @Module({
   imports: [
@@ -18,14 +19,14 @@ import { TestingModule } from "./modules/testing/testing.module";
     BlogModule,
     PostModule,
     CommentModule,
-    UserModule,
+    UsersModule,
     MailModule,
     AuthModule,
+    DeviceModule,
     ConfigModule.forRoot({ isGlobal: true}), // no need to import into other modules,
     TestingModule
   ],
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule {
-}
+export class AppModule {}

@@ -6,6 +6,7 @@ import { PreparationPostForDB } from "./post-preparation-for-DB";
 import { PostViewModel } from "../infrastructure/query-repositories/post-View-Model";
 import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 
+
 @Injectable()
 export class PostsService {
   constructor(protected postsRepositories: PostsRepositories,
@@ -38,4 +39,15 @@ export class PostsService {
     if (!res) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     return true;
   }
+
+  /*async updateLikeStatus(id: string, likeStatus: LikeStatusType): Promise<boolean> {
+    const post = await this.postsRepositories.findPost(id)
+    if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`)
+    return this.postsRepositories.updateStatusPostById(id, likeStatus)
+  }*/
+  /*async createComment(id: string, content: string, userId: string, userLogin: string): Promise<CommentsViewType | null> {
+    const post = await this.postsRepositories.findPost(id)
+    if (!post) return null
+    return await this.commentsRepositories.createCommentByIdPost(post._id, content, userId, userLogin)
+  }*/
 }
