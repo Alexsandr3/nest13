@@ -2,12 +2,12 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { ErrorExceptionFilter, HttpExceptionFilter } from "./exception.filter";
-import * as cookieParser from 'cookie-parser';
+import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 5003;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: {credentials: true}});
+  const app = await NestFactory.create(AppModule, { cors: { credentials: true } });
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, //data from input DTO
     forbidNonWhitelisted: true, //stopping create data
