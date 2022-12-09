@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   Put,
-  HttpCode,
+  HttpCode, UseGuards
 } from "@nestjs/common";
 import { BlogsService } from "../domain/blogs.service";
 import { CreateBlogDto } from "./input-Dtos/create-Blog-Dto-Model";
@@ -20,6 +20,7 @@ import { CreatePostByBlogIdDto } from "../../posts/api/input-Dtos/create-Post-By
 import { PostsQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-query.reposit";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
+import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
 
 
 
@@ -35,7 +36,7 @@ export class BlogsController {
     return await this.blogsQueryRepositories.findBlogs(pagination);
   }
 
-  //basic
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createBlog(@Body() blogInputModel: CreateBlogDto): Promise<BlogViewModel> {
     const id = await this.blogsService.createBlog(blogInputModel);
@@ -49,7 +50,7 @@ export class BlogsController {
     return this.postsQueryRepositories.findPosts(pagination, blogId);
   }
 
-  //basic
+  @UseGuards(BasicAuthGuard)
   @Post(`:blogId/posts`)
   async createPost(@Param(`blogId`, IdValidationPipe) blogId: string,
                    @Body() postInputModel: CreatePostByBlogIdDto): Promise<PostViewModel> {
@@ -62,7 +63,7 @@ export class BlogsController {
     return await this.blogsQueryRepositories.findBlog(id);
   }
 
-  //basic
+  @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   @Put(`:id`)
   async updateBlog(@Param(`id`, IdValidationPipe) id: string,
@@ -70,7 +71,7 @@ export class BlogsController {
     return await this.blogsService.updateBlog(id, blogInputModel);
   }
 
-  //basic
+  @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   @Delete(`:id`)
   async remove(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {

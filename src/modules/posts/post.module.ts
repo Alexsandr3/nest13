@@ -20,6 +20,7 @@ import { UsersQueryRepositories } from "../users/infrastructure/query-reposirory
 import { LikesStatus, likesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
 import { User, UserSchema } from "../users/domain/users-schema-Model";
 import { JwtService } from "../auth/application/jwt.service";
+import { BasicAuthGuard } from "../auth/guard/basic-auth.guard";
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { JwtService } from "../auth/application/jwt.service";
     UsersQueryRepositories,
     LikeDetailsViewModel,
     JwtAuthGuard,
-    JwtService
+    JwtService,
+    BasicAuthGuard
   ],
 })
 export class PostModule {}

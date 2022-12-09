@@ -10,6 +10,7 @@ import { DeviceRepositories } from "../security/infrastructure/device-repositori
 import { MailService } from "../mail/mail.service";
 import { Device, DeviceSchema } from "../security/domain/device-schema-Model";
 import { MailModule } from "../mail/mail.module";
+import { BasicAuthGuard } from "../auth/guard/basic-auth.guard";
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { MailModule } from "../mail/mail.module";
   ],
 
   controllers: [UsersController],
-  providers: [UsersService, UsersRepositories, UsersQueryRepositories, JwtService, DeviceRepositories, MailService],
+  providers: [UsersService, UsersRepositories, UsersQueryRepositories, JwtService, DeviceRepositories, MailService, BasicAuthGuard],
   exports: [UsersRepositories]
 })
 export class UsersModule {

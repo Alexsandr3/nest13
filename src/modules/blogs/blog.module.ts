@@ -11,6 +11,7 @@ import { PostsQueryRepositories } from "../posts/infrastructure/query-repositori
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
 import { LikesPostsStatus, likesPostsStatusSchema } from "../posts/domain/likesPost-schema-Model";
 import { LikesStatus, likesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
+import { BasicStrategy } from "../auth/strategies/basic.strategy";
 
 
 
@@ -30,7 +31,7 @@ import { LikesStatus, likesStatusSchema } from "../comments/domain/likesStatus-s
     BlogsRepositories,
     BlogsQueryRepositories,
     PostsRepositories,
-    PostsQueryRepositories
+    PostsQueryRepositories, BasicStrategy,
   ]
 })
 export class BlogModule {

@@ -1821,6 +1821,14 @@
   "resolved" "https://registry.npmjs.org/@types/parse-json/-/parse-json-4.0.0.tgz"
   "version" "4.0.0"
 
+"@types/passport-http@^0.3.9":
+  "integrity" "sha512-uQ4vyRdvM0jdWuKpLmi6Q6ri9Nwt8YnHmF7kE6snbthxPrsMWcjRCVc5WcPaQ356ODSZTDgiRYURMPIspCkn3Q=="
+  "resolved" "https://registry.npmjs.org/@types/passport-http/-/passport-http-0.3.9.tgz"
+  "version" "0.3.9"
+  dependencies:
+    "@types/express" "*"
+    "@types/passport" "*"
+
 "@types/passport-jwt@^3.0.7":
   "integrity" "sha512-qRQ4qlww1Yhs3IaioDKrsDNmKy6gLDLgFsGwpCnc2YqWovO2Oxu9yCQdWHMJafQ7UIuOba4C4/TNXcGkQfEjlQ=="
   "resolved" "https://registry.npmjs.org/@types/passport-jwt/-/passport-jwt-3.0.7.tgz"
@@ -1847,7 +1855,7 @@
     "@types/express" "*"
     "@types/passport" "*"
 
-"@types/passport@*":
+"@types/passport@*", "@types/passport@^1.0.11":
   "integrity" "sha512-pz1cx9ptZvozyGKKKIPLcVDVHwae4hrH5d6g5J+DkMRRjR3cVETb4jMabhXAUbg3Ov7T22nFHEgaK2jj+5CBpw=="
   "resolved" "https://registry.npmjs.org/@types/passport/-/passport-1.0.11.tgz"
   "version" "1.0.11"
@@ -6147,6 +6155,13 @@
   "integrity" "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ=="
   "resolved" "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz"
   "version" "1.3.3"
+
+"passport-http@^0.3.0":
+  "integrity" "sha512-OwK9DkqGVlJfO8oD0Bz1VDIo+ijD3c1ZbGGozIZw+joIP0U60pXY7goB+8wiDWtNqHpkTaQiJ9Ux1jE3Ykmpuw=="
+  "resolved" "https://registry.npmjs.org/passport-http/-/passport-http-0.3.0.tgz"
+  "version" "0.3.0"
+  dependencies:
+    "passport-strategy" "1.x.x"
 
 "passport-jwt@^4.0.0":
   "integrity" "sha512-BwC0n2GP/1hMVjR4QpnvqA61TxenUMlmfNjYNgK0ZAs0HK4SOQkHcSv4L328blNTLtHq7DbmvyNJiH+bn6C5Mg=="

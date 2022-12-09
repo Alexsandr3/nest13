@@ -19,6 +19,7 @@ import { JwtAuthGuard } from "../../auth/guard/jwt-auth-bearer.guard";
 import { UpdateLikeStatusDto } from "./input-Dtos/update-Like-Status-Model";
 import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
 import { CreateCommentDto } from "./input-Dtos/create-Comment-Dto-Model";
+import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
 
 
 @Controller(`posts`)
@@ -57,7 +58,7 @@ export class PostsController {
     return await this.postsQueryRepositories.findPosts(pagination, userId);
   }
 
-  //basic
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createPost(@Body() postInputModel: CreatePostDto): Promise<PostViewModel> {
     return this.postsService.createPost(postInputModel);
@@ -69,7 +70,7 @@ export class PostsController {
     return await this.postsQueryRepositories.findPost(id, userId);
   }
 
-  //basic
+  @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   @Put(`:id`)
   async updateBlog(@Param(`id`, IdValidationPipe) id: string,
@@ -77,7 +78,7 @@ export class PostsController {
     return await this.postsService.updatePost(id, postInputModel);
   }
 
-  //basic
+  @UseGuards(BasicAuthGuard)
   @Delete(`:id`)
   @HttpCode(204)
   async remove(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
