@@ -13,7 +13,9 @@ async function bootstrap() {
     forbidNonWhitelisted: true, //stopping create data
     transform: true, //transform data to correct
     stopAtFirstError: true,
+
     exceptionFactory: (errors) => {
+      console.log("errorsForRes", errors);
       const errorsForRes = [];
       errors.forEach((e) => {
         // errorsForRes.push({field: e.property})

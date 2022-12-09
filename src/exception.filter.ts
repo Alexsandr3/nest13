@@ -38,12 +38,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     if (status === 400) {
+      console.log("err", exception.getResponse());
       const errorResponse = []
       const responseBody: any = exception.getResponse();
-      responseBody.message.forEach(m => errorResponse.push(m));
-      response.status(status).json({
-        errorsMessages: errorResponse
-      });
+      try {
+        responseBody.message.forEach(m => errorResponse.push(m));
+        response.status(status).json({
+          errorsMessages: errorResponse
+        });
+      } catch (e) {
+        return response.status(status).send({
+          "errorsMessages": [responseBody]
+        })
+      }
     }
 
     if (status === 401) {

@@ -33,24 +33,31 @@ export class UsersService {
   }
 
   private checkCodeConfirm(user: UsersDBType, code: string) {
-    if (user.emailConfirmation.isConfirmation) throw new BadRequestExceptionMY([`Code has confirmation already`]);
-    if (user.emailConfirmation.confirmationCode !== code) throw new BadRequestExceptionMY([`Company is not confirmed`]);
-    if (user.emailConfirmation.expirationDate < new Date()) throw new BadRequestExceptionMY([`Confirmation has expired`]);
+    if (user.emailConfirmation.isConfirmation) throw new BadRequestExceptionMY({message: `Code has confirmation already`, field: "code"});
+    if (user.emailConfirmation.confirmationCode !== code) throw new BadRequestExceptionMY({message: `Company is not confirmed`, field: "code"});
+    if (user.emailConfirmation.expirationDate < new Date()) throw new BadRequestExceptionMY({message: `Confirmation has expired`, field: "code"});
     return user;
   }
 
   private checkUser(isConfirmation: Boolean, expirationDate: Date) {
-    if (isConfirmation) throw new BadRequestExceptionMY([`Code has confirmation already`]);
-    if (expirationDate < new Date()) throw new BadRequestExceptionMY([`Confirmation has expired`]);
+    if (isConfirmation) throw new BadRequestExceptionMY({message: `Code has confirmation already`, field: "code"});
+    if (expirationDate < new Date()) throw new BadRequestExceptionMY({message: `Confirmation has expired`, field: "code"});
     return;
   }
 
   private async validateUser(userInputModel: CreateUserDto): Promise<CreateUserDto> {
     //find user
     const checkEmail = await this.usersQueryRepositories.findByLoginOrEmail(userInputModel.email);
-    if (checkEmail) throw new BadRequestExceptionMY([`${userInputModel.email}  already in use, do you need choose new data`]);
+    if (checkEmail) throw new BadRequestExceptionMY({
+      message: `${userInputModel.email}  already in use, do you need choose new data`,
+      field: `email`
+    });
+
     const checkLogin = await this.usersQueryRepositories.findByLoginOrEmail(userInputModel.login);
-    if (checkLogin) throw new BadRequestExceptionMY([`${userInputModel.login}  already in use, do you need choose new data`]);
+    if (checkLogin) throw new BadRequestExceptionMY({
+      message: `${userInputModel.login}  already in use, do you need choose new data`,
+      field: `login`
+    });
     return userInputModel;
   }
 
@@ -106,7 +113,7 @@ export class UsersService {
   async confirmByCode(code: string): Promise<boolean> {
     //find user by code
     const user = await this.usersRepositories.findUserByConfirmationCode(code);
-    if (!user) throw new BadRequestExceptionMY([`Invalid code or you are already registered`]);
+    if (!user) throw new BadRequestExceptionMY({message: `Invalid code or you are already registered`, field: "code" });
     //check code
     await this.checkCodeConfirm(user, code);
     return await this.usersRepositories.updateConfirmation(user._id);
@@ -114,7 +121,7 @@ export class UsersService {
 
   async recovery(email: string): Promise<boolean> {
     const user = await this.usersRepositories.findByLoginOrEmail(email);
-    if (!user) throw new BadRequestExceptionMY(`${email} has invalid`);
+    if (!user) throw new BadRequestExceptionMY({message:`${email} has invalid`, field: "email" });
     await this.checkUser(user.emailConfirmation.isConfirmation, user.emailConfirmation.expirationDate);
     const code: any = {
       emailRecovery: {
@@ -135,7 +142,7 @@ export class UsersService {
   async newPassword(newPassword: string, code: string): Promise<boolean> {
     //search user by code
     const user = await this.usersRepositories.findUserByRecoveryCode(code);
-    if (!user) throw new BadRequestExceptionMY([`Incorrect input data`]);
+    if (!user) throw new BadRequestExceptionMY({message: `Incorrect input data`, field: "code"});
     //check code confirmation
     await this.checkCodeConfirm(user, code);
     //generation new passwordHash for save
@@ -146,7 +153,7 @@ export class UsersService {
   async resending(email: string): Promise<boolean> {
     //search user by email
     const user = await this.usersRepositories.findByLoginOrEmail(email);
-    if (!user) throw new BadRequestExceptionMY([`Incorrect input data`]);
+    if (!user) throw new BadRequestExceptionMY({message: `Incorrect input data`, field: "email" });
     //check code
     await this.checkUser(user.emailConfirmation.isConfirmation, user.emailConfirmation.expirationDate);
     //generation new code

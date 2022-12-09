@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { CommentsRepositories } from "../infrastructure/comments.repositories";
 import { LikeStatusType } from "../../posts/domain/likesPost-schema-Model";
 import {
-  BadRequestExceptionMY,
   ForbiddenExceptionMY,
   NotFoundExceptionMY
 } from "../../../helpers/My-HttpExceptionFilter";
@@ -31,7 +30,7 @@ export class CommentsService {
     }
     const result = await this.commentsRepositories.updateCommentsById(id, content)
     if (!result) {
-      throw new BadRequestExceptionMY([`Bad request`])
+      throw new Error(`not today`)
     }
     return true
   }
@@ -46,7 +45,7 @@ export class CommentsService {
     }
     const result = await this.commentsRepositories.deleteCommentsById(id)
     if (!result) {
-      throw new BadRequestExceptionMY([`Bad request`])
+      throw new Error(`not today`)
     }
     return true
   }

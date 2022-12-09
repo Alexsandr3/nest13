@@ -44,6 +44,7 @@ export class AuthController {
     return await this.usersService.newPassword(newPasswordData.newPassword, newPasswordData.recoveryCode);
   }
 
+  @HttpCode(200)
   @Post(`/login`)
   async login(@Request() req, @Ip() ip, @Body() loginInputModel: LoginDto,
               @Res({ passthrough: true }) res: Response): Promise<Pick<TokensType, "accessToken">> {

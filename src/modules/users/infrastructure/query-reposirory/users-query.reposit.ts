@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import {  LeanDocument, Model } from "mongoose";
+import { LeanDocument, Model } from "mongoose";
 import { User, UserDocument } from "../../domain/users-schema-Model";
 import { ObjectId } from "mongodb";
 import { UsersViewType } from "./user-View-Model";
@@ -33,25 +33,27 @@ export class UsersQueryRepositories {
 
   async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
     const foundsUsers = await this.userModel
-      .find({$or: [
-          {"accountData.email": {$regex: data.searchEmailTerm, $options: 'i'}},
-          {"accountData.login": {$regex: data.searchLoginTerm, $options: 'i'}}
+      .find({
+        $or: [
+          { "accountData.email": { $regex: data.searchEmailTerm, $options: "i" } },
+          { "accountData.login": { $regex: data.searchLoginTerm, $options: "i" } }
         ]
       })
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
-      .sort({[data.sortBy]: data.sortDirection})
-      .lean()
+      .sort({ [`accountData.${data.sortBy}`]: data.sortDirection })
+      //.sort({[data.sortBy]: data.sortDirection})
+      .lean();
 
 
-    const mappedUsers = foundsUsers.map(user => this.mappedForUser(user))
+    const mappedUsers = foundsUsers.map(user => this.mappedForUser(user));
     const totalCount = await this.userModel.countDocuments({
       $or: [
-        {"accountData.email": {$regex: data.searchEmailTerm, $options: 'i'}},
-        {"accountData.login": {$regex: data.searchLoginTerm, $options: 'i'}}
+        { "accountData.email": { $regex: data.searchEmailTerm, $options: "i" } },
+        { "accountData.login": { $regex: data.searchLoginTerm, $options: "i" } }
       ]
-    })
-    const pagesCountRes = Math.ceil(totalCount / data.pageSize)
+    });
+    const pagesCountRes = Math.ceil(totalCount / data.pageSize);
     return new PaginationViewModel(
       pagesCountRes,
       data.pageNumber,
@@ -63,19 +65,19 @@ export class UsersQueryRepositories {
   async findByLoginOrEmail(loginOrEmail: string): Promise<LeanDocument<UserDocument>> {
     const user = await this.userModel.findOne({ $or: [{ "accountData.email": loginOrEmail }, { "accountData.login": loginOrEmail }] });
     //if (user) throw new BadRequestExceptionMY([`${loginOrEmail}  already in use, do you need choose new data`]);
-    return user
+    return user;
   }
 
   async getUserById(id: string): Promise<MeViewModel> {
-    const result = await this.userModel.findOne({_id: new ObjectId(id)})
+    const result = await this.userModel.findOne({ _id: new ObjectId(id) });
     if (!result) {
-      throw new UnauthorizedExceptionMY(`incorrect userId`)
+      throw new UnauthorizedExceptionMY(`incorrect userId`);
     } else {
       return new MeViewModel(
         result.accountData.email,
         result.accountData.login,
         result._id.toString()
-      )
+      );
     }
   }
 }

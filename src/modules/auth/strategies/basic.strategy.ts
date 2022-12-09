@@ -6,7 +6,6 @@ import { PassportStrategy } from '@nestjs/passport';
 const basicConstant = {
     userName: process.env.SA_LOGIN || "admin",
     password: process.env.SA_PASSWORD || "qwerty"
-
 }
 
 @Injectable()
