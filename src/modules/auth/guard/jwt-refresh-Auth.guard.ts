@@ -10,7 +10,6 @@ export class RefreshGuard implements CanActivate {
               private readonly deviceRepositories: DeviceRepositories) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    debugger
     const req = context.switchToHttp().getRequest()
     const refreshToken = req.cookies.refreshToken
     if(!refreshToken) throw new UnauthorizedExceptionMY(`Did not come refreshToken`)
@@ -19,11 +18,7 @@ export class RefreshGuard implements CanActivate {
     if (dateExp < new Date()) throw new UnauthorizedExceptionMY(`Expired date`)
     const deviceUser = await this.deviceRepositories.findDeviceForValid(payload.userId, payload.deviceId, payload.iat)
     if (!deviceUser) throw new UnauthorizedExceptionMY(`Incorrect userId or deviceId or issuedAt`)
+    req.payload = payload
     return true
   }
-
-
-
-
-
 }

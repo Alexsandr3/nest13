@@ -91,7 +91,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get(`me`)
   async getProfile(@CurrentUserId() userId: string): Promise<MeViewModel> {
-    console.log("userId-0000", userId);
     return await this.usersQueryRepositories.getUserById(userId);
   }
 

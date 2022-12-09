@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { JwtService } from "../application/jwt.service";
 import { UnauthorizedExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
-import { request } from "express";
+
 
 
 
@@ -9,21 +9,14 @@ import { request } from "express";
 export class JwtAuthGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {
   }
-  // @ts-ignore
-  canActivate(context: ExecutionContext) {
+
+  canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest();
-
-    try {
-      const token = this.getToken(req);
-      const userId = this.jwtService.getUserIdByToken(token);
-      if (!userId) throw new UnauthorizedExceptionMY(`Did not come userId`);
-      return  request.user = userId
-    } catch (e) {
-      // return false or throw a specific error if desired
-      throw new Error(e)
-    }
+    const token = this.getToken(req);
+    const userId = this.jwtService.getUserIdByToken(token);
+    req.userId = userId
+    return true
   }
-
 
   protected getToken(request: {
     headers: Record<string, string | string[]>;

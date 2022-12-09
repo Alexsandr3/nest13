@@ -16,7 +16,6 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
     }
 
     public validate = async (username, password): Promise<boolean> => {
-        debugger
         if (
             basicConstant.userName === username &&
             basicConstant.password === password
