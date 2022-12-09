@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   Put,
-  HttpCode
+  HttpCode,
 } from "@nestjs/common";
 import { BlogsService } from "../domain/blogs.service";
 import { CreateBlogDto } from "./input-Dtos/create-Blog-Dto-Model";
@@ -22,11 +22,12 @@ import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
 
 
+
 @Controller(`blogs`)
 export class BlogsController {
   constructor(protected blogsService: BlogsService,
               protected blogsQueryRepositories: BlogsQueryRepositories,
-              private postsQueryRepositories: PostsQueryRepositories) {
+              protected postsQueryRepositories: PostsQueryRepositories) {
   }
 
   @Get()
@@ -34,6 +35,7 @@ export class BlogsController {
     return await this.blogsQueryRepositories.findBlogs(pagination);
   }
 
+  //basic
   @Post()
   async createBlog(@Body() blogInputModel: CreateBlogDto): Promise<BlogViewModel> {
     const id = await this.blogsService.createBlog(blogInputModel);
@@ -41,13 +43,16 @@ export class BlogsController {
   }
 
   @Get(`:blogId/posts`)
-  async findPosts(@Param(`blogId`, IdValidationPipe) blogId: string, @Query() pagination: PaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
+  async findPosts(@Param(`blogId`, IdValidationPipe) blogId: string,
+                  @Query() pagination: PaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
     await this.blogsQueryRepositories.findBlog(blogId);
     return this.postsQueryRepositories.findPosts(pagination, blogId);
   }
 
+  //basic
   @Post(`:blogId/posts`)
-  async createPost(@Param(`blogId`, IdValidationPipe) blogId: string, @Body() postInputModel: CreatePostByBlogIdDto): Promise<PostViewModel> {
+  async createPost(@Param(`blogId`, IdValidationPipe) blogId: string,
+                   @Body() postInputModel: CreatePostByBlogIdDto): Promise<PostViewModel> {
     const blog = await this.blogsQueryRepositories.findBlog(blogId);
     return this.blogsService.createPost(postInputModel, blogId, blog.name);
   }
@@ -57,15 +62,17 @@ export class BlogsController {
     return await this.blogsQueryRepositories.findBlog(id);
   }
 
-  @Put(`:id`)
+  //basic
   @HttpCode(204)
+  @Put(`:id`)
   async updateBlog(@Param(`id`, IdValidationPipe) id: string,
                    @Body() blogInputModel: UpdateBlogDto): Promise<boolean> {
     return await this.blogsService.updateBlog(id, blogInputModel);
   }
 
-  @Delete(`:id`)
+  //basic
   @HttpCode(204)
+  @Delete(`:id`)
   async remove(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
     return await this.blogsService.removeBlog(id);
   }

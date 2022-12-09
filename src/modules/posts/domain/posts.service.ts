@@ -5,12 +5,18 @@ import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
 import { PreparationPostForDB } from "./post-preparation-for-DB";
 import { PostViewModel } from "../infrastructure/query-repositories/post-View-Model";
 import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
+import { CommentsRepositories } from "../../comments/infrastructure/comments.repositories";
+import { UsersQueryRepositories } from "../../users/infrastructure/query-reposirory/users-query.reposit";
+import { PreparationCommentForDB } from "../../comments/domain/comment-preparation-for-DB";
+import { CommentsViewType } from "../../comments/infrastructure/comments-View-Model";
 
 
 @Injectable()
 export class PostsService {
   constructor(protected postsRepositories: PostsRepositories,
-              private blogsQueryRepositories: BlogsQueryRepositories) {
+              protected blogsQueryRepositories: BlogsQueryRepositories,
+              protected commentsRepositories: CommentsRepositories,
+              protected usersQueryRepositories: UsersQueryRepositories) {
   }
 
   async createPost(postInputModel: CreatePostDto): Promise<PostViewModel> {
@@ -40,14 +46,24 @@ export class PostsService {
     return true;
   }
 
-  /*async updateLikeStatus(id: string, likeStatus: LikeStatusType): Promise<boolean> {
+  async updateLikeStatus(id: string, likeStatus: string, userId: string): Promise<boolean> {
     const post = await this.postsRepositories.findPost(id)
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`)
-    return this.postsRepositories.updateStatusPostById(id, likeStatus)
-  }*/
-  /*async createComment(id: string, content: string, userId: string, userLogin: string): Promise<CommentsViewType | null> {
+    return this.postsRepositories.updateStatusPostById(id, userId, likeStatus)
+  }
+
+
+
+  async createComment(id: string, content: string, userId: string): Promise<CommentsViewType> {
     const post = await this.postsRepositories.findPost(id)
-    if (!post) return null
-    return await this.commentsRepositories.createCommentByIdPost(post._id, content, userId, userLogin)
-  }*/
+    if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`)
+    const user = await this.usersQueryRepositories.findUser(userId)
+    const newComment = new PreparationCommentForDB(
+      post._id.toString(),
+      content,
+      userId,
+      user.login,
+      new Date().toISOString())
+    return await this.commentsRepositories.createCommentByIdPost(newComment)
+  }
 }

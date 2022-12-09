@@ -1,54 +1,51 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Comment, CommentDocument } from "../domain/comments-schema-Model";
+import { Comment, CommentDocument } from "../../domain/comments-schema-Model";
 import { ObjectId } from "mongodb";
-import { CommentsViewType, LikesInfoViewModel } from "./comments-View-Model";
-import { LikeStatusType } from "../../posts/domain/likesPost-schema-Model";
-import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
-import { CommentsDBType } from "../domain/comment-DB-Type";
-import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
-import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
+import { CommentsViewType, LikesInfoViewModel } from "../comments-View-Model";
+import { LikeStatusType } from "../../../posts/domain/likesPost-schema-Model";
+import { PaginationDto } from "../../../blogs/api/input-Dtos/pagination-Dto-Model";
+import { CommentsDBType } from "../../domain/comment-DB-Type";
+import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
+import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
+import { LikesStatus, LikesStatusDocument } from "../../domain/likesStatus-schema-Model";
 
 @Injectable()
 export class CommentsQueryRepositories {
-  constructor(@InjectModel(Comment.name) private readonly commentsModel: Model<CommentDocument>) {
+  constructor(@InjectModel(Comment.name) private readonly commentsModel: Model<CommentDocument>,
+              @InjectModel(LikesStatus.name) private readonly likesStatusModel: Model<LikesStatusDocument>) {
   }
 
 
-  async findComments(commentId: string): Promise<CommentsViewType> {
-    /*
+  async findComments(commentId: string, userId: string | null): Promise<CommentsViewType> {
     let myStatus: string = LikeStatusType.None
     if (userId) {
-      const result: LikeDBType | null = await LikeModelClass.findOne({userId: userId, parentId: commentId})
-      if (result){
+      const result = await this.likesStatusModel.findOne({ userId: userId, parentId: commentId })
+      if (result) {
         myStatus = result.likeStatus
       }
     }
-    const totalCountLike = await LikeModelClass.countDocuments({parentId: commentId, likeStatus: "Like"})
-    const totalCountDislike = await LikeModelClass.countDocuments({parentId: commentId, likeStatus: "Dislike"})
+    const totalCountLike = await this.likesStatusModel.countDocuments({ parentId: commentId, likeStatus: "Like" })
+    const totalCountDislike = await this.likesStatusModel.countDocuments({ parentId: commentId, likeStatus: "Dislike" })
     if (!myStatus) return null
     const likesInfo = new LikesInfoViewModel(
       totalCountLike,
       totalCountDislike,
-      myStatus)*/
-    const likesInfo = new LikesInfoViewModel(
-      0,
-      0,
-      LikeStatusType.None);
+      myStatus)
     //search comment
-    const result = await this.commentsModel.findOne({ _id: new ObjectId(commentId) });
+    const result = await this.commentsModel.findOne({ _id: new ObjectId(commentId) })
     if (!result) {
-      throw new NotFoundExceptionMY(`Not found for commentId${commentId}`)
+      throw new NotFoundExceptionMY(`Not found for commentId${commentId}`);
     } else {
       //mapped comment for View
       return new CommentsViewType(
-        result._id.toString(),
+        result._id?.toString(),
         result.content,
         result.userId,
         result.userLogin,
         result.createdAt,
-        likesInfo);
+        likesInfo)
     }
   }
 

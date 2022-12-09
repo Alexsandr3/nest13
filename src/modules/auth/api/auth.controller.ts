@@ -4,10 +4,9 @@ import {
   Get,
   Post,
   Request,
-  HttpCode, UseGuards
+  HttpCode, UseGuards, Res, Ip
 } from "@nestjs/common";
 import { AuthService } from "../domain/auth.service";
-import { CurrentUserId } from "../decorators/current-user-id.param.decorator";
 import { UsersService } from "../../users/domain/users.service";
 import { CreateUserDto } from "../../users/api/input-Dto/create-User-Dto-Model";
 import { ConfirmationCodeDto } from "../../users/api/input-Dto/confirmation-code-Dto-Model";
@@ -15,84 +14,85 @@ import { LoginDto } from "./dto/login-Dto-Model";
 import { EmailRecoveryDto } from "./dto/email-Recovery-Dto-Model";
 import { NewPasswordDto } from "./dto/new-Password-Dto-Model";
 import { TokensType } from "../application/jwt.service";
-import { response } from "express";
-import { JwtRefreshTokenStrategy } from "../strategies/jwt-Refresh.strategy";
-import JwtRefreshGuard from "../guard/jwt-Refresh.guard";
 import { PayloadType } from "../application/payloadType";
+import { RefreshGuard } from "../guard/jwt-refresh-Auth.guard";
+import { Response } from "express";
+import { PayloadRefresh } from "../decorators/payload-refresh.param.decorator";
+import { JwtAuthGuard } from "../guard/jwt-auth-bearer.guard";
+import { UsersQueryRepositories } from "../../users/infrastructure/query-reposirory/users-query.reposit";
+import { MeViewModel } from "../infrastructure/me-View-Model";
+import { CurrentUserId } from "../decorators/current-user-id.param.decorator";
 
 
 @Controller(`auth`)
 export class AuthController {
   constructor(private readonly authService: AuthService,
-              private readonly usersService: UsersService) {
+              private readonly usersService: UsersService,
+              private readonly usersQueryRepositories: UsersQueryRepositories) {
   }
 
 
-  @Post(`/login`)
-  async login(@Request() req, @Body() loginInputModel: LoginDto): Promise<Pick<TokensType, "accessToken">> {
-    const ipAddress = req.ip;
-    const deviceName = req.headers["user-agent"];
-    console.log("loginInputModel", loginInputModel);
-    const createdToken = await this.authService.login(loginInputModel, ipAddress, deviceName);
-    response.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: true });
-    return { "accessToken": createdToken.accessToken };
-  }
-
-  @Post(`/password-recovery`)
   @HttpCode(204)
+  @Post(`/password-recovery`)
   async recovery(@Body() inputData: EmailRecoveryDto): Promise<boolean> {
     return await this.usersService.recovery(inputData.email);
   }
 
-  @Post(`/new-password`)
   @HttpCode(204)
+  @Post(`/new-password`)
   async newPassword(@Body() newPasswordData: NewPasswordDto): Promise<boolean> {
     return await this.usersService.newPassword(newPasswordData.newPassword, newPasswordData.recoveryCode);
   }
 
-  @UseGuards(JwtRefreshGuard) //payload
-  @Post(`refresh-token`)
-  async refresh(@Request() payload: PayloadType): Promise<Pick<TokensType, "accessToken">> {
-    console.log("payload", payload);
-    const createdToken = await this.usersService.refresh(payload);
-    response.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: true });
+  @Post(`/login`)
+  async login(@Request() req, @Ip() ip, @Body() loginInputModel: LoginDto,
+              @Res({ passthrough: true }) res: Response): Promise<Pick<TokensType, "accessToken">> {
+    const deviceName = req.headers["user-agent"];
+    const createdToken = await this.authService.login(loginInputModel, ip, deviceName);
+    res.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: true });
     return { "accessToken": createdToken.accessToken };
   }
 
-  @Post(`/registration-confirmation`)
-  @HttpCode(204)
-  async confirmByCode(@Body() inputModel: ConfirmationCodeDto): Promise<boolean> {
-    await this.usersService.confirmByCode(inputModel.code);
-    return;
+  @UseGuards(RefreshGuard)
+  @Post(`refresh-token`)
+  async refresh(@PayloadRefresh() payloadRefresh: PayloadType,
+                @Res({ passthrough: true }) res): Promise<Pick<TokensType, "accessToken">> {
+    const createdToken = await this.usersService.refresh(payloadRefresh);
+    res.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: true });
+    return { "accessToken": createdToken.accessToken };
   }
 
-  @Post(`/registration`)
   @HttpCode(204)
+  @Post(`/registration-confirmation`)
+  async confirmByCode(@Body() inputModel: ConfirmationCodeDto): Promise<boolean> {
+    return await this.usersService.confirmByCode(inputModel.code);
+  }
+
+  @HttpCode(204)
+  @Post(`/registration`)
   async registration(@Body() userInputModel: CreateUserDto): Promise<boolean> {
     await this.usersService.createUser(userInputModel);
     return;
   }
 
+  @HttpCode(204)
   @Post(`/registration-email-resending`)
-  @HttpCode(204)
   async resending(@Body() resendingInputModel: EmailRecoveryDto): Promise<boolean> {
-    await this.usersService.resending(resendingInputModel.email);
-    return;
+    return await this.usersService.resending(resendingInputModel.email);
   }
 
-  @UseGuards(JwtRefreshGuard)
-  @Post(`/logout`)
+  @UseGuards(RefreshGuard)
   @HttpCode(204)
-  async logout(@Request() payload: PayloadType): Promise<boolean> {
-    await this.usersService.logout(payload);
-    return;
+  @Post(`/logout`)
+  async logout(@PayloadRefresh() payloadRefresh: PayloadType): Promise<boolean> {
+    return await this.usersService.logout(payloadRefresh);
   }
 
-  //@UseGuards(JwtAuthGuard) //payload
+  @UseGuards(JwtAuthGuard)
   @Get(`me`)
-  async getProfile(@CurrentUserId() currentUserId) {
-    //check userId
-    // return await this.usersService.findUser(currentUserId)
+  async getProfile(@CurrentUserId() userId: string): Promise<MeViewModel> {
+    console.log("userId-0000", userId);
+    return await this.usersQueryRepositories.getUserById(userId);
   }
 
 }

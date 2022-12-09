@@ -54,6 +54,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
       response.status(status).send(exception.message);
     }
 
+    if (status === 403) {
+      response.status(status).send(exception.message);
+    }
+
     if (status === 404) {
       response.status(status).send(exception.message);
     }

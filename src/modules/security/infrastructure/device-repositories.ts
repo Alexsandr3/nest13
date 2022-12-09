@@ -15,14 +15,13 @@ export class DeviceRepositories {
     return await this.deviceModel.create(device);
   }
 
-  async updateDateDevice(payload: PayloadType, oldIat: number): Promise<boolean> {
-    const dateCreatedOldToken = (new Date(oldIat * 1000)).toISOString();
-    const dateCreateToken = (new Date(payload.iat * 1000)).toISOString();
-    const dateExpiredToken = (new Date(payload.exp * 1000)).toISOString();
+  async updateDateDevice(userId: string, deviceId: string,
+                         dateCreateToken: string, dateExpiredToken: string,
+                         dateCreatedOldToken: string): Promise<boolean> {
     const result = await this.deviceModel.updateOne({
       $and: [
-        { userId: { $eq: payload.userId } },
-        { deviceId: { $eq: payload.deviceId } },
+        { userId: { $eq: userId } },
+        { deviceId: { $eq: deviceId } },
         { lastActiveDate: { $eq: dateCreatedOldToken } }
       ]
     }, {
@@ -34,24 +33,52 @@ export class DeviceRepositories {
     return result.modifiedCount === 1;
   }
 
-  async findDeviceForDelete(payload: PayloadType) {
-    const dateCreatedToken = (new Date(payload.iat * 1000)).toISOString();
-    return  this.deviceModel.findOne({
-        $and: [
-          { userId: { $eq: payload.userId } },
-          { deviceId: { $eq: payload.deviceId } },
-          { lastActiveDate: { $eq: dateCreatedToken } }
-        ]
-      });
+  async findDeviceForDelete(userId: string, deviceId: string, dateCreatedToken: string) {
+    return this.deviceModel.findOne({
+      $and: [
+        { userId: { $eq: userId } },
+        { deviceId: { $eq: deviceId } },
+        { lastActiveDate: { $eq: dateCreatedToken } }
+      ]
+    });
   }
 
-  async deleteDevice(payload: PayloadType): Promise<boolean> {
+  async deleteDevice(userId: string, deviceId: string): Promise<boolean> {
     const result = await this.deviceModel.deleteOne({
       $and: [
-        {userId: {$eq: payload.userId}},
-        {deviceId: {$eq: payload.deviceId}},
+        { userId: { $eq: userId } },
+        { deviceId: { $eq: deviceId } }
       ]
-    })
-    return result.deletedCount === 1
+    });
+    return result.deletedCount === 1;
+  }
+
+  async deleteDevices(payload: PayloadType) {
+    return this.deviceModel.deleteMany({ userId: payload.userId, deviceId: { $ne: payload.deviceId } });
+  }
+
+  async findByDeviceIdAndUserId(userId: string, deviceId: string) {
+    return this.deviceModel.findOne({ userId, deviceId });
+  }
+
+  async deleteDeviceByDeviceId(deviceId: string) {
+    return this.deviceModel.deleteMany({ deviceId: deviceId });
+  }
+
+  async findDeviceForValid(userId: string, deviceId: string, iat: number) {
+    const dateCreateToken = (new Date(iat * 1000)).toISOString();
+    const result = await this.deviceModel
+      .findOne({
+        $and: [
+          { userId: userId },
+          { deviceId: deviceId },
+          { lastActiveDate: dateCreateToken }
+        ]
+      });
+    if (!result) {
+      return null;
+    } else {
+      return result;
+    }
   }
 }

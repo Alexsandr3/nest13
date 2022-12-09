@@ -12,7 +12,7 @@ export type LikesPostsStatusDocument = HydratedDocument<LikesPostsStatus>;
 @Schema()
 export class LikesPostsStatus {
   @Prop({ type: String, required: true })
-  createdAt: string;
+  addedAt: string;
   @Prop({ type: String, required: true })
   userId: string;
   @Prop({ type: String, required: true })

@@ -12,8 +12,14 @@ import {
 import { BlogsQueryRepositories } from '../blogs/infrastructure/query-repository/blogs-query.repositories';
 import { Blog, BlogSchema } from '../blogs/domain/blog-schema-Model';
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
-import { CommentsQueryRepositories } from "../comments/infrastructure/comments-query.repositories";
+import { CommentsQueryRepositories } from "../comments/infrastructure/query-repository/comments-query.repositories";
 import { LikeDetailsViewModel } from "./infrastructure/query-repositories/likes-Info-View-Model";
+import { JwtAuthGuard } from "../auth/guard/jwt-auth-bearer.guard";
+import { CommentsRepositories } from "../comments/infrastructure/comments.repositories";
+import { UsersQueryRepositories } from "../users/infrastructure/query-reposirory/users-query.reposit";
+import { LikesStatus, likesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
+import { User, UserSchema } from "../users/domain/users-schema-Model";
+import { JwtService } from "../auth/application/jwt.service";
 
 @Module({
   imports: [
@@ -21,7 +27,9 @@ import { LikeDetailsViewModel } from "./infrastructure/query-repositories/likes-
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: LikesPostsStatus.name, schema: likesPostsStatusSchema },
+      { name: LikesStatus.name, schema: likesStatusSchema },
       { name: Comment.name, schema: CommentSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [PostsController],
@@ -30,8 +38,12 @@ import { LikeDetailsViewModel } from "./infrastructure/query-repositories/likes-
     PostsRepositories,
     PostsQueryRepositories,
     BlogsQueryRepositories,
+    CommentsRepositories,
     CommentsQueryRepositories,
-    LikeDetailsViewModel
+    UsersQueryRepositories,
+    LikeDetailsViewModel,
+    JwtAuthGuard,
+    JwtService
   ],
 })
 export class PostModule {}

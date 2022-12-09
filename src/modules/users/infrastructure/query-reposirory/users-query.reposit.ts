@@ -6,7 +6,8 @@ import { ObjectId } from "mongodb";
 import { UsersViewType } from "./user-View-Model";
 import { PaginationUsersDto } from "../../api/input-Dto/pagination-Users-Dto-Model";
 import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
-import {  NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
+import { NotFoundExceptionMY, UnauthorizedExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
+import { MeViewModel } from "../../../auth/infrastructure/me-View-Model";
 
 @Injectable()
 export class UsersQueryRepositories {
@@ -63,5 +64,18 @@ export class UsersQueryRepositories {
     const user = await this.userModel.findOne({ $or: [{ "accountData.email": loginOrEmail }, { "accountData.login": loginOrEmail }] });
     //if (user) throw new BadRequestExceptionMY([`${loginOrEmail}  already in use, do you need choose new data`]);
     return user
+  }
+
+  async getUserById(id: string): Promise<MeViewModel> {
+    const result = await this.userModel.findOne({_id: new ObjectId(id)})
+    if (!result) {
+      throw new UnauthorizedExceptionMY(`incorrect userId`)
+    } else {
+      return new MeViewModel(
+        result.accountData.email,
+        result.accountData.login,
+        result._id.toString()
+      )
+    }
   }
 }

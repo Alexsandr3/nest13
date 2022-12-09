@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
 import { UsersService } from "../../users/domain/users.service";
 import { UsersQueryRepositories } from "../../users/infrastructure/query-reposirory/users-query.reposit";
 import * as bcrypt from "bcrypt";
@@ -10,33 +10,35 @@ import { DeviceRepositories } from "../../security/infrastructure/device-reposit
 import { PreparationDeviceForDB } from "../../security/domain/device-preparation-for-DB";
 
 
-
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly deviceRepositories: DeviceRepositories,
-    private readonly usersQueryRepositories: UsersQueryRepositories,
-  ) {}
+    private readonly usersQueryRepositories: UsersQueryRepositories
+  ) {
+  }
 
   private async validateUser(loginInputModel: LoginDto): Promise<any> {
     //find user
     const user = await this.usersQueryRepositories.findByLoginOrEmail(loginInputModel.loginOrEmail);
-    if(!user) throw new UnauthorizedExceptionMY(`Company with this ${loginInputModel.loginOrEmail} is not authorized `)
+    if (!user) throw new UnauthorizedExceptionMY(`User '${loginInputModel.loginOrEmail}' is not authorized `);
+    //check password
     const result = await bcrypt.compare(loginInputModel.password, user.accountData.passwordHash);
     if (!result) throw new UnauthorizedExceptionMY(`Incorrect password`);
     return user;
   }
 
   async login(loginInputModel: LoginDto, ipAddress: string, deviceName: string): Promise<TokensType> {
-
-    const user = await this.validateUser(loginInputModel)
-    const deviceId = randomUUID()
-    const userId = user._id.toString()
-    const token = await this.jwtService.createJwt(userId, user.accountData.login, deviceId)
-    console.log("token", token);
-    const payloadNew = await this.jwtService.verifyToken(token.refreshToken)
+    const user = await this.validateUser(loginInputModel);
+    //preparation data for token
+    const deviceId = randomUUID();
+    const userId = user._id.toString();
+    //generation new tokens
+    const token = await this.jwtService.createJwt(userId, deviceId);
+    const payloadNew = await this.jwtService.verifyToken(token.refreshToken);
+    //preparation data for save device
     const dateCreatedToken = (new Date(payloadNew.iat * 1000)).toISOString();
     const dateExpiredToken = (new Date(payloadNew.exp * 1000)).toISOString();
     const device = new PreparationDeviceForDB(
@@ -46,8 +48,8 @@ export class AuthService {
       dateCreatedToken,
       dateExpiredToken,
       deviceId
-    )
-    await this.deviceRepositories.createDevice(device)
-    return token
+    );
+    await this.deviceRepositories.createDevice(device);
+    return token;
   }
 }

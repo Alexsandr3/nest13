@@ -1,42 +1,53 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { LeanDocument, Model } from "mongoose";
 import { Post, PostDocument } from "../domain/post-schema-Model";
 import {
-  ExtendedLikesInfoViewModel
+  ExtendedLikesInfoViewModel, LikeDetailsViewModel
 } from "./query-repositories/likes-Info-View-Model";
 import { PreparationPostForDB } from "../domain/post-preparation-for-DB";
 import { PostViewModel } from "./query-repositories/post-View-Model";
-import { LikeStatusType } from "../domain/likesPost-schema-Model";
+import { LikesPostsStatus, LikesPostsStatusDocument, LikeStatusType } from "../domain/likesPost-schema-Model";
 import { ObjectId } from "mongodb";
 import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
 import { PostDBType } from "../domain/post-DB-Type";
+import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 
 @Injectable()
 export class PostsRepositories {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
-   /* @InjectModel(LikesPostsStatus.name)
-    private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>*/
+    @InjectModel(LikesPostsStatus.name) private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>
   ) {
   }
 
-  /*  private _LikeDetailsView(object: LikesPostsDBType): LikeDetailsViewModel {
-      return new LikeDetailsViewModel(
-        object.addedAt,
-        object.userId,
-        object.login,
-      );
-    }*/
+  private async LikeDetailsView(object: LeanDocument<LikesPostsStatusDocument>): Promise<LikeDetailsViewModel> {
+    return new LikeDetailsViewModel(
+      object.addedAt,
+      object.userId,
+      object.login
+    );
+  }
   async createPost(newPost: PreparationPostForDB): Promise<PostViewModel> {
     const post = await this.postModel.create(newPost);
-    if (!post) return null;
+    if (!post) throw new Error('not today')
+
+
+    const postId = post._id.toString()
+    const newestLikes = await this.likesPostsStatusModel
+      .find({parentId: postId, likeStatus: "Like"})
+      .sort({addedAt: "desc"})
+      .limit(3)
+      .lean()
+
+    const mappedNewestLikes = newestLikes.map(async like => await this.LikeDetailsView(like))
+    const itemsLikes = await Promise.all(mappedNewestLikes)
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(
       0,
       0,
       LikeStatusType.None,
-      []
-    );
+      itemsLikes
+    )
     return new PostViewModel(
       post._id.toString(),
       post.title,
@@ -46,7 +57,7 @@ export class PostsRepositories {
       post.blogName,
       post.createdAt,
       extendedLikesInfo
-    );
+    )
   }
 
   async deletePost(id: string): Promise<boolean> {
@@ -73,14 +84,14 @@ export class PostsRepositories {
     return post;
   }
 
-  /*async updateStatusPostById(id: string, user: UsersViewType, likeStatus: LikeStatusType): Promise<boolean> {
+  async updateStatusPostById(id: string, userId: string, likeStatus: string): Promise<boolean> {
     const like = await this.likesPostsStatusModel.updateOne(
-      { userId: user.id, parentId: id },
-      { $set: { likeStatus: likeStatus, addedAt: new Date().toISOString(), login: user.login } },
+      { userId: userId, parentId: id },
+      { $set: { likeStatus: likeStatus, addedAt: new Date().toISOString() } },
       { upsert: true });
-    if (!like) return false;
+    if (!like) throw new NotFoundExceptionMY(`Like doesn't exists`)
     return true;
-  }*/
+  }
 
 
   /*async createComment(post_id: ObjectId, content: string, userId: string, userLogin: string): Promise<CommentsViewType | null> {

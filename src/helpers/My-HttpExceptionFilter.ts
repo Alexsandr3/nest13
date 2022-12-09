@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 
 
 //model for 404 - `Not Found` error
@@ -12,7 +12,6 @@ export class NotFoundExceptionMY {
 //model for 400 - `BAD_REQUEST` error
 export class BadRequestExceptionMY {
   constructor(message) {
-    console.log("xxx - message" , message);
     throw new BadRequestException(message);
   }
 }
@@ -21,5 +20,12 @@ export class BadRequestExceptionMY {
 export class UnauthorizedExceptionMY {
   constructor(message) {
     throw new UnauthorizedException(message);
+  }
+}
+
+//model for 403 - `Forbidden` error
+export class ForbiddenExceptionMY {
+  constructor(message) {
+    throw new ForbiddenException(message);
   }
 }
