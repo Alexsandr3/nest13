@@ -40,7 +40,8 @@ export class UsersService {
   }
 
   private checkUser(isConfirmation: Boolean, expirationDate: Date) {
-    if (isConfirmation) throw new BadRequestExceptionMY({message: `Code has confirmation already`, field: "code"});
+    if (isConfirmation) throw new BadRequestExceptionMY({message: `Incorrect input data`, field: "email"});
+    //TODO code for check {message: `Code has confirmation already`, field: "email"}
     if (expirationDate < new Date()) throw new BadRequestExceptionMY({message: `Confirmation has expired`, field: "code"});
     return;
   }
@@ -153,7 +154,7 @@ export class UsersService {
   async resending(email: string): Promise<boolean> {
     //search user by email
     const user = await this.usersRepositories.findByLoginOrEmail(email);
-    if (!user) throw new BadRequestExceptionMY({message: `Incorrect input data`, field: "email" });
+    if (!user) throw new BadRequestExceptionMY({message: `Incorrect input data`, field: 'email' });
     //check code
     await this.checkUser(user.emailConfirmation.isConfirmation, user.emailConfirmation.expirationDate);
     //generation new code
