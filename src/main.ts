@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: { credentials: true } });
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, //data from input DTO
-    forbidNonWhitelisted: true, //stopping create data
+    //forbidNonWhitelisted: true, //stopping create data
     transform: true, //transform data to correct
     stopAtFirstError: true,
 
