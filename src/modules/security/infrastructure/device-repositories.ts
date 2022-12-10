@@ -85,6 +85,7 @@ export class DeviceRepositories {
   async findDeviceByDeviceId(deviceId: string) {
     const result = await this.deviceModel
       .findOne({deviceId: deviceId})
+    console.log("result found", result);
     if (!result) {
       return null
     } else {

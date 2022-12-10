@@ -49,6 +49,7 @@ export class AuthService {
       dateExpiredToken,
       deviceId
     );
+    console.log("device new ---- ", device);
     await this.deviceRepositories.createDevice(device);
     return token;
   }
