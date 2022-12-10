@@ -22,6 +22,7 @@ import { JwtAuthGuard } from "../guard/jwt-auth-bearer.guard";
 import { UsersQueryRepositories } from "../../users/infrastructure/query-reposirory/users-query.reposit";
 import { MeViewModel } from "../infrastructure/me-View-Model";
 import { CurrentUserId } from "../decorators/current-user-id.param.decorator";
+import { SkipThrottle } from "@nestjs/throttler";
 
 
 @Controller(`auth`)
@@ -54,6 +55,7 @@ export class AuthController {
     return { "accessToken": createdToken.accessToken };
   }
 
+  @SkipThrottle()
   @UseGuards(RefreshGuard)
   @Post(`refresh-token`)
   async refresh(@PayloadRefresh() payloadRefresh: PayloadType,
@@ -82,6 +84,7 @@ export class AuthController {
     return await this.usersService.resending(resendingInputModel.email);
   }
 
+  @SkipThrottle()
   @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Post(`/logout`)
@@ -89,6 +92,7 @@ export class AuthController {
     return await this.usersService.logout(payloadRefresh);
   }
 
+  @SkipThrottle()
   @UseGuards(JwtAuthGuard)
   @Get(`me`)
   async getProfile(@CurrentUserId() userId: string): Promise<MeViewModel> {

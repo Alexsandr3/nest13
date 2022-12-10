@@ -12,23 +12,33 @@ import { User, UserSchema } from "../users/domain/users-schema-Model";
 import { Device, DeviceSchema } from "../security/domain/device-schema-Model";
 import { RefreshGuard } from "./guard/jwt-refresh-Auth.guard";
 import { JwtAuthGuard } from "./guard/jwt-auth-bearer.guard";
+import { ThrottlerModule } from "@nestjs/throttler";
 
 
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 10,
+      limit: 5
+    }),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Device.name, schema: DeviceSchema }
     ]),
-/*    JwtModule.register({
-      secret: settings.ACCESS_TOKEN_SECRET,
-      signOptions: { expiresIn: '15m' },
-    }),*/
+    /*    JwtModule.register({
+          secret: settings.ACCESS_TOKEN_SECRET,
+          signOptions: { expiresIn: '15m' },
+        }),*/
     MailModule,
     UsersModule],
   controllers: [AuthController],
-  providers: [UsersService, AuthService, JwtService, DeviceRepositories, UsersQueryRepositories, RefreshGuard, JwtAuthGuard],
+  providers: [UsersService, AuthService, JwtService, DeviceRepositories, UsersQueryRepositories, RefreshGuard, JwtAuthGuard,
+    /*{
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }*/
+  ],
   exports: [JwtService]
 })
 export class AuthModule {

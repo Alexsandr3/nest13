@@ -9,16 +9,8 @@ export function IsMongoIdObject(validationOptions?: ValidationOptions) {
       propertyName: propertyName,
       constraints: [],
       options: validationOptions,
-      validator: {
-        validate(value: any) {
-          return ObjectId.isValid(value);
-        }
-      }
+      validator: { validate(value: any) {return ObjectId.isValid(value)}}
+      //validator: { validate(value: any) {return ObjectId.isValid(value)}}
     });
   };
-}
-
-export class OnlyIDParamDTO {
-  @IsMongoIdObject()
-  id: string;
 }

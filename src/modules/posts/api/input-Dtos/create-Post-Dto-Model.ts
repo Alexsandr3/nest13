@@ -1,5 +1,6 @@
-import { IsMongoId, IsString, Length } from "class-validator";
-import { Transform } from 'class-transformer';
+import { IsString, Length } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsMongoIdObject } from "../../../../helpers/decorator-IsMongoIdObject";
 
 export class CreatePostDto {
   /**
@@ -28,7 +29,7 @@ export class CreatePostDto {
    */
   @Transform(({ value }) => value.trim())
   @IsString()
-  @IsMongoId()
+  @IsMongoIdObject()
   blogId: string;
 }
 

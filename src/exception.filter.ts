@@ -51,23 +51,24 @@ export class HttpExceptionFilter implements ExceptionFilter {
           "errorsMessages": [responseBody]
         })
       }
+    } else {
+      return response.status(status).send(exception.message);
     }
-
-    if (status === 401) {
-      response.status(status).send(exception.message);
-    }
-
-    if (status === 403) {
-      response.status(status).send(exception.message);
-    }
-
-    if (status === 404) {
-      response.status(status).send(exception.message);
-    }
-
-    if (status === 421) {
-      response.status(status).send(exception.message);
-    }
+    // if (status === 401) {
+    //   response.status(status).send(exception.message);
+    // }
+    //
+    // if (status === 403) {
+    //   response.status(status).send(exception.message);
+    // }
+    //
+    // if (status === 404) {
+    //   response.status(status).send(exception.message);
+    // }
+    //
+    // if (status === 421) {
+    //   response.status(status).send(exception.message);
+    // }
 
   }
 }
