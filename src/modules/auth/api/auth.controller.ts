@@ -56,6 +56,7 @@ export class AuthController {
   }
 
   @SkipThrottle()
+  @HttpCode(200)
   @UseGuards(RefreshGuard)
   @Post(`refresh-token`)
   async refresh(@PayloadRefresh() payloadRefresh: PayloadType,
