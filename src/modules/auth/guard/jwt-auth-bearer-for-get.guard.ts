@@ -6,12 +6,12 @@ import { JwtService } from "../application/jwt.service";
 export class JwtForGetGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {
   }
-
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const authorization = request.headers["authorization"];
     if (!authorization) {
       request.userId = null;
+      return true
     }
     const token = request.headers.authorization.split(' ')[1]
     const userId = this.jwtService.getUserIdByToken(token);
