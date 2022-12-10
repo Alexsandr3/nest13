@@ -22,6 +22,7 @@ import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
 import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
 import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
+import { JwtForGetGuard } from "../../auth/guard/jwt-auth-bearer-for-get.guard";
 
 
 @Controller(`blogs`)
@@ -43,6 +44,7 @@ export class BlogsController {
     return this.blogsQueryRepositories.findBlog(id);
   }
 
+  @UseGuards(JwtForGetGuard)
   @Get(`:blogId/posts`)
   async findPosts(@CurrentUserId() userId: string,
                   @Param(`blogId`, IdValidationPipe) blogId: string,
@@ -58,6 +60,7 @@ export class BlogsController {
     const blog = await this.blogsQueryRepositories.findBlog(blogId);
     return this.blogsService.createPost(postInputModel, blogId, blog.name);
   }
+
 
   @Get(`:id`)
   async findOne(@Param(`id`, IdValidationPipe) id: string): Promise<BlogViewModel> {

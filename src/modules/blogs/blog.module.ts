@@ -12,6 +12,8 @@ import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model
 import { LikesPostsStatus, likesPostsStatusSchema } from "../posts/domain/likesPost-schema-Model";
 import { LikesStatus, likesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
 import { BasicStrategy } from "../auth/strategies/basic.strategy";
+import { JwtForGetGuard } from "../auth/guard/jwt-auth-bearer-for-get.guard";
+import { JwtService } from "../auth/application/jwt.service";
 
 
 
@@ -31,7 +33,7 @@ import { BasicStrategy } from "../auth/strategies/basic.strategy";
     BlogsRepositories,
     BlogsQueryRepositories,
     PostsRepositories,
-    PostsQueryRepositories, BasicStrategy,
+    PostsQueryRepositories, BasicStrategy, JwtForGetGuard, JwtService
   ]
 })
 export class BlogModule {

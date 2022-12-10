@@ -7,6 +7,7 @@ import { CommentsService } from "../domain/comments.service";
 import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
 import { UpdateCommentDto } from "./input-Dtos/update-Comment-Dto-Model";
 import { JwtAuthGuard } from "../../auth/guard/jwt-auth-bearer.guard";
+import { JwtForGetGuard } from "../../auth/guard/jwt-auth-bearer-for-get.guard";
 
 
 @Controller(`comments`)
@@ -25,6 +26,7 @@ export class CommentsController {
   }
 
 
+  @UseGuards(JwtForGetGuard)
   @Get(`/:id`)
   async findAll(@CurrentUserId() userId: string,
                 @Param(`id`, IdValidationPipe) id: string): Promise<CommentsViewType> {

@@ -8,6 +8,7 @@ import { CommentsService } from "./domain/comments.service";
 import { CommentsRepositories } from "./infrastructure/comments.repositories";
 import { JwtAuthGuard } from "../auth/guard/jwt-auth-bearer.guard";
 import { JwtService } from "../auth/application/jwt.service";
+import { JwtForGetGuard } from "../auth/guard/jwt-auth-bearer-for-get.guard";
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { JwtService } from "../auth/application/jwt.service";
     ]),
   ],
   controllers: [CommentsController],
-  providers: [CommentsQueryRepositories, CommentsService, CommentsRepositories, JwtAuthGuard, JwtService],
+  providers: [CommentsQueryRepositories, CommentsService, CommentsRepositories, JwtAuthGuard, JwtService, JwtForGetGuard],
 })
 export class CommentModule {}

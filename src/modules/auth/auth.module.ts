@@ -11,7 +11,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "../users/domain/users-schema-Model";
 import { Device, DeviceSchema } from "../security/domain/device-schema-Model";
 import { RefreshGuard } from "./guard/jwt-refresh-Auth.guard";
-import { JwtAuthGuard } from "./guard/jwt-auth.guard";
+import { JwtAuthGuard } from "./guard/jwt-auth-bearer.guard";
 
 
 

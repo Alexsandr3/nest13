@@ -20,6 +20,7 @@ import { UpdateLikeStatusDto } from "./input-Dtos/update-Like-Status-Model";
 import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
 import { CreateCommentDto } from "./input-Dtos/create-Comment-Dto-Model";
 import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
+import { JwtForGetGuard } from "../../auth/guard/jwt-auth-bearer-for-get.guard";
 
 
 @Controller(`posts`)
@@ -34,9 +35,11 @@ export class PostsController {
   async updateLikeStatus(@CurrentUserId() userId: string,
                          @Param(`postId`, IdValidationPipe) id: string,
                          @Body() updateLikeStatusInputModel: UpdateLikeStatusDto) {
+
     return await this.postsService.updateLikeStatus(id, updateLikeStatusInputModel.likeStatus, userId);
   }
 
+  @UseGuards(JwtForGetGuard)
   @Get(`:postId/comments`)
   async findComments(@CurrentUserId() userId: string,
                      @Param(`postId`, IdValidationPipe) id: string,
@@ -52,6 +55,7 @@ export class PostsController {
     return await this.postsService.createComment(id, inputCommentModel.content, userId);
   }
 
+  @UseGuards(JwtForGetGuard)
   @Get()
   async findAll(@CurrentUserId() userId: string,
                 @Query() pagination: PaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
@@ -64,9 +68,12 @@ export class PostsController {
     return this.postsService.createPost(postInputModel);
   }
 
+
+  @UseGuards(JwtForGetGuard)
   @Get(`:id`)
   async findOne(@CurrentUserId() userId: string,
                 @Param(`id`, IdValidationPipe) id: string): Promise<PostViewModel> {
+    console.log("userId", userId);
     return await this.postsQueryRepositories.findPost(id, userId);
   }
 
