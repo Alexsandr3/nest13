@@ -44,6 +44,7 @@ export class BlogsController {
     return this.blogsQueryRepositories.findBlog(id);
   }
 
+
   @UseGuards(JwtForGetGuard)
   @Get(`:blogId/posts`)
   async findPosts(@CurrentUserId() userId: string,
