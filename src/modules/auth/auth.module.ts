@@ -12,7 +12,8 @@ import { User, UserSchema } from "../users/domain/users-schema-Model";
 import { Device, DeviceSchema } from "../security/domain/device-schema-Model";
 import { RefreshGuard } from "./guard/jwt-refresh-Auth.guard";
 import { JwtAuthGuard } from "./guard/jwt-auth-bearer.guard";
-import { ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { APP_GUARD } from "@nestjs/core";
 
 
 
@@ -34,10 +35,10 @@ import { ThrottlerModule } from "@nestjs/throttler";
     UsersModule],
   controllers: [AuthController],
   providers: [UsersService, AuthService, JwtService, DeviceRepositories, UsersQueryRepositories, RefreshGuard, JwtAuthGuard,
-    /*{
+    {
       provide: APP_GUARD,
       useClass: ThrottlerGuard
-    }*/
+    }
   ],
   exports: [JwtService]
 })
