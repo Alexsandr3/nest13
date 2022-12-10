@@ -21,7 +21,7 @@ import { PostsQueryRepositories } from "../../posts/infrastructure/query-reposit
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
 import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
-
+import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
 
 
 @Controller(`blogs`)
@@ -44,10 +44,11 @@ export class BlogsController {
   }
 
   @Get(`:blogId/posts`)
-  async findPosts(@Param(`blogId`, IdValidationPipe) blogId: string,
+  async findPosts(@CurrentUserId() userId: string,
+                  @Param(`blogId`, IdValidationPipe) blogId: string,
                   @Query() pagination: PaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
     await this.blogsQueryRepositories.findBlog(blogId);
-    return this.postsQueryRepositories.findPosts(pagination, blogId);
+    return this.postsQueryRepositories.findPosts(pagination, userId, blogId);
   }
 
   @UseGuards(BasicAuthGuard)
