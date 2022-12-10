@@ -9,8 +9,10 @@ import { DeviceViewModel } from "../infrastructure/device-View-Model";
 import { PayloadRefresh } from "../../auth/decorators/payload-refresh.param.decorator";
 import { PayloadType } from "../../auth/application/payloadType";
 import { CurrentDevice } from "../../auth/decorators/current-device.param.decorator";
+import { SkipThrottle } from "@nestjs/throttler";
 
 
+@SkipThrottle()
 @Controller(`security`)
 export class DevicesController {
   constructor(protected devicesService: DevicesService,

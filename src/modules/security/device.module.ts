@@ -15,6 +15,6 @@ import { RefreshGuard } from "../auth/guard/jwt-refresh-Auth.guard";
   ],
   controllers: [DevicesController],
   providers: [DevicesService, DeviceRepositories, DeviceQueryRepositories, RefreshGuard, JwtService],
-  //exports: [DeviceRepositories]
+
 })
 export class DeviceModule {}

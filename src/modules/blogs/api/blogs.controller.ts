@@ -23,8 +23,9 @@ import { PostViewModel } from "../../posts/infrastructure/query-repositories/pos
 import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
 import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
 import { JwtForGetGuard } from "../../auth/guard/jwt-auth-bearer-for-get.guard";
+import { SkipThrottle } from "@nestjs/throttler";
 
-
+@SkipThrottle()
 @Controller(`blogs`)
 export class BlogsController {
   constructor(protected blogsService: BlogsService,
