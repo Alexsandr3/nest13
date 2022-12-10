@@ -1,6 +1,9 @@
-import { IsUUID } from "class-validator";
+import { IsString } from "class-validator";
+
 
 export class DeviceIdDto {
-  @IsUUID()
+
+  //@Transform(({ value }) => value.trim())
+  @IsString()
   deviceId: string;
 }

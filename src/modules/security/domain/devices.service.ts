@@ -16,9 +16,9 @@ export class DevicesService {
   }
 
   async deleteByDeviceId(deviceIdForDelete: string, deviceId: string, userId: string): Promise<boolean> {
-    console.log("deviceId", deviceId);
-    const fondDevice = await this.deviceRepositories.findDeviceByDeviceId(deviceId);
-    console.log("fondDevice", fondDevice);
+    console.log("deviceIdForDelete", deviceIdForDelete);
+
+    const fondDevice = await this.deviceRepositories.findDeviceByDeviceId(deviceIdForDelete);
     if (!fondDevice) throw new NotFoundExceptionMY(`Device with id: ${deviceId} doesn't exist`);
     const isUserDevice = await this.deviceRepositories.findByDeviceIdAndUserId(userId, deviceId);
     if (!isUserDevice) throw new ForbiddenExceptionMY(`You are not the owner of the device `);

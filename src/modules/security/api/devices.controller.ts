@@ -9,7 +9,6 @@ import { PayloadRefresh } from "../../auth/decorators/payload-refresh.param.deco
 import { PayloadType } from "../../auth/application/payloadType";
 import { CurrentDevice } from "../../auth/decorators/current-device.param.decorator";
 import { SkipThrottle } from "@nestjs/throttler";
-import { DeviceIdDto } from "./deviceId-Dto-Model";
 
 
 @SkipThrottle()
@@ -37,9 +36,9 @@ export class DevicesController {
   @HttpCode(204)
   @Delete(`/devices/:id`)
   async deleteByDeviceId(@PayloadRefresh() payloadRefresh: PayloadType,
-                         @Param() id: DeviceIdDto): Promise<boolean> {
+                         @Param(`id`) id: string): Promise<boolean> {
     const { deviceId, userId } = payloadRefresh;
-    return await this.devicesService.deleteByDeviceId(id.deviceId, deviceId, userId);
+    return await this.devicesService.deleteByDeviceId(id, deviceId, userId);
   }
 
 }
