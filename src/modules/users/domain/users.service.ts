@@ -42,6 +42,7 @@ export class UsersService {
   private checkUser(isConfirmation: Boolean, expirationDate: Date) {
     if (isConfirmation) throw new BadRequestExceptionMY({message: `Incorrect input data`, field: "email"});
     //TODO code for check {message: `Code has confirmation already`, field: "email"}
+    //TODO throttler !?
     if (expirationDate < new Date()) throw new BadRequestExceptionMY({message: `Confirmation has expired`, field: "code"});
     return;
   }
