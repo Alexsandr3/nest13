@@ -4,11 +4,11 @@ import {
 import { DevicesService } from "../domain/devices.service";
 import { DeviceQueryRepositories } from "../infrastructure/device-query.repositories";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
-import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
 import { RefreshGuard } from "../../auth/guard/jwt-refresh-Auth.guard";
 import { DeviceViewModel } from "../infrastructure/device-View-Model";
 import { PayloadRefresh } from "../../auth/decorators/payload-refresh.param.decorator";
 import { PayloadType } from "../../auth/application/payloadType";
+import { CurrentDevice } from "../../auth/decorators/current-device.param.decorator";
 
 
 @Controller(`security`)
@@ -20,7 +20,7 @@ export class DevicesController {
 
   @UseGuards(RefreshGuard)
   @Get(`/devices`)
-  async findDevices(@CurrentUserId() userId: string): Promise<DeviceViewModel[]>{
+  async findDevices(@CurrentDevice() userId: string): Promise<DeviceViewModel[]>{
     return await this.deviceQueryRepositories.findDevices(userId)
   }
 
