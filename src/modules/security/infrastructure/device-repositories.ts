@@ -81,4 +81,14 @@ export class DeviceRepositories {
       return result;
     }
   }
+
+  async findDeviceByDeviceId(deviceId: string) {
+    const result = await this.deviceModel
+      .findOne({deviceId: deviceId})
+    if (!result) {
+      return null
+    } else {
+      return result
+    }
+  }
 }
