@@ -49,7 +49,8 @@ export class PostsService {
   async updateLikeStatus(id: string, likeStatus: string, userId: string): Promise<boolean> {
     const post = await this.postsRepositories.findPost(id)
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`)
-    return this.postsRepositories.updateStatusPostById(id, userId, likeStatus)
+    const user = await this.usersQueryRepositories.findUser(userId)
+    return this.postsRepositories.updateStatusPostById(id, userId, likeStatus, user.login)
   }
 
 

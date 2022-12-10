@@ -84,10 +84,10 @@ export class PostsRepositories {
     return post;
   }
 
-  async updateStatusPostById(id: string, userId: string, likeStatus: string): Promise<boolean> {
+  async updateStatusPostById(id: string, userId: string, likeStatus: string, login: string): Promise<boolean> {
     const like = await this.likesPostsStatusModel.updateOne(
       { userId: userId, parentId: id },
-      { $set: { likeStatus: likeStatus, addedAt: new Date().toISOString() } },
+      { $set: { likeStatus: likeStatus, addedAt: new Date().toISOString(), login: login } },
       { upsert: true });
     if (!like) throw new NotFoundExceptionMY(`Like doesn't exists`)
     return true;
