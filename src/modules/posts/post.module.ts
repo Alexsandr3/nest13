@@ -22,6 +22,7 @@ import { User, UserSchema } from "../users/domain/users-schema-Model";
 import { JwtService } from "../auth/application/jwt.service";
 import { BasicAuthGuard } from "../auth/guard/basic-auth.guard";
 import { JwtForGetGuard } from "../auth/guard/jwt-auth-bearer-for-get.guard";
+import { BlogIdValidator } from "../../helpers/decorator-IsMongoIdObject";
 
 @Module({
   imports: [
@@ -47,7 +48,8 @@ import { JwtForGetGuard } from "../auth/guard/jwt-auth-bearer-for-get.guard";
     JwtAuthGuard,
     JwtService,
     BasicAuthGuard,
-    JwtForGetGuard
+    JwtForGetGuard,
+    BlogIdValidator
 
   ]
 })
