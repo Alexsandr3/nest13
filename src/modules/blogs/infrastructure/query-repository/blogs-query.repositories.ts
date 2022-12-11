@@ -36,7 +36,7 @@ export class BlogsQueryRepositories {
       .lean();
     //mapped for View
     const mappedBlogs = foundBlogs.map((blog) => this.mapperForBlogView(blog));
-    //counting blogs with pagination
+    //counting blogs
     const totalCount = await this.blogsModel
       .countDocuments(data.searchNameTerm ? { name: { $regex: data.searchNameTerm, $options: "i" } } : {});
     const pagesCountRes = Math.ceil(totalCount / data.pageSize);
@@ -53,7 +53,7 @@ export class BlogsQueryRepositories {
   async findBlog(id: string): Promise<BlogViewModel> {
     const blog = await this.blogsModel.findOne({ _id: new ObjectId(id) });
     if (!blog) throw new NotFoundExceptionMY(`Not found for id:${id}`);
-    //returning Blog for view
+    //returning Blog for View
     return this.mapperForBlogView(blog);
   }
 }

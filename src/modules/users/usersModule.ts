@@ -10,7 +10,7 @@ import { DeviceRepositories } from "../security/infrastructure/device-repositori
 import { MailService } from "../mail/mail.service";
 import { Device, DeviceSchema } from "../security/domain/device-schema-Model";
 import { MailModule } from "../mail/mail.module";
-import { BasicAuthGuard } from "../auth/guard/basic-auth.guard";
+import { BasicAuthGuard } from "../../guards/basic-auth.guard";
 
 @Module({
   imports: [

@@ -1,11 +1,5 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get, HttpCode,
-  Param,
-  Post, Put,
-  Query, UseGuards
+  Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards
 } from "@nestjs/common";
 import { PostsService } from "../domain/posts.service";
 import { PostsQueryRepositories } from "../infrastructure/query-repositories/posts-query.reposit";
@@ -15,19 +9,20 @@ import { PaginationViewModel } from "../../blogs/infrastructure/query-repository
 import { PostViewModel } from "../infrastructure/query-repositories/post-View-Model";
 import { CommentsViewType } from "../../comments/infrastructure/comments-View-Model";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
-import { JwtAuthGuard } from "../../auth/guard/jwt-auth-bearer.guard";
+import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
 import { UpdateLikeStatusDto } from "./input-Dtos/update-Like-Status-Model";
-import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
+import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
 import { CreateCommentDto } from "./input-Dtos/create-Comment-Dto-Model";
-import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
-import { JwtForGetGuard } from "../../auth/guard/jwt-auth-bearer-for-get.guard";
+import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
+import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
 
 
 @Controller(`posts`)
 export class PostsController {
-  constructor(protected postsService: PostsService,
-              protected postsQueryRepositories: PostsQueryRepositories) {
+  constructor(private readonly postsService: PostsService,
+              private readonly postsQueryRepositories: PostsQueryRepositories) {
   }
+
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
@@ -35,7 +30,6 @@ export class PostsController {
   async updateLikeStatus(@CurrentUserId() userId: string,
                          @Param(`postId`, IdValidationPipe) id: string,
                          @Body() updateLikeStatusInputModel: UpdateLikeStatusDto) {
-
     return await this.postsService.updateLikeStatus(id, updateLikeStatusInputModel.likeStatus, userId);
   }
 
@@ -43,8 +37,8 @@ export class PostsController {
   @Get(`:postId/comments`)
   async findComments(@CurrentUserId() userId: string,
                      @Param(`postId`, IdValidationPipe) id: string,
-                     @Query() pagination: PaginationDto): Promise<PaginationViewModel<CommentsViewType[]>> {
-    return await this.postsQueryRepositories.findCommentsByIdPost(id, pagination, userId);
+                     @Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<CommentsViewType[]>> {
+    return await this.postsQueryRepositories.findCommentsByIdPost(id, paginationInputModel, userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -68,19 +62,17 @@ export class PostsController {
     return this.postsService.createPost(postInputModel);
   }
 
-
   @UseGuards(JwtForGetGuard)
   @Get(`:id`)
   async findOne(@CurrentUserId() userId: string,
                 @Param(`id`, IdValidationPipe) id: string): Promise<PostViewModel> {
-    console.log("userId", userId);
     return await this.postsQueryRepositories.findPost(id, userId);
   }
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   @Put(`:id`)
-  async updateBlog(@Param(`id`, IdValidationPipe) id: string,
+  async updatePost(@Param(`id`, IdValidationPipe) id: string,
                    @Body() postInputModel: CreatePostDto): Promise<boolean> {
     return await this.postsService.updatePost(id, postInputModel);
   }
@@ -88,7 +80,7 @@ export class PostsController {
   @UseGuards(BasicAuthGuard)
   @Delete(`:id`)
   @HttpCode(204)
-  async remove(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
+  async deletePost(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
     return await this.postsService.removePost(id);
   }
 }

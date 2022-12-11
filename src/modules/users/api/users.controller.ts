@@ -6,13 +6,13 @@ import { PaginationUsersDto } from "./input-Dto/pagination-Users-Dto-Model";
 import { UsersQueryRepositories } from "../infrastructure/query-reposirory/users-query.reposit";
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
-import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
+import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
 
 
 @Controller(`users`)
 export class UsersController {
-  constructor(protected usersService: UsersService,
-              protected usersQueryRepositories: UsersQueryRepositories) {
+  constructor(private readonly usersService: UsersService,
+              private readonly usersQueryRepositories: UsersQueryRepositories) {
   }
 
   @UseGuards(BasicAuthGuard)
@@ -20,15 +20,16 @@ export class UsersController {
   async createUser(@Body() userInputModel: CreateUserDto): Promise<UsersViewType> {
     return this.usersService.createUser(userInputModel);
   }
+
   @UseGuards(BasicAuthGuard)
   @Get()
-  async findUsers(@Query() pagination: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
-    return this.usersQueryRepositories.findUsers(pagination);
+  async findUsers(@Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
+    return this.usersQueryRepositories.findUsers(paginationInputModel);
   }
 
   @UseGuards(BasicAuthGuard)
-  @Delete(`:id`)
   @HttpCode(204)
+  @Delete(`:id`)
   async deleteUser(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
     return await this.usersService.deleteUser(id);
   }

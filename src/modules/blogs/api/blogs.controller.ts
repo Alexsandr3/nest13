@@ -1,13 +1,5 @@
 import {
-  Body,
-  Controller,
-  Get,
-  Query,
-  Post,
-  Param,
-  Delete,
-  Put,
-  HttpCode, UseGuards
+  Body, Controller, Get, Query, Post, Param, Delete, Put, HttpCode, UseGuards
 } from "@nestjs/common";
 import { BlogsService } from "../domain/blogs.service";
 import { CreateBlogDto } from "./input-Dtos/create-Blog-Dto-Model";
@@ -20,29 +12,29 @@ import { CreatePostByBlogIdDto } from "../../posts/api/input-Dtos/create-Post-By
 import { PostsQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-query.reposit";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
-import { BasicAuthGuard } from "../../auth/guard/basic-auth.guard";
-import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
-import { JwtForGetGuard } from "../../auth/guard/jwt-auth-bearer-for-get.guard";
+import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
+import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
+import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
 import { SkipThrottle } from "@nestjs/throttler";
 
 @SkipThrottle()
 @Controller(`blogs`)
 export class BlogsController {
-  constructor(protected blogsService: BlogsService,
-              protected blogsQueryRepositories: BlogsQueryRepositories,
-              protected postsQueryRepositories: PostsQueryRepositories) {
+  constructor(private readonly blogsService: BlogsService,
+              private readonly blogsQueryRepositories: BlogsQueryRepositories,
+              private readonly postsQueryRepositories: PostsQueryRepositories) {
   }
 
   @Get()
-  async findAll(@Query() pagination: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
-    return await this.blogsQueryRepositories.findBlogs(pagination);
+  async findAll(@Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+    return await this.blogsQueryRepositories.findBlogs(paginationInputModel);
   }
 
   @UseGuards(BasicAuthGuard)
   @Post()
   async createBlog(@Body() blogInputModel: CreateBlogDto): Promise<BlogViewModel> {
-    const id = await this.blogsService.createBlog(blogInputModel);
-    return this.blogsQueryRepositories.findBlog(id);
+    const blogId = await this.blogsService.createBlog(blogInputModel);
+    return this.blogsQueryRepositories.findBlog(blogId);
   }
 
 
@@ -50,17 +42,18 @@ export class BlogsController {
   @Get(`:blogId/posts`)
   async findPosts(@CurrentUserId() userId: string,
                   @Param(`blogId`, IdValidationPipe) blogId: string,
-                  @Query() pagination: PaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
+                  @Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<PostViewModel[]>> {
+    //TODO -  I can to send error from query repositories ?
     await this.blogsQueryRepositories.findBlog(blogId);
-    return this.postsQueryRepositories.findPosts(pagination, userId, blogId);
+    return this.postsQueryRepositories.findPosts(paginationInputModel, userId, blogId);
   }
 
   @UseGuards(BasicAuthGuard)
   @Post(`:blogId/posts`)
   async createPost(@Param(`blogId`, IdValidationPipe) blogId: string,
                    @Body() postInputModel: CreatePostByBlogIdDto): Promise<PostViewModel> {
-    const blog = await this.blogsQueryRepositories.findBlog(blogId);
-    return this.blogsService.createPost(postInputModel, blogId, blog.name);
+    const foundBlog = await this.blogsQueryRepositories.findBlog(blogId);
+    return this.blogsService.createPost(postInputModel, blogId, foundBlog.name);
   }
 
 
@@ -80,7 +73,7 @@ export class BlogsController {
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
   @Delete(`:id`)
-  async remove(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
-    return await this.blogsService.removeBlog(id);
+  async deleteBlog(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
+    return await this.blogsService.deleteBlog(id);
   }
 }

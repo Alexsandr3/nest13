@@ -14,15 +14,15 @@ import { Blog, BlogSchema } from "../blogs/domain/blog-schema-Model";
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
 import { CommentsQueryRepositories } from "../comments/infrastructure/query-repository/comments-query.repositories";
 import { LikeDetailsViewModel } from "./infrastructure/query-repositories/likes-Info-View-Model";
-import { JwtAuthGuard } from "../auth/guard/jwt-auth-bearer.guard";
+import { JwtAuthGuard } from "../../guards/jwt-auth-bearer.guard";
 import { CommentsRepositories } from "../comments/infrastructure/comments.repositories";
 import { UsersQueryRepositories } from "../users/infrastructure/query-reposirory/users-query.reposit";
 import { LikesStatus, likesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
 import { User, UserSchema } from "../users/domain/users-schema-Model";
 import { JwtService } from "../auth/application/jwt.service";
-import { BasicAuthGuard } from "../auth/guard/basic-auth.guard";
-import { JwtForGetGuard } from "../auth/guard/jwt-auth-bearer-for-get.guard";
-import { BlogIdValidator } from "../../helpers/decorator-IsMongoIdObject";
+import { BasicAuthGuard } from "../../guards/basic-auth.guard";
+import { JwtForGetGuard } from "../../guards/jwt-auth-bearer-for-get.guard";
+import { BlogIdValidator } from "../../validators/blog-id-validator.service";
 
 @Module({
   imports: [

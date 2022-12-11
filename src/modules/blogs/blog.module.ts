@@ -11,8 +11,8 @@ import { PostsQueryRepositories } from "../posts/infrastructure/query-repositori
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
 import { LikesPostsStatus, likesPostsStatusSchema } from "../posts/domain/likesPost-schema-Model";
 import { LikesStatus, likesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
-import { BasicStrategy } from "../auth/strategies/basic.strategy";
-import { JwtForGetGuard } from "../auth/guard/jwt-auth-bearer-for-get.guard";
+import { BasicStrategy } from "../../strategies/basic.strategy";
+import { JwtForGetGuard } from "../../guards/jwt-auth-bearer-for-get.guard";
 import { JwtService } from "../auth/application/jwt.service";
 
 

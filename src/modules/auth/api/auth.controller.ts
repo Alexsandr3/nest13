@@ -1,10 +1,5 @@
 import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Request,
-  HttpCode, UseGuards, Res, Ip
+  Body, Controller, Get, Post, Request, HttpCode, UseGuards, Res, Ip
 } from "@nestjs/common";
 import { AuthService } from "../domain/auth.service";
 import { UsersService } from "../../users/domain/users.service";
@@ -15,13 +10,13 @@ import { EmailRecoveryDto } from "./dto/email-Recovery-Dto-Model";
 import { NewPasswordDto } from "./dto/new-Password-Dto-Model";
 import { TokensType } from "../application/jwt.service";
 import { PayloadType } from "../application/payloadType";
-import { RefreshGuard } from "../guard/jwt-refresh-Auth.guard";
+import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
 import { Response } from "express";
-import { PayloadRefresh } from "../decorators/payload-refresh.param.decorator";
-import { JwtAuthGuard } from "../guard/jwt-auth-bearer.guard";
+import { PayloadRefresh } from "../../../decorators/payload-refresh.param.decorator";
+import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
 import { UsersQueryRepositories } from "../../users/infrastructure/query-reposirory/users-query.reposit";
 import { MeViewModel } from "../infrastructure/me-View-Model";
-import { CurrentUserId } from "../decorators/current-user-id.param.decorator";
+import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
 import { SkipThrottle } from "@nestjs/throttler";
 
 
@@ -35,14 +30,14 @@ export class AuthController {
 
   @HttpCode(204)
   @Post(`/password-recovery`)
-  async recovery(@Body() inputData: EmailRecoveryDto): Promise<boolean> {
-    return await this.usersService.recovery(inputData.email);
+  async recovery(@Body() emailInputModel: EmailRecoveryDto): Promise<boolean> {
+    return await this.usersService.recovery(emailInputModel.email);
   }
 
   @HttpCode(204)
   @Post(`/new-password`)
-  async newPassword(@Body() newPasswordData: NewPasswordDto): Promise<boolean> {
-    return await this.usersService.newPassword(newPasswordData.newPassword, newPasswordData.recoveryCode);
+  async newPassword(@Body() newPasswordInputModel: NewPasswordDto): Promise<boolean> {
+    return await this.usersService.newPassword(newPasswordInputModel.newPassword, newPasswordInputModel.recoveryCode);
   }
 
   @HttpCode(200)
@@ -68,8 +63,8 @@ export class AuthController {
 
   @HttpCode(204)
   @Post(`/registration-confirmation`)
-  async confirmByCode(@Body() inputModel: ConfirmationCodeDto): Promise<boolean> {
-    return await this.usersService.confirmByCode(inputModel.code);
+  async confirmByCode(@Body() codeInputModel: ConfirmationCodeDto): Promise<boolean> {
+    return await this.usersService.confirmByCode(codeInputModel.code);
   }
 
   @HttpCode(204)

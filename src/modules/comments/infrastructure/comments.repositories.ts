@@ -7,6 +7,7 @@ import { LikeStatusType } from "../../posts/domain/likesPost-schema-Model";
 import { LikesStatus, LikesStatusDocument } from "../domain/likesStatus-schema-Model";
 import { PreparationCommentForDB } from "../domain/comment-preparation-for-DB";
 import { CommentsViewType, LikesInfoViewModel } from "./comments-View-Model";
+import { CommentsDBType } from "../domain/comment-DB-Type";
 
 @Injectable()
 export class CommentsRepositories {
@@ -15,7 +16,7 @@ export class CommentsRepositories {
   }
 
 
-  async findCommentsById(id: string) {
+  async findCommentsById(id: string): Promise<CommentsDBType> {
     return this.commentsModel.findOne({_id: new ObjectId(id)})
   }
 
@@ -43,12 +44,14 @@ export class CommentsRepositories {
 
   async createCommentByIdPost(newComment: PreparationCommentForDB): Promise<CommentsViewType> {
     const createComment = await this.commentsModel.create(newComment)
-
+    //TODO I need check???
     if (!createComment) throw new Error(`not today`)
+    //default items
     const likesInfo = new LikesInfoViewModel(
       0,
       0,
       LikeStatusType.None)
+    //returning comment for View
     return new CommentsViewType(
       createComment._id.toString(),
       newComment.content,

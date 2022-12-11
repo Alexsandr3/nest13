@@ -24,11 +24,11 @@ export class UsersQueryRepositories {
   }
 
   async findUser(id: string): Promise<UsersViewType> {
-    const res = await this.userModel.findOne({ _id: new ObjectId(id) }).lean();
-    if (!res) {
+    const user = await this.userModel.findOne({ _id: new ObjectId(id) }).lean();
+    if (!user) {
       throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     }
-    return this.mappedForUser(res);
+    return this.mappedForUser(user);
   }
 
   async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
@@ -42,11 +42,10 @@ export class UsersQueryRepositories {
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [`accountData.${data.sortBy}`]: data.sortDirection })
-      //.sort({[data.sortBy]: data.sortDirection})
       .lean();
-
-
+    //mapped user for View
     const mappedUsers = foundsUsers.map(user => this.mappedForUser(user));
+    //counting users
     const totalCount = await this.userModel.countDocuments({
       $or: [
         { "accountData.email": { $regex: data.searchEmailTerm, $options: "i" } },
@@ -54,6 +53,7 @@ export class UsersQueryRepositories {
       ]
     });
     const pagesCountRes = Math.ceil(totalCount / data.pageSize);
+    // Found Users with pagination!
     return new PaginationViewModel(
       pagesCountRes,
       data.pageNumber,
@@ -62,21 +62,15 @@ export class UsersQueryRepositories {
       mappedUsers);
   }
 
-  async findByLoginOrEmail(loginOrEmail: string): Promise<LeanDocument<UserDocument>> {
-    const user = await this.userModel.findOne({ $or: [{ "accountData.email": loginOrEmail }, { "accountData.login": loginOrEmail }] });
-    //if (user) throw new BadRequestExceptionMY([`${loginOrEmail}  already in use, do you need choose new data`]);
-    return user;
-  }
-
   async getUserById(id: string): Promise<MeViewModel> {
-    const result = await this.userModel.findOne({ _id: new ObjectId(id) });
-    if (!result) {
+    const user = await this.userModel.findOne({ _id: new ObjectId(id) });
+    if (!user) {
       throw new UnauthorizedExceptionMY(`incorrect userId`);
     } else {
       return new MeViewModel(
-        result.accountData.email,
-        result.accountData.login,
-        result._id.toString()
+        user.accountData.email,
+        user.accountData.login,
+        user._id.toString()
       );
     }
   }

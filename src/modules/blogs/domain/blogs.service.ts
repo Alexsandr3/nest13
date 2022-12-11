@@ -8,11 +8,13 @@ import { PreparationBlogForDB } from "./blog-preparation-for-DB";
 import { PreparationPostForDB } from "../../posts/domain/post-preparation-for-DB";
 import { UpdateBlogDto } from "../api/input-Dtos/update-Blog-Dto-Model";
 import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
+import { PostsQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-query.reposit";
 
 @Injectable()
 export class BlogsService {
-  constructor(protected blogsRepositories: BlogsRepositories,
-              protected postsRepositories: PostsRepositories) {
+  constructor(private readonly blogsRepositories: BlogsRepositories,
+              private readonly postsRepositories: PostsRepositories,
+              private readonly postsQueryRepositories: PostsQueryRepositories) {
   }
 
   async createBlog(blogInputModel: CreateBlogDto): Promise<string> {
@@ -26,15 +28,15 @@ export class BlogsService {
     return await this.blogsRepositories.createBlog(newBlog);
   }
 
-  async removeBlog(id: string): Promise<boolean> {
-    const res = await this.blogsRepositories.deleteBlog(id);
-    if (!res) throw new NotFoundExceptionMY(`Not found for id:${id}`);
+  async deleteBlog(id: string): Promise<boolean> {
+    const result = await this.blogsRepositories.deleteBlog(id);
+    if (!result) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     return true;
   }
 
   async updateBlog(id: string, blogInputModel: UpdateBlogDto): Promise<boolean> {
-    const res = await this.blogsRepositories.updateBlog(id, blogInputModel);
-    if (!res) throw new NotFoundExceptionMY(`Not found for id:${id}`);
+    const result = await this.blogsRepositories.updateBlog(id, blogInputModel);
+    if (!result) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     return true;
   }
 
@@ -48,6 +50,7 @@ export class BlogsService {
       blogName,
       new Date().toISOString()
     );
-    return await this.postsRepositories.createPost(newPost);
+    const createdPost = await this.postsRepositories.createPost(newPost);
+    return await this.postsQueryRepositories.createPostForView(createdPost);
   }
 }

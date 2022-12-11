@@ -16,9 +16,6 @@ import { LikesStatus, LikesStatusDocument } from "../../../comments/domain/likes
 import { CommentsViewType, LikesInfoViewModel } from "../../../comments/infrastructure/comments-View-Model";
 
 
-
-
-
 @Injectable()
 export class PostsQueryRepositories {
   constructor(@InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
@@ -27,7 +24,7 @@ export class PostsQueryRepositories {
               @InjectModel(LikesPostsStatus.name) private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>) {
   }
 
-  private async LikeDetailsView(object: LeanDocument<LikesPostsStatusDocument>): Promise<LikeDetailsViewModel> {
+  private LikeDetailsView(object: LeanDocument<LikesPostsStatusDocument>): LikeDetailsViewModel {
     return new LikeDetailsViewModel(
       object.addedAt,
       object.userId,
@@ -44,7 +41,10 @@ export class PostsQueryRepositories {
       }
     }
     const totalCountLike = await this.likesStatusModel.countDocuments({ parentId: comment._id, likeStatus: "Like" });
-    const totalCountDislike = await this.likesStatusModel.countDocuments({ parentId: comment._id, likeStatus: "Dislike" });
+    const totalCountDislike = await this.likesStatusModel.countDocuments({
+      parentId: comment._id,
+      likeStatus: "Dislike"
+    });
     const likesInfo = new LikesInfoViewModel(
       totalCountLike,
       totalCountDislike,
@@ -58,7 +58,8 @@ export class PostsQueryRepositories {
       likesInfo);
   }
 
-  private async _postForView(post: PostDBType, userId: string | null): Promise<PostViewModel> {
+  private async postForView(post: PostDBType, userId: string | null): Promise<PostViewModel> {
+    //find likes status
     let myStatus: string = LikeStatusType.None;
     if (userId) {
       const result = await this.likesPostsStatusModel.findOne({ userId: userId, parentId: post._id });
@@ -67,19 +68,24 @@ export class PostsQueryRepositories {
       }
     }
     const totalCountLike = await this.likesPostsStatusModel.countDocuments({ parentId: post._id, likeStatus: "Like" });
-    const totalCountDislike = await this.likesPostsStatusModel.countDocuments({ parentId: post._id, likeStatus: "Dislike" });
+    const totalCountDislike = await this.likesPostsStatusModel.countDocuments({
+      parentId: post._id,
+      likeStatus: "Dislike"
+    });
+    //finding the newest likes
     const newestLikes = await this.likesPostsStatusModel
       .find({ parentId: post._id.toString(), likeStatus: "Like" })
       .sort({ addedAt: "desc" })
       .limit(3)
       .lean();
-    const mappedNewestLikes = newestLikes.map(async like => await this.LikeDetailsView(like));
-    const itemsLikes = await Promise.all(mappedNewestLikes);
+    //mapped the newest likes for View
+    const mappedNewestLikes = newestLikes.map(like => this.LikeDetailsView(like));
+    //const itemsLikes = await Promise.all(mappedNewestLikes);
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(
       totalCountLike,
       totalCountDislike,
       myStatus,
-      itemsLikes
+      mappedNewestLikes
     );
     return new PostViewModel(
       post._id.toString(),
@@ -94,9 +100,7 @@ export class PostsQueryRepositories {
   }
 
   async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
-    /* let filter = {};
-     if (blogId) { filter = { blogId: blogId }}*/
-    //search all posts with pagination
+    //search all posts with pagination by blogId
     const foundPosts = await this.postModel
       .find(blogId ? { blogId } : {})
       .skip((data.pageNumber - 1) * data.pageSize)
@@ -104,8 +108,9 @@ export class PostsQueryRepositories {
       .sort({ [data.sortBy]: data.sortDirection })
       .lean();
     //mapped posts for view
-    const mappedPosts = foundPosts.map(post => this._postForView(post, userId));
-    const itemsPosts = await Promise.all(mappedPosts)
+    const mappedPosts = foundPosts.map(post => this.postForView(post, userId));
+    //TODO can i not wait all Promise?
+    const itemsPosts = await Promise.all(mappedPosts);
     //counting posts for blogId
     const totalCount = await this.postModel.countDocuments(blogId ? { blogId } : {});
     //pages count
@@ -121,32 +126,64 @@ export class PostsQueryRepositories {
   }
 
   async findPost(id: string, userId: string | null): Promise<PostViewModel> {
+    //find post by id from uri params
     const post = await this.postModel.findOne({ _id: new ObjectId(id) });
-    if (!post) {
-      throw new NotFoundExceptionMY(`Not found for id: ${id}`);
-    } else {
-      //return post for View
-      return this._postForView(post, userId);
-    }
+    if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
+    //returning post for View
+    return this.postForView(post, userId);
   }
 
-  async findCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null) {
+  async findCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null): Promise<PaginationViewModel<CommentsViewType[]>>  {
+    //find post by postId and userId
     const post = await this.findPost(postId, userId);
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${postId}`);
+    //find comment by postId
     const comments = await this.commentModel.find({ postId: postId })
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection }).lean();
-    const mappedComments = comments.map(async comment => await this.commentWithNewId(comment, userId));
+
+    const mappedComments = comments.map(comment => this.commentWithNewId(comment, userId));
+    //TODO promise !!!!
     const itemsComments = await Promise.all(mappedComments);
+    //counting comments
     const totalCountComments = await this.commentModel.countDocuments(postId ? { postId } : {});
     const pagesCountRes = Math.ceil(totalCountComments / data.pageSize);
+    //returning comment with pagination
     return new PaginationViewModel(
       pagesCountRes,
       data.pageNumber,
       data.pageSize,
       totalCountComments,
       itemsComments
+    );
+  }
+
+  async createPostForView(post: PostDBType): Promise<PostViewModel> {
+    const postId = post._id.toString();
+    const newestLikes = await this.likesPostsStatusModel
+      .find({ parentId: postId, likeStatus: "Like" })
+      .sort({ addedAt: "desc" })
+      .limit(3)
+      .lean();
+    const mappedNewestLikes = newestLikes.map(like => this.LikeDetailsView(like));
+    //const itemsLikes = await Promise.all(mappedNewestLikes);
+    const extendedLikesInfo = new ExtendedLikesInfoViewModel(
+      0,
+      0,
+      LikeStatusType.None,
+      mappedNewestLikes
+    );
+    //returning created post with extended likes info for View
+    return new PostViewModel(
+      post._id.toString(),
+      post.title,
+      post.shortDescription,
+      post.content,
+      post.blogId,
+      post.blogName,
+      post.createdAt,
+      extendedLikesInfo
     );
   }
 }

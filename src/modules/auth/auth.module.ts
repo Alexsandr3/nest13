@@ -10,11 +10,11 @@ import { UsersQueryRepositories } from "../users/infrastructure/query-reposirory
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "../users/domain/users-schema-Model";
 import { Device, DeviceSchema } from "../security/domain/device-schema-Model";
-import { RefreshGuard } from "./guard/jwt-refresh-Auth.guard";
-import { JwtAuthGuard } from "./guard/jwt-auth-bearer.guard";
+import { RefreshGuard } from "../../guards/jwt-auth-refresh.guard";
+import { JwtAuthGuard } from "../../guards/jwt-auth-bearer.guard";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { APP_GUARD } from "@nestjs/core";
-
+import { UsersRepositories } from "../users/infrastructure/users-repositories";
 
 
 @Module({
@@ -34,7 +34,8 @@ import { APP_GUARD } from "@nestjs/core";
     MailModule,
     UsersModule],
   controllers: [AuthController],
-  providers: [UsersService, AuthService, JwtService, DeviceRepositories, UsersQueryRepositories, RefreshGuard, JwtAuthGuard,
+  providers: [UsersService, AuthService, JwtService, DeviceRepositories,
+    UsersRepositories, UsersQueryRepositories, RefreshGuard, JwtAuthGuard,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard

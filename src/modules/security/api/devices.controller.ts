@@ -2,26 +2,26 @@ import {
   Controller, Delete, Get, HttpCode, Param, UseGuards
 } from "@nestjs/common";
 import { DevicesService } from "../domain/devices.service";
-import { DeviceQueryRepositories } from "../infrastructure/device-query.repositories";
-import { RefreshGuard } from "../../auth/guard/jwt-refresh-Auth.guard";
-import { DeviceViewModel } from "../infrastructure/device-View-Model";
-import { PayloadRefresh } from "../../auth/decorators/payload-refresh.param.decorator";
+import { DeviceQueryRepositories } from "../infrastructure/query-repository/device-query.repositories";
+import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
+import { DeviceViewModel } from "../infrastructure/query-repository/device-View-Model";
+import { PayloadRefresh } from "../../../decorators/payload-refresh.param.decorator";
 import { PayloadType } from "../../auth/application/payloadType";
-import { CurrentDevice } from "../../auth/decorators/current-device.param.decorator";
+import { CurrentUserIdDevice } from "../../../decorators/current-device.param.decorator";
 import { SkipThrottle } from "@nestjs/throttler";
 
 
 @SkipThrottle()
 @Controller(`security`)
 export class DevicesController {
-  constructor(protected devicesService: DevicesService,
-              protected deviceQueryRepositories: DeviceQueryRepositories) {
+  constructor(private readonly devicesService: DevicesService,
+              private readonly deviceQueryRepositories: DeviceQueryRepositories) {
   }
 
 
   @UseGuards(RefreshGuard)
   @Get(`/devices`)
-  async findDevices(@CurrentDevice() userId: string): Promise<DeviceViewModel[]> {
+  async findDevices(@CurrentUserIdDevice() userId: string): Promise<DeviceViewModel[]> {
     return await this.deviceQueryRepositories.findDevices(userId);
   }
 

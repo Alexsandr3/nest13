@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { User, UserDocument } from "../domain/users-schema-Model";
-import {  PreparationUserForDB } from "../domain/user-preparation-for-DB";
+import { PreparationUserForDB } from "../domain/user-preparation-for-DB";
 import { ObjectId } from "mongodb";
 import { UsersDBType } from "../domain/user-DB-Type";
 
@@ -23,51 +23,52 @@ export class UsersRepositories {
     return result.deletedCount === 1;
   }
 
-  async findByLoginOrEmail(loginOrEmail: string) {
-    return this.userModel.findOne({$or: [{"accountData.email": loginOrEmail}, {"accountData.login": loginOrEmail}]});
+  async findByLoginOrEmail(loginOrEmail: string): Promise<UsersDBType> {
+    return this.userModel.findOne({ $or: [{ "accountData.email": loginOrEmail }, { "accountData.login": loginOrEmail }] });
   }
 
   async findUserByConfirmationCode(confirmationCode: string): Promise<UsersDBType> {
-    return this.userModel.findOne({'emailConfirmation.confirmationCode': confirmationCode})
+    return this.userModel.findOne({ "emailConfirmation.confirmationCode": confirmationCode });
   }
 
   async updateConfirmation(_id: ObjectId): Promise<boolean> {
-    const result = await this.userModel.updateOne({_id: _id}, {
-      $set: {'emailConfirmation.isConfirmation': true}})
-    return result.modifiedCount === 1
+    const result = await this.userModel.updateOne({ _id: _id }, {
+      $set: { "emailConfirmation.isConfirmation": true }
+    });
+    return result.modifiedCount === 1;
   }
 
   async findUserByRecoveryCode(recoveryCode: string): Promise<UsersDBType> {
-    return this.userModel.findOne({'emailRecovery.recoveryCode': recoveryCode})
+    return this.userModel.findOne({ "emailRecovery.recoveryCode": recoveryCode });
   }
 
   async updateCodeRecovery(_id: ObjectId, code: string, expirationDate: Date): Promise<boolean> {
-    const result = await this.userModel.updateOne({_id: _id}, {
+    const result = await this.userModel.updateOne({ _id: _id }, {
       $set: {
-        'emailRecovery.recoveryCode': code,
+        "emailRecovery.recoveryCode": code,
         "emailRecovery.expirationDate": expirationDate
       }
-    })
-    return result.modifiedCount === 1
+    });
+    return result.modifiedCount === 1;
   }
 
   async updateRecovery(_id: ObjectId, passwordHash: string): Promise<boolean> {
-    const result = await this.userModel.updateOne({_id: _id}, {
+    const result = await this.userModel.updateOne({ _id: _id }, {
       $set: {
-        'accountData.passwordHash': passwordHash,
-        'emailRecovery.isConfirmation': true
+        "accountData.passwordHash": passwordHash,
+        "emailRecovery.isConfirmation": true
       }
-    })
-    return result.modifiedCount === 1
+    });
+    return result.modifiedCount === 1;
   }
 
   async updateCodeConfirmation(_id: ObjectId, code: string, expirationDate: Date): Promise<boolean> {
-    const result = await this.userModel.updateOne({_id: _id}, {
+    const result = await this.userModel.updateOne({ _id: _id }, {
       $set: {
-        'emailConfirmation.confirmationCode': code,
+        "emailConfirmation.confirmationCode": code,
         "emailConfirmation.expirationDate": expirationDate
       }
-    })
-    return result.modifiedCount === 1
+    });
+    return result.modifiedCount === 1;
   }
 }

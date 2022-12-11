@@ -4,16 +4,16 @@ import { CommentsViewType } from "../infrastructure/comments-View-Model";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { UpdateLikeStatusDto } from "../../posts/api/input-Dtos/update-Like-Status-Model";
 import { CommentsService } from "../domain/comments.service";
-import { CurrentUserId } from "../../auth/decorators/current-user-id.param.decorator";
+import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
 import { UpdateCommentDto } from "./input-Dtos/update-Comment-Dto-Model";
-import { JwtAuthGuard } from "../../auth/guard/jwt-auth-bearer.guard";
-import { JwtForGetGuard } from "../../auth/guard/jwt-auth-bearer-for-get.guard";
+import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
+import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
 
 
 @Controller(`comments`)
 export class CommentsController {
-  constructor(protected commentsQueryRepositories: CommentsQueryRepositories,
-              protected commentsService: CommentsService) {
+  constructor(private readonly commentsService: CommentsService,
+              private readonly commentsQueryRepositories: CommentsQueryRepositories) {
   }
 
   @UseGuards(JwtAuthGuard)
@@ -21,16 +21,16 @@ export class CommentsController {
   @Put(`/:id/like-status`)
   async updateLikeStatus(@CurrentUserId() userId: string,
                          @Param(`id`, IdValidationPipe) id: string,
-                         @Body() input: UpdateLikeStatusDto): Promise<boolean> {
-    return await this.commentsService.updateLikeStatus(id, input.likeStatus, userId);
+                         @Body() updateLikeStatusInputModel: UpdateLikeStatusDto): Promise<boolean> {
+    return await this.commentsService.updateLikeStatus(id, updateLikeStatusInputModel.likeStatus, userId);
   }
 
 
   @UseGuards(JwtForGetGuard)
   @Get(`/:id`)
-  async findAll(@CurrentUserId() userId: string,
+  async findOne(@CurrentUserId() userId: string,
                 @Param(`id`, IdValidationPipe) id: string): Promise<CommentsViewType> {
-    return this.commentsQueryRepositories.findComments(id, userId);
+    return this.commentsQueryRepositories.findComment(id, userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -38,8 +38,8 @@ export class CommentsController {
   @Put(`/:id`)
   async updateCommentsById(@CurrentUserId() userId: string,
                            @Param(`id`, IdValidationPipe) id: string,
-                           @Body() input: UpdateCommentDto): Promise<boolean> {
-    await this.commentsService.updateCommentsById(id, input.content, userId);
+                           @Body() updateCommentInputModel: UpdateCommentDto): Promise<boolean> {
+    await this.commentsService.updateCommentsById(id, updateCommentInputModel.content, userId);
     return true;
   }
 

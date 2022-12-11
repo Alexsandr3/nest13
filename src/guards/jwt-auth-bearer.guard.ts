@@ -1,8 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { JwtService } from "../application/jwt.service";
-import { UnauthorizedExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
-
-
+import { JwtService } from "../modules/auth/application/jwt.service";
+import { UnauthorizedExceptionMY } from "../helpers/My-HttpExceptionFilter";
 
 
 @Injectable()
@@ -14,9 +12,9 @@ export class JwtAuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const token = this.getToken(req);
     const userId = this.jwtService.getUserIdByToken(token);
-    if(!userId) throw new UnauthorizedExceptionMY(`not today`)
-    req.userId = userId
-    return true
+    if (!userId) throw new UnauthorizedExceptionMY(`not today`);
+    req.userId = userId;
+    return true;
   }
 
   protected getToken(request: {

@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { Device, DeviceDocument } from "../domain/device-schema-Model";
 import { PreparationDeviceForDB } from "../domain/device-preparation-for-DB";
 import { PayloadType } from "../../auth/application/payloadType";
+import { DeviceDBType } from "../domain/device-DB-Type";
 
 @Injectable()
 export class DeviceRepositories {
@@ -33,7 +34,7 @@ export class DeviceRepositories {
     return result.modifiedCount === 1;
   }
 
-  async findDeviceForDelete(userId: string, deviceId: string, dateCreatedToken: string) {
+  async findDeviceForDelete(userId: string, deviceId: string, dateCreatedToken: string): Promise<DeviceDBType> {
     return this.deviceModel.findOne({
       $and: [
         { userId: { $eq: userId } },
@@ -57,17 +58,18 @@ export class DeviceRepositories {
     return this.deviceModel.deleteMany({ userId: payload.userId, deviceId: { $ne: payload.deviceId } });
   }
 
-  async findByDeviceIdAndUserId(userId: string, deviceId: string) {
+  async findByDeviceIdAndUserId(userId: string, deviceId: string): Promise<DeviceDBType> {
     return this.deviceModel.findOne({ userId, deviceId });
   }
 
   async deleteDeviceByDeviceId(deviceId: string) {
-    return this.deviceModel.deleteMany({ deviceId: deviceId });
+    const result = await this.deviceModel.deleteMany({ deviceId: deviceId });
+    return result
   }
 
-  async findDeviceForValid(userId: string, deviceId: string, iat: number) {
+  async findDeviceForValid(userId: string, deviceId: string, iat: number): Promise<DeviceDBType> {
     const dateCreateToken = (new Date(iat * 1000)).toISOString();
-    const result = await this.deviceModel
+    const device = await this.deviceModel
       .findOne({
         $and: [
           { userId: userId },
@@ -75,20 +77,20 @@ export class DeviceRepositories {
           { lastActiveDate: dateCreateToken }
         ]
       });
-    if (!result) {
+    if (!device) {
       return null;
     } else {
-      return result;
+      return device;
     }
   }
 
-  async findDeviceByDeviceId(deviceId: string) {
-    const result = await this.deviceModel
-      .findOne({deviceId: deviceId})
-    if (!result) {
-      return null
+  async findDeviceByDeviceId(deviceId: string): Promise<DeviceDBType> {
+    const device = await this.deviceModel
+      .findOne({ deviceId: deviceId });
+    if (!device) {
+      return null;
     } else {
-      return result
+      return device;
     }
   }
 }
