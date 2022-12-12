@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import request from 'supertest';
 import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
+import { AppModule } from "../src/app.module";
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -17,7 +17,7 @@ describe('AppController (e2e)', () => {
   });
 
   describe('blogs_01', () => {
-    it(`01 - should create new blog; status 201; content: created blog`, async () => {
+    it.skip(`01 - should create new blog; status 201; content: created blog`, async () => {
       const createResponse = await request(app)
         .post(`/blogs`)
         //.set('Authorization', `Basic YWRtaW46cXdlcnR5`)
@@ -37,7 +37,6 @@ describe('AppController (e2e)', () => {
         createdAt: expect.any(String)
       })
     })
-
   })
 
  /* it('/ (GET)', () => {

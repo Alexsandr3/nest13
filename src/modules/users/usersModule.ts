@@ -11,6 +11,14 @@ import { MailService } from "../mail/mail.service";
 import { Device, DeviceSchema } from "../security/domain/device-schema-Model";
 import { MailModule } from "../mail/mail.module";
 import { BasicAuthGuard } from "../../guards/basic-auth.guard";
+import { CreateUserHandler } from "./application/use-cases/handlers/create-user-handler";
+import { CqrsModule } from "@nestjs/cqrs";
+import { DeleteUserCommand } from "./application/use-cases/delete-user-command";
+
+const handlers = [CreateUserHandler, DeleteUserCommand];
+const adapters = [JwtService, MailService, UsersRepositories, UsersQueryRepositories, DeviceRepositories];
+const guards = [BasicAuthGuard];
+
 
 @Module({
   imports: [
@@ -18,11 +26,12 @@ import { BasicAuthGuard } from "../../guards/basic-auth.guard";
       { name: User.name, schema: UserSchema },
       { name: Device.name, schema: DeviceSchema }
     ]),
-    MailModule
+    MailModule,
+    CqrsModule
   ],
 
   controllers: [UsersController],
-  providers: [UsersService, UsersRepositories, UsersQueryRepositories, JwtService, DeviceRepositories, MailService, BasicAuthGuard],
+  providers: [UsersService, ...guards, ...adapters, ...handlers],
   exports: [UsersRepositories]
 })
 export class UsersModule {

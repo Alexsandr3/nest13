@@ -1,7 +1,6 @@
 import {
   Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards
 } from "@nestjs/common";
-import { PostsService } from "../domain/posts.service";
 import { PostsQueryRepositories } from "../infrastructure/query-repositories/posts-query.reposit";
 import { CreatePostDto } from "./input-Dtos/create-Post-Dto-Model";
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
@@ -15,12 +14,20 @@ import { CurrentUserId } from "../../../decorators/current-user-id.param.decorat
 import { CreateCommentDto } from "./input-Dtos/create-Comment-Dto-Model";
 import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
 import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
+import { CommandBus } from "@nestjs/cqrs";
+import { UpdatePostCommand } from "../application/use-cases/update-post-command";
+import { BlogsQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-query.repositories";
+import { CreatePostCommand } from "../application/use-cases/create-post-command";
+import { DeletePostCommand } from "../application/use-cases/delete-post-command";
+import { CreateCommentCommand } from "../application/use-cases/create-comment-command";
+import { UpdateLikeStatusCommand } from "../application/use-cases/update-like-status-command";
 
 
 @Controller(`posts`)
 export class PostsController {
-  constructor(private readonly postsService: PostsService,
-              private readonly postsQueryRepositories: PostsQueryRepositories) {
+  constructor(private readonly postsQueryRepositories: PostsQueryRepositories,
+              private readonly blogsQueryRepositories: BlogsQueryRepositories,
+              private commandBus: CommandBus) {
   }
 
 
@@ -30,7 +37,7 @@ export class PostsController {
   async updateLikeStatus(@CurrentUserId() userId: string,
                          @Param(`postId`, IdValidationPipe) id: string,
                          @Body() updateLikeStatusInputModel: UpdateLikeStatusDto) {
-    return await this.postsService.updateLikeStatus(id, updateLikeStatusInputModel.likeStatus, userId);
+    return await this.commandBus.execute(new UpdateLikeStatusCommand(id, updateLikeStatusInputModel, userId))
   }
 
   @UseGuards(JwtForGetGuard)
@@ -46,7 +53,7 @@ export class PostsController {
   async createComment(@CurrentUserId() userId: string,
                       @Param(`postId`, IdValidationPipe) id: string,
                       @Body() inputCommentModel: CreateCommentDto) {
-    return await this.postsService.createComment(id, inputCommentModel.content, userId);
+    return await this.commandBus.execute(new CreateCommentCommand(id, inputCommentModel, userId))
   }
 
   @UseGuards(JwtForGetGuard)
@@ -59,7 +66,8 @@ export class PostsController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createPost(@Body() postInputModel: CreatePostDto): Promise<PostViewModel> {
-    return this.postsService.createPost(postInputModel);
+    const blog = await this.blogsQueryRepositories.findBlog(postInputModel.blogId)
+    return this.commandBus.execute(new CreatePostCommand(postInputModel, blog.name))
   }
 
   @UseGuards(JwtForGetGuard)
@@ -74,13 +82,13 @@ export class PostsController {
   @Put(`:id`)
   async updatePost(@Param(`id`, IdValidationPipe) id: string,
                    @Body() postInputModel: CreatePostDto): Promise<boolean> {
-    return await this.postsService.updatePost(id, postInputModel);
+    return await this.commandBus.execute(new UpdatePostCommand(id, postInputModel))
   }
 
   @UseGuards(BasicAuthGuard)
   @Delete(`:id`)
   @HttpCode(204)
   async deletePost(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
-    return await this.postsService.removePost(id);
+    return await this.commandBus.execute(new DeletePostCommand(id))
   }
 }

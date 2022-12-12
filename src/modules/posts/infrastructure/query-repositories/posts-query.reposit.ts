@@ -109,7 +109,6 @@ export class PostsQueryRepositories {
       .lean();
     //mapped posts for view
     const mappedPosts = foundPosts.map(post => this.postForView(post, userId));
-    //TODO can i not wait all Promise?
     const itemsPosts = await Promise.all(mappedPosts);
     //counting posts for blogId
     const totalCount = await this.postModel.countDocuments(blogId ? { blogId } : {});
@@ -144,7 +143,6 @@ export class PostsQueryRepositories {
       .sort({ [data.sortBy]: data.sortDirection }).lean();
 
     const mappedComments = comments.map(comment => this.commentWithNewId(comment, userId));
-    //TODO promise !!!!
     const itemsComments = await Promise.all(mappedComments);
     //counting comments
     const totalCountComments = await this.commentModel.countDocuments(postId ? { postId } : {});

@@ -19,9 +19,9 @@ export class JwtService {
 
   async createJwt(userId: string, deviceId: string): Promise<TokensType> {
     const accessToken = jwt.sign({
-      userId: userId }, settings.ACCESS_TOKEN_SECRET, { expiresIn: "10s" });
+      userId: userId }, settings.ACCESS_TOKEN_SECRET, { expiresIn: "5m" });
     const refreshToken = jwt.sign({
-      userId: userId, deviceId: deviceId }, settings.REFRESH_TOKEN_SECRET, { expiresIn: "20s" });
+      userId: userId, deviceId: deviceId }, settings.REFRESH_TOKEN_SECRET, { expiresIn: "15m" });
     return new TokensType(accessToken, refreshToken);
   }
 

@@ -7,18 +7,22 @@ import { UsersQueryRepositories } from "../infrastructure/query-reposirory/users
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
+import { CommandBus } from "@nestjs/cqrs";
+import { CreateUserCommand } from "../application/use-cases/create-user-command";
+import { DeleteUserCommand } from "../application/use-cases/delete-user-command";
 
 
 @Controller(`users`)
 export class UsersController {
   constructor(private readonly usersService: UsersService,
-              private readonly usersQueryRepositories: UsersQueryRepositories) {
+              private readonly usersQueryRepositories: UsersQueryRepositories,
+              private commandBus: CommandBus) {
   }
 
   @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(@Body() userInputModel: CreateUserDto): Promise<UsersViewType> {
-    return this.usersService.createUser(userInputModel);
+    return this.commandBus.execute(new CreateUserCommand(userInputModel));
   }
 
   @UseGuards(BasicAuthGuard)
@@ -31,7 +35,8 @@ export class UsersController {
   @HttpCode(204)
   @Delete(`:id`)
   async deleteUser(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
-    return await this.usersService.deleteUser(id);
+    return await this.commandBus.execute(new DeleteUserCommand(id))
+
   }
 
 }

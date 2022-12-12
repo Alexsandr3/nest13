@@ -1,20 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { PayloadType } from "../../auth/application/payloadType";
-import { DeviceRepositories } from "../infrastructure/device-repositories";
-import { ForbiddenExceptionMY, NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 
 
 @Injectable()
 export class DevicesService {
-  constructor(private readonly deviceRepositories: DeviceRepositories) {
+  constructor() {
   }
 
-  async deleteDevices(payload: PayloadType): Promise<boolean> {
-    await this.deviceRepositories.deleteDevices(payload);
-    return true;
-  }
+  /* async deleteDevices(payload: PayloadType): Promise<boolean> {
+     await this.deviceRepositories.deleteDevices(payload);
+     return true;
+   }*/
 
-  async deleteByDeviceId(deviceIdForDelete: string, deviceId: string, userId: string): Promise<boolean> {
+  /*async deleteByDeviceId(deviceIdForDelete: string, deviceId: string, userId: string): Promise<boolean> {
     //find device by id from uri params
     const fondDevice = await this.deviceRepositories.findDeviceByDeviceId(deviceIdForDelete);
     if (!fondDevice) throw new NotFoundExceptionMY(`Device with id: ${deviceId} doesn't exist`);
@@ -28,5 +25,5 @@ export class DevicesService {
     const isDelete = await this.deviceRepositories.deleteDeviceByDeviceId(deviceIdForDelete);
     if (!isDelete) throw new ForbiddenExceptionMY(`Something went wrong`);
     return true;
-  }
+  }*/
 }

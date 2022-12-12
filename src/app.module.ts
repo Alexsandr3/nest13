@@ -11,9 +11,15 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 import { TestingModule } from "./modules/testing/testing.module";
 import { DeviceModule } from "./modules/security/device.module";
+import { ThrottlerModule } from "@nestjs/throttler";
+
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 10,
+      limit: 5
+    }),
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URL),
     BlogModule,

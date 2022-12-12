@@ -3,7 +3,6 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { Device, DeviceDocument } from "../domain/device-schema-Model";
 import { PreparationDeviceForDB } from "../domain/device-preparation-for-DB";
-import { PayloadType } from "../../auth/application/payloadType";
 import { DeviceDBType } from "../domain/device-DB-Type";
 
 @Injectable()
@@ -54,8 +53,8 @@ export class DeviceRepositories {
     return result.deletedCount === 1;
   }
 
-  async deleteDevices(payload: PayloadType) {
-    return this.deviceModel.deleteMany({ userId: payload.userId, deviceId: { $ne: payload.deviceId } });
+  async deleteDevices(userId: string, deviceId: string) {
+    return this.deviceModel.deleteMany({ userId: userId, deviceId: { $ne: deviceId } });
   }
 
   async findByDeviceIdAndUserId(userId: string, deviceId: string): Promise<DeviceDBType> {
@@ -64,7 +63,7 @@ export class DeviceRepositories {
 
   async deleteDeviceByDeviceId(deviceId: string) {
     const result = await this.deviceModel.deleteMany({ deviceId: deviceId });
-    return result
+    return result;
   }
 
   async findDeviceForValid(userId: string, deviceId: string, iat: number): Promise<DeviceDBType> {

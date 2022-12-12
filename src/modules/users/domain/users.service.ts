@@ -1,39 +1,19 @@
-import { HttpException, Injectable } from "@nestjs/common";
-import { CreateUserDto } from "../api/input-Dto/create-User-Dto-Model";
-import { PreparationUserForDB } from "./user-preparation-for-DB";
+import { Injectable } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
-import { UsersRepositories } from "../infrastructure/users-repositories";
-import { UsersQueryRepositories } from "../infrastructure/query-reposirory/users-query.reposit";
-import { UsersViewType } from "../infrastructure/query-reposirory/user-View-Model";
-import { MailService } from "../../mail/mail.service";
-import { randomUUID } from "crypto";
-import {
-  BadRequestExceptionMY,
-  NotFoundExceptionMY,
-  UnauthorizedExceptionMY
-} from "../../../helpers/My-HttpExceptionFilter";
-import { add } from "date-fns";
+import { BadRequestExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 import { UsersDBType } from "./user-DB-Type";
-import { JwtService, TokensType } from "../../auth/application/jwt.service";
-import { DeviceRepositories } from "../../security/infrastructure/device-repositories";
-import { PayloadType } from "../../auth/application/payloadType";
 
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepositories: UsersRepositories,
-              private readonly usersQueryRepositories: UsersQueryRepositories,
-              private readonly deviceRepositories: DeviceRepositories,
-              private readonly jwtService: JwtService,
-              private readonly mailService: MailService,
-              ) {
+  constructor() {
   }
 
-  private generateHash(password: string) {
+  public generateHash(password: string) {
     return bcrypt.hash(password, 10);
   }
 
-  private checkCodeConfirm(user: UsersDBType, code: string){
+  public checkCodeConfirm(user: UsersDBType, code: string) {
     if (user.emailConfirmation.isConfirmation) throw new BadRequestExceptionMY({
       message: `Code has confirmation already`,
       field: "code"
@@ -46,21 +26,18 @@ export class UsersService {
       message: `Confirmation has expired`,
       field: "code"
     });
-    return
+    return;
   }
 
-  private checkUser(isConfirmation: Boolean, expirationDate: Date) {
-    if (isConfirmation) throw new BadRequestExceptionMY({ message: `Incorrect input data`, field: "email" });
-    //TODO code for check {message: `Code has confirmation already`, field: "email"}
-    //TODO throttler !?
+  public checkUser(isConfirmation: Boolean, expirationDate: Date) {
+    if (isConfirmation) throw new BadRequestExceptionMY({ message: `Code has confirmation already`, field: "email" });
     if (expirationDate < new Date()) throw new BadRequestExceptionMY({
-      message: `Confirmation has expired`,
-      field: "code"
+      message: `Confirmation has expired`, field: "email"
     });
-    return
+    return;
   }
 
-  private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
+  /*private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
     //find user
     const checkEmail = await this.usersRepositories.findByLoginOrEmail(userInputModel.email);
     if (checkEmail) throw new BadRequestExceptionMY({
@@ -73,9 +50,9 @@ export class UsersService {
       field: `login`
     });
     return true;
-  }
+  }*/
 
-  async createUser(userInputModel: CreateUserDto): Promise<UsersViewType> {
+  /*async createUser(userInputModel: CreateUserDto): Promise<UsersViewType> {
     //email verification and login for uniqueness
     await this.validateUser(userInputModel);
     //generation Hash
@@ -114,17 +91,17 @@ export class UsersService {
       throw new HttpException("Service is unavailable. Please try again later. We need saved User", 421);
     }
     return foundUser;
-  }
+  }*/
 
-  async deleteUser(id: string): Promise<boolean> {
+  /*async deleteUser(id: string): Promise<boolean> {
     const result = await this.usersRepositories.deleteUser(id);
     if (!result) {
       throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     }
     return true;
-  }
+  }*/
 
-  async confirmByCode(code: string): Promise<boolean> {
+  /*async confirmByCode(code: string): Promise<boolean> {
     //find user by code
     const user = await this.usersRepositories.findUserByConfirmationCode(code);
     if (!user) throw new BadRequestExceptionMY({
@@ -135,9 +112,9 @@ export class UsersService {
     await this.checkCodeConfirm(user, code);
     //update status code-> true
     return await this.usersRepositories.updateConfirmation(user._id);
-  }
+  }*/
 
-  async recovery(email: string): Promise<boolean> {
+  /*async recovery(email: string): Promise<boolean> {
     //search user by login or email
     const user = await this.usersRepositories.findByLoginOrEmail(email);
     if (!user) throw new BadRequestExceptionMY({ message: `${email} has invalid`, field: "email" });
@@ -159,9 +136,9 @@ export class UsersService {
       throw new HttpException("Service is unavailable. Please try again later. We need saved User", 421);
     }
     return true;
-  }
+  }*/
 
-  async newPassword(newPassword: string, code: string): Promise<boolean> {
+  /*async newPassword(newPassword: string, code: string): Promise<boolean> {
     //search user by code
     const user = await this.usersRepositories.findUserByRecoveryCode(code);
     if (!user) throw new BadRequestExceptionMY({ message: `Incorrect input data`, field: "code" });
@@ -170,9 +147,9 @@ export class UsersService {
     //generation new passwordHash for save
     const passwordHash = await this.generateHash(newPassword);
     return await this.usersRepositories.updateRecovery(user._id, passwordHash);
-  }
+  }*/
 
-  async resending(email: string): Promise<boolean> {
+  /*async resending(email: string): Promise<boolean> {
     //search user by email
     const user = await this.usersRepositories.findByLoginOrEmail(email);
     if (!user) throw new BadRequestExceptionMY({ message: `Incorrect input data`, field: "email" });
@@ -195,32 +172,34 @@ export class UsersService {
       throw new HttpException("Service is unavailable. Please try again later. We need saved User", 421);
     }
     return true;
-  }
+  }*/
 
-  async refresh(payload: PayloadType): Promise<TokensType> {
-    //generation of a new pair of tokens
-    const newTokens: TokensType = await this.jwtService.createJwt(payload.userId, payload.deviceId);
-    const payloadNew: PayloadType = await this.jwtService.verifyRefreshToken(newTokens.refreshToken);
-    //preparation data for update device in DB
-    const userId = payloadNew.userId;
-    const deviceId = payloadNew.deviceId;
-    const dateCreatedOldToken = (new Date(payload.iat * 1000)).toISOString();
-    const dateCreateToken = (new Date(payloadNew.iat * 1000)).toISOString();
-    const dateExpiredToken = (new Date(payloadNew.exp * 1000)).toISOString();
-    await this.deviceRepositories.updateDateDevice(
-      userId, deviceId, dateCreateToken, dateExpiredToken, dateCreatedOldToken);
-    return newTokens;
-  }
+  /* async refresh(payload: PayloadType): Promise<TokensType> {
+     //generation of a new pair of tokens
+     const newTokens: TokensType = await this.jwtService.createJwt(payload.userId, payload.deviceId);
+     const payloadNew: PayloadType = await this.jwtService.verifyRefreshToken(newTokens.refreshToken);
+     //preparation data for update device in DB
+     const userId = payloadNew.userId;
+     const deviceId = payloadNew.deviceId;
+     const dateCreatedOldToken = (new Date(payload.iat * 1000)).toISOString();
+     const dateCreateToken = (new Date(payloadNew.iat * 1000)).toISOString();
+     const dateExpiredToken = (new Date(payloadNew.exp * 1000)).toISOString();
+     await this.deviceRepositories.updateDateDevice(
+       userId, deviceId, dateCreateToken, dateExpiredToken, dateCreatedOldToken);
+     return newTokens;
+   }*/
 
-  async logout(payload: PayloadType): Promise<boolean> {
-    const { userId, deviceId } = payload;
-    const dateCreatedToken = (new Date(payload.iat * 1000)).toISOString();
-    //search device
-    const foundDevice = await this.deviceRepositories.findDeviceForDelete(userId, deviceId, dateCreatedToken);
-    if (!foundDevice) throw new UnauthorizedExceptionMY("not today sorry man");
-    //removing device
-    const isDeleted = await this.deviceRepositories.deleteDevice(userId, deviceId);
-    if (!isDeleted) throw new UnauthorizedExceptionMY("not today");
-    return true;
-  }
+  /* async logout(payload: PayloadType): Promise<boolean> {
+     const { userId, deviceId } = payload;
+     const dateCreatedToken = (new Date(payload.iat * 1000)).toISOString();
+     //search device
+     const foundDevice = await this.deviceRepositories.findDeviceForDelete(userId, deviceId, dateCreatedToken);
+     if (!foundDevice) throw new UnauthorizedExceptionMY("not today sorry man");
+     //removing device
+     const isDeleted = await this.deviceRepositories.deleteDevice(userId, deviceId);
+     if (!isDeleted) throw new UnauthorizedExceptionMY("not today");
+     return true;
+   }*/
 }
+
+

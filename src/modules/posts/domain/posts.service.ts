@@ -1,27 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { PostsRepositories } from "../infrastructure/posts-repositories";
-import { BlogsQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-query.repositories";
-import { CreatePostDto } from "../api/input-Dtos/create-Post-Dto-Model";
-import { PreparationPostForDB } from "./post-preparation-for-DB";
-import { PostViewModel } from "../infrastructure/query-repositories/post-View-Model";
-import { NotFoundExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
-import { CommentsRepositories } from "../../comments/infrastructure/comments.repositories";
-import { UsersQueryRepositories } from "../../users/infrastructure/query-reposirory/users-query.reposit";
-import { PreparationCommentForDB } from "../../comments/domain/comment-preparation-for-DB";
-import { CommentsViewType } from "../../comments/infrastructure/comments-View-Model";
-import { PostsQueryRepositories } from "../infrastructure/query-repositories/posts-query.reposit";
 
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly blogsQueryRepositories: BlogsQueryRepositories,
-              private readonly postsRepositories: PostsRepositories,
-              private readonly postsQueryRepositories: PostsQueryRepositories,
-              private readonly commentsRepositories: CommentsRepositories,
-              private readonly usersQueryRepositories: UsersQueryRepositories) {
+  constructor() {
   }
 
-  async createPost(postInputModel: CreatePostDto): Promise<PostViewModel> {
+  /*async createPost(postInputModel: CreatePostDto): Promise<PostViewModel> {
     //finding Blog
     const blog = await this.blogsQueryRepositories.findBlog(postInputModel.blogId);
     //preparation Post for save in DB
@@ -35,21 +20,21 @@ export class PostsService {
     );
     const createdPost = await this.postsRepositories.createPost(newPost);
     return await this.postsQueryRepositories.createPostForView(createdPost);
-  }
+  }*/
 
-  async removePost(id: string): Promise<boolean> {
+  /*async removePost(id: string): Promise<boolean> {
     const result = await this.postsRepositories.deletePost(id);
     if (!result) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     return true;
-  }
+  }*/
 
-  async updatePost(id: string, postInputModel: CreatePostDto): Promise<boolean> {
+  /*async updatePost(id: string, postInputModel: CreatePostDto): Promise<boolean> {
     const result = await this.postsRepositories.updatePost(id, postInputModel);
     if (!result) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     return true;
-  }
+  }*/
 
-  async updateLikeStatus(id: string, likeStatus: string, userId: string): Promise<boolean> {
+  /*async updateLikeStatus(id: string, likeStatus: string, userId: string): Promise<boolean> {
     //finding post by id from uri params
     const post = await this.postsRepositories.findPost(id);
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
@@ -59,9 +44,9 @@ export class PostsService {
     const result = await this.postsRepositories.updateStatusPostById(id, userId, likeStatus, user.login);
     if (!result) throw new NotFoundExceptionMY(`Like doesn't exists`);
     return result;
-  }
+  }*/
 
-  async createComment(id: string, content: string, userId: string): Promise<CommentsViewType> {
+  /*async createComment(id: string, content: string, userId: string): Promise<CommentsViewType> {
     //find post for create comment
     const post = await this.postsRepositories.findPost(id);
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
@@ -74,5 +59,5 @@ export class PostsService {
       user.login,
       new Date().toISOString());
     return await this.commentsRepositories.createCommentByIdPost(newComment);
-  }
+  }*/
 }

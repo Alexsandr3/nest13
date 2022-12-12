@@ -14,8 +14,14 @@ import { LikesStatus, likesStatusSchema } from "../comments/domain/likesStatus-s
 import { BasicStrategy } from "../../strategies/basic.strategy";
 import { JwtForGetGuard } from "../../guards/jwt-auth-bearer-for-get.guard";
 import { JwtService } from "../auth/application/jwt.service";
+import { CreateBlogHandler } from "./application/use-cases/handlers/create-blog-handler";
+import { CqrsModule } from "@nestjs/cqrs";
+import { DeleteBlogHandler } from "./application/use-cases/handlers/delete-blog-handler";
+import { UpdateBlogHandler } from "./application/use-cases/handlers/update-blog-handler";
+import { CreatePostHandler } from "./application/use-cases/handlers/create-post-handler";
 
-
+const handlers = [CreateBlogHandler, DeleteBlogHandler, UpdateBlogHandler, CreatePostHandler];
+const adapters = [BlogsRepositories, BlogsQueryRepositories, PostsRepositories, PostsQueryRepositories, JwtService];
 
 @Module({
   imports: [
@@ -24,17 +30,12 @@ import { JwtService } from "../auth/application/jwt.service";
       { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: LikesStatus.name, schema: likesStatusSchema },
-      { name: LikesPostsStatus.name, schema: likesPostsStatusSchema },
-    ])
+      { name: LikesPostsStatus.name, schema: likesPostsStatusSchema }
+    ]),
+    CqrsModule
   ],
   controllers: [BlogsController],
-  providers: [
-    BlogsService,
-    BlogsRepositories,
-    BlogsQueryRepositories,
-    PostsRepositories,
-    PostsQueryRepositories, BasicStrategy, JwtForGetGuard, JwtService
-  ]
+  providers: [BlogsService, BasicStrategy, JwtForGetGuard, ...handlers, ...adapters]
 })
 export class BlogModule {
 }

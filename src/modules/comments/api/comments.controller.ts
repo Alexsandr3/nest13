@@ -8,11 +8,16 @@ import { CurrentUserId } from "../../../decorators/current-user-id.param.decorat
 import { UpdateCommentDto } from "./input-Dtos/update-Comment-Dto-Model";
 import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
 import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
+import { CommandBus } from "@nestjs/cqrs";
+import { DeleteCommentCommand } from "../application/use-cases/delete-comment-command";
+import { UpdateCommentCommand } from "../application/use-cases/update-comment-command";
+import { UpdateLikeStatusCommentCommand } from "../application/use-cases/update-like-status-comment-command";
 
 
 @Controller(`comments`)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService,
+              private commandBus: CommandBus,
               private readonly commentsQueryRepositories: CommentsQueryRepositories) {
   }
 
@@ -22,7 +27,7 @@ export class CommentsController {
   async updateLikeStatus(@CurrentUserId() userId: string,
                          @Param(`id`, IdValidationPipe) id: string,
                          @Body() updateLikeStatusInputModel: UpdateLikeStatusDto): Promise<boolean> {
-    return await this.commentsService.updateLikeStatus(id, updateLikeStatusInputModel.likeStatus, userId);
+    return await this.commandBus.execute(new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId))
   }
 
 
@@ -39,7 +44,7 @@ export class CommentsController {
   async updateCommentsById(@CurrentUserId() userId: string,
                            @Param(`id`, IdValidationPipe) id: string,
                            @Body() updateCommentInputModel: UpdateCommentDto): Promise<boolean> {
-    await this.commentsService.updateCommentsById(id, updateCommentInputModel.content, userId);
+    await this.commandBus.execute(new UpdateCommentCommand(id, updateCommentInputModel, userId))
     return true;
   }
 
@@ -48,7 +53,7 @@ export class CommentsController {
   @Delete(`/:id`)
   async deleteCommentById(@CurrentUserId() userId: string,
                           @Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
-    await this.commentsService.deleteCommentById(id, userId);
+    await this.commandBus.execute(new DeleteCommentCommand(id, userId))
     return true;
   }
 }
