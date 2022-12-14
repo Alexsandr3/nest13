@@ -73,7 +73,7 @@ export class PostsQueryRepositories {
     });
     //finding the newest likes
     const newestLikes = await this.likesPostsStatusModel
-      .find({ parentId: post._id.toString(), likeStatus: "Like" })
+      .find({ parentId: post._id.toString(), likeStatus: "Like", isBanned: false })
       .sort({ addedAt: "desc" })
       .limit(3)
       .lean();
