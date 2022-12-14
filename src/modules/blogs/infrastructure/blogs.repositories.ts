@@ -39,8 +39,8 @@ export class BlogsRepositories {
     return result.matchedCount === 1;
   }
 
-  async findBlog(id: string, userId?: string): Promise<BlogsDBType> {
-    const blog = await this.blogsModel.findOne({ _id: new ObjectId(id), userId: userId });
+  async findBlog(id: string): Promise<BlogsDBType> {
+    const blog = await this.blogsModel.findOne({ _id: new ObjectId(id)});
     if (!blog) return null;
     return blog;
   }

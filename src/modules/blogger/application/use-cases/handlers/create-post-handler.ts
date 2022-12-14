@@ -4,7 +4,7 @@ import { PostViewModel } from "../../../../posts/infrastructure/query-repositori
 import { PreparationPostForDB } from "../../../../posts/domain/post-preparation-for-DB";
 import { PostsRepositories } from "../../../../posts/infrastructure/posts-repositories";
 import { PostsQueryRepositories } from "../../../../posts/infrastructure/query-repositories/posts-query.reposit";
-import { ForbiddenExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
+import { ForbiddenExceptionMY, NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 import { BlogsRepositories } from "../../../../blogs/infrastructure/blogs.repositories";
 
 
@@ -18,7 +18,8 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
   async execute(command: CreatePostCommand): Promise<PostViewModel> {
     const { userId, blogId } = command;
     const { title, shortDescription, content } = command.postInputModel;
-    const blog = await this.blogsRepositories.findBlog(blogId, userId);
+    const blog = await this.blogsRepositories.findBlog(blogId);
+    if(!blog) throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`)
     if (userId !== blog.userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     //preparation Post for save in DB
     const newPost = new PreparationPostForDB(

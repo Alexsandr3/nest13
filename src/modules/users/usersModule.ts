@@ -13,7 +13,6 @@ import { MailModule } from "../mail/mail.module";
 import { BasicAuthGuard } from "../../guards/basic-auth.guard";
 import { CreateUserHandler } from "./application/use-cases/handlers/create-user-handler";
 import { CqrsModule } from "@nestjs/cqrs";
-import { DeleteUserCommand } from "./application/use-cases/delete-user-command";
 import { UserBanInfo, UserBanInfoSchema } from "./domain/users-ban-info-schema-Model";
 import { UpdateBanInfoHandler } from "./application/use-cases/handlers/update-ban-info-handler";
 import { Post, PostSchema } from "../posts/domain/post-schema-Model";
@@ -22,8 +21,9 @@ import { PostsRepositories } from "../posts/infrastructure/posts-repositories";
 import { CommentsRepositories } from "../comments/infrastructure/comments.repositories";
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
 import { LikesStatus, LikesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
+import { DeleteUserHandler } from "./application/use-cases/handlers/delete-user-handler";
 
-const handlers = [CreateUserHandler, DeleteUserCommand, UpdateBanInfoHandler];
+const handlers = [CreateUserHandler, DeleteUserHandler, UpdateBanInfoHandler];
 const adapters = [JwtService, MailService, UsersRepositories, PostsRepositories, UsersQueryRepositories, DeviceRepositories, CommentsRepositories];
 const guards = [BasicAuthGuard];
 
@@ -46,7 +46,6 @@ const guards = [BasicAuthGuard];
 
   controllers: [UsersController],
   providers: [UsersService, ...guards, ...adapters, ...handlers],
-  //exports: [UsersRepositories]
 })
 export class UsersModule {
 }

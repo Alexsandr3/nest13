@@ -43,9 +43,9 @@ export class UsersController {
 
   @UseGuards(BasicAuthGuard)
   @HttpCode(204)
-  @Delete(`:id`)
-  async deleteUser(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
-    return await this.commandBus.execute(new DeleteUserCommand(id))
+  @Delete(`:userId`)
+  async deleteUser(@Param(`userId`, IdValidationPipe) userId: string): Promise<boolean> {
+    return await this.commandBus.execute(new DeleteUserCommand(userId))
   }
 
 }

@@ -23,6 +23,7 @@ export class UpdateBanInfoHandler implements ICommandHandler<UpdateBanInfoComman
     if (!user) throw new NotFoundExceptionMY(`Not found `);
     if (isBanned === false) {
       const banDate = null;
+      const banReason = null;
       const banInfo = await this.usersRepositories.updateBanInfo(userId, isBanned, banDate, banReason);
       if (!banInfo) throw new BadRequestExceptionMY({
         message: `New data not received for update`, field: `database`
