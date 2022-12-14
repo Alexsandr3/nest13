@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node", //for 15 home works
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
