@@ -1,7 +1,6 @@
 import {
   Body, Controller, Get, Query, Post, Param, Delete, Put, HttpCode, UseGuards
 } from "@nestjs/common";
-import { UpdateBlogDto } from "./input-Dtos/update-Blog-Dto-Model";
 import { CreatePostByBlogIdDto } from "../../posts/api/input-Dtos/create-Post-By-BlogId-Dto-Model";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
@@ -19,6 +18,7 @@ import { UpdatePostCommand } from "../application/use-cases/update-post-command"
 import { DeletePostCommand } from "../application/use-cases/delete-post-command";
 import { CurrentUserIdBlogger } from "../../../decorators/current-user-id.param.decorator";
 import { CreateBlogDto } from "./input-dtos/create-Blog-Dto-Model";
+import { UpdateBlogDto } from "./input-dtos/update-Blog-Dto-Model";
 
 @UseGuards(JwtAuthGuard)
 @Controller(`blogger/blogs`)

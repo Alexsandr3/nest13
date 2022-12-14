@@ -4,8 +4,8 @@ import { Model } from "mongoose";
 import { BlogDocument, Blog } from "../../blogger/domain/blog-schema-Model";
 import { ObjectId } from "mongodb";
 import { PreparationBlogForDB } from "../../blogger/domain/blog-preparation-for-DB";
-import { UpdateBlogDto } from "../../blogger/api/input-dtos/update-Blog-Dto-Model";
 import { BlogsDBType } from "../../blogger/domain/blog-DB-Type";
+import { UpdateBlogDto } from "../../blogger/api/input-dtos/update-Blog-Dto-Model";
 
 @Injectable()
 export class BlogsRepositories {
