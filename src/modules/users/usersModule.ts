@@ -14,9 +14,17 @@ import { BasicAuthGuard } from "../../guards/basic-auth.guard";
 import { CreateUserHandler } from "./application/use-cases/handlers/create-user-handler";
 import { CqrsModule } from "@nestjs/cqrs";
 import { DeleteUserCommand } from "./application/use-cases/delete-user-command";
+import { UserBanInfo, UserBanInfoSchema } from "./domain/users-ban-info-schema-Model";
+import { UpdateBanInfoHandler } from "./application/use-cases/handlers/update-ban-info-handler";
+import { Post, PostSchema } from "../posts/domain/post-schema-Model";
+import { LikesPostsStatus, LikesPostsStatusSchema } from "../posts/domain/likesPost-schema-Model";
+import { PostsRepositories } from "../posts/infrastructure/posts-repositories";
+import { CommentsRepositories } from "../comments/infrastructure/comments.repositories";
+import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
+import { LikesStatus, LikesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
 
-const handlers = [CreateUserHandler, DeleteUserCommand];
-const adapters = [JwtService, MailService, UsersRepositories, UsersQueryRepositories, DeviceRepositories];
+const handlers = [CreateUserHandler, DeleteUserCommand, UpdateBanInfoHandler];
+const adapters = [JwtService, MailService, UsersRepositories, PostsRepositories, UsersQueryRepositories, DeviceRepositories, CommentsRepositories];
 const guards = [BasicAuthGuard];
 
 
@@ -24,7 +32,13 @@ const guards = [BasicAuthGuard];
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
-      { name: Device.name, schema: DeviceSchema }
+      { name: Device.name, schema: DeviceSchema },
+      { name: UserBanInfo.name, schema: UserBanInfoSchema },
+      { name: Post.name, schema: PostSchema },
+      { name: Comment.name, schema: CommentSchema },
+      { name: LikesStatus.name, schema: LikesStatusSchema },
+      { name: Post.name, schema: PostSchema },
+      { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema }
     ]),
     MailModule,
     CqrsModule
@@ -32,7 +46,7 @@ const guards = [BasicAuthGuard];
 
   controllers: [UsersController],
   providers: [UsersService, ...guards, ...adapters, ...handlers],
-  exports: [UsersRepositories]
+  //exports: [UsersRepositories]
 })
 export class UsersModule {
 }

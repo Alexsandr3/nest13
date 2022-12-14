@@ -31,7 +31,7 @@ export class CommentsQueryRepositories {
       totalCountDislike,
       myStatus);
     //search comment
-    const comment = await this.commentsModel.findOne({ _id: new ObjectId(commentId) });
+    const comment = await this.commentsModel.findOne({ _id: new ObjectId(commentId), isBanned: false });
     if (!comment) throw new NotFoundExceptionMY(`Not found for commentId: ${commentId}`);
     //returning comment for View
     return new CommentsViewType(

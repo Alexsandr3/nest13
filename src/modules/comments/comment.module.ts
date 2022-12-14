@@ -3,7 +3,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Comment, CommentSchema } from "./domain/comments-schema-Model";
 import { CommentsQueryRepositories } from "./infrastructure/query-repository/comments-query.repositories";
 import { CommentsController } from "./api/comments.controller";
-import { LikesStatus, likesStatusSchema } from "./domain/likesStatus-schema-Model";
+import { LikesStatus, LikesStatusSchema } from "./domain/likesStatus-schema-Model";
 import { CommentsService } from "./domain/comments.service";
 import { CommentsRepositories } from "./infrastructure/comments.repositories";
 import { JwtAuthGuard } from "../../guards/jwt-auth-bearer.guard";
@@ -22,7 +22,7 @@ const guards = [JwtAuthGuard, JwtForGetGuard];
   imports: [
     MongooseModule.forFeature([
       { name: Comment.name, schema: CommentSchema },
-      { name: LikesStatus.name, schema: likesStatusSchema }
+      { name: LikesStatus.name, schema: LikesStatusSchema }
     ]),
     CqrsModule
   ],

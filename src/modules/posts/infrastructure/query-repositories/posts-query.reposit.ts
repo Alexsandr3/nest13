@@ -101,8 +101,9 @@ export class PostsQueryRepositories {
 
   async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
     //search all posts with pagination by blogId
+    const filter = blogId ? { blogId, isBanned: false } : {isBanned: false}
     const foundPosts = await this.postModel
-      .find(blogId ? { blogId } : {})
+      .find(filter)
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection })
@@ -111,7 +112,7 @@ export class PostsQueryRepositories {
     const mappedPosts = foundPosts.map(post => this.postForView(post, userId));
     const itemsPosts = await Promise.all(mappedPosts);
     //counting posts for blogId
-    const totalCount = await this.postModel.countDocuments(blogId ? { blogId } : {});
+    const totalCount = await this.postModel.countDocuments(filter);
     //pages count
     const pagesCountRes = Math.ceil(totalCount / data.pageSize);
     // Found posts with pagination
@@ -126,18 +127,19 @@ export class PostsQueryRepositories {
 
   async findPost(id: string, userId: string | null): Promise<PostViewModel> {
     //find post by id from uri params
-    const post = await this.postModel.findOne({ _id: new ObjectId(id) });
+    const post = await this.postModel.findOne({ _id: new ObjectId(id), isBanned: false });
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     //returning post for View
     return this.postForView(post, userId);
   }
 
   async findCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null): Promise<PaginationViewModel<CommentsViewType[]>>  {
+    const filter = { postId: postId, isBanned: false }
     //find post by postId and userId
     const post = await this.findPost(postId, userId);
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${postId}`);
     //find comment by postId
-    const comments = await this.commentModel.find({ postId: postId })
+    const comments = await this.commentModel.find(filter)
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection }).lean();
@@ -145,7 +147,7 @@ export class PostsQueryRepositories {
     const mappedComments = comments.map(comment => this.commentWithNewId(comment, userId));
     const itemsComments = await Promise.all(mappedComments);
     //counting comments
-    const totalCountComments = await this.commentModel.countDocuments(postId ? { postId } : {});
+    const totalCountComments = await this.commentModel.countDocuments(postId ? { postId, isBanned: false } : {isBanned: false});
     const pagesCountRes = Math.ceil(totalCountComments / data.pageSize);
     //returning comment with pagination
     return new PaginationViewModel(

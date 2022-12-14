@@ -25,6 +25,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
     const user = await this.usersQueryRepositories.findUser(userId);
     //preparation comment for save in DB
     const newComment = new PreparationCommentForDB(
+      false,
       post._id.toString(),
       content,
       userId,

@@ -1,4 +1,5 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
+import { UnauthorizedExceptionMY } from "../helpers/My-HttpExceptionFilter";
 
 
 export const CurrentUserId = createParamDecorator(
@@ -10,6 +11,15 @@ export const CurrentUserId = createParamDecorator(
   }
 );
 
+
+export const CurrentUserIdBlogger = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+      debugger
+      const request = context.switchToHttp().getRequest();
+      if (!request.userId) throw new UnauthorizedExceptionMY(`UserId didn't come`)
+      return  request.userId;
+  }
+);
 
 
 

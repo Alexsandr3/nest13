@@ -60,4 +60,10 @@ export class CommentsRepositories {
       newComment.createdAt,
       likesInfo)
   }
+
+  async updateStatusBan(userId: string, isBanned: boolean): Promise<boolean> {
+    const result = await this.commentsModel.updateMany({ userId: userId },
+      { $set: { isBanned: isBanned }});
+    return result.matchedCount === 1;
+  }
 }

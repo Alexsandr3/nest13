@@ -31,13 +31,6 @@ export class CommentsController {
   }
 
 
-  @UseGuards(JwtForGetGuard)
-  @Get(`/:id`)
-  async findOne(@CurrentUserId() userId: string,
-                @Param(`id`, IdValidationPipe) id: string): Promise<CommentsViewType> {
-    return this.commentsQueryRepositories.findComment(id, userId);
-  }
-
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Put(`/:id`)
@@ -55,5 +48,12 @@ export class CommentsController {
                           @Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
     await this.commandBus.execute(new DeleteCommentCommand(id, userId))
     return true;
+  }
+
+  @UseGuards(JwtForGetGuard)
+  @Get(`/:id`)
+  async findOne(@CurrentUserId() userId: string,
+                @Param(`id`, IdValidationPipe) id: string): Promise<CommentsViewType> {
+    return this.commentsQueryRepositories.findComment(id, userId);
   }
 }

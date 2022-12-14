@@ -12,8 +12,7 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
   }
 
   async execute(command: UpdateLikeStatusCommand): Promise<boolean> {
-    const { id } = command;
-    const { userId } = command;
+    const { id, userId } = command;
     const { likeStatus } = command.updateLikeStatusInputModel;
     //finding post by id from uri params
     const post = await this.postsRepositories.findPost(id);

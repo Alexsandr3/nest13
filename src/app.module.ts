@@ -12,6 +12,8 @@ import { ConfigModule } from "@nestjs/config";
 import { TestingModule } from "./modules/testing/testing.module";
 import { DeviceModule } from "./modules/security/device.module";
 import { ThrottlerModule } from "@nestjs/throttler";
+import { BloggerModule } from "./modules/blogger/blogger.module";
+import { SaModule } from "./modules/sa/sa.module";
 
 
 @Module({
@@ -30,7 +32,9 @@ import { ThrottlerModule } from "@nestjs/throttler";
     AuthModule,
     DeviceModule,
     ConfigModule.forRoot({ isGlobal: true}), // no need to import into other modules,
-    TestingModule
+    TestingModule,
+    BloggerModule,
+    SaModule
   ],
   controllers: [AppController],
   providers: [AppService]

@@ -46,6 +46,7 @@ export class AuthController {
     return await this.commandBus.execute(new NewPasswordCommand(newPasswordInputModel));
   }
 
+
   @HttpCode(200)
   @Post(`/login`)
   async login(@Request() req, @Ip() ip, @Body() loginInputModel: LoginDto,

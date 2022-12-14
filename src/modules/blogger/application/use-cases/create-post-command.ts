@@ -4,7 +4,7 @@ import { CreatePostByBlogIdDto } from "../../../posts/api/input-Dtos/create-Post
 export class CreatePostCommand {
   constructor(public readonly postInputModel: CreatePostByBlogIdDto,
               public readonly blogId: string,
-              public readonly blogName: string) {
+              public readonly userId: string) {
   }
 
 }

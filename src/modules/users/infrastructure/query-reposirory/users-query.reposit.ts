@@ -3,23 +3,32 @@ import { InjectModel } from "@nestjs/mongoose";
 import { LeanDocument, Model } from "mongoose";
 import { User, UserDocument } from "../../domain/users-schema-Model";
 import { ObjectId } from "mongodb";
-import { UsersViewType } from "./user-View-Model";
+import { BanInfoType, UsersViewType } from "./user-View-Model";
 import { PaginationUsersDto } from "../../api/input-Dto/pagination-Users-Dto-Model";
 import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { NotFoundExceptionMY, UnauthorizedExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
 import { MeViewModel } from "../../../auth/infrastructure/me-View-Model";
+import { UserBanInfo, UserBanInfoDocument } from "../../domain/users-ban-info-schema-Model";
 
 @Injectable()
 export class UsersQueryRepositories {
-  constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {
+  constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+              @InjectModel(UserBanInfo.name) private readonly userBanInfoModel: Model<UserBanInfoDocument>) {
   }
 
-  private mappedForUser(user: LeanDocument<UserDocument>): UsersViewType {
+  private async mappedForUser(user: LeanDocument<UserDocument>): Promise<UsersViewType> {
+    const banInfoDocument = await this.userBanInfoModel.findOne({ userId: user._id.toString() });
+    const banInfo = new BanInfoType(
+      banInfoDocument.isBanned,
+      banInfoDocument.banDate,
+      banInfoDocument.banReason
+    )
     return new UsersViewType(
       user._id.toString(),
       user.accountData.login,
       user.accountData.email,
-      user.accountData.createdAt
+      user.accountData.createdAt,
+      banInfo
     );
   }
 
@@ -45,6 +54,7 @@ export class UsersQueryRepositories {
       .lean();
     //mapped user for View
     const mappedUsers = foundsUsers.map(user => this.mappedForUser(user));
+    const items = await Promise.all(mappedUsers)
     //counting users
     const totalCount = await this.userModel.countDocuments({
       $or: [
@@ -59,7 +69,8 @@ export class UsersQueryRepositories {
       data.pageNumber,
       data.pageSize,
       totalCount,
-      mappedUsers);
+      items
+    );
   }
 
   async getUserById(id: string): Promise<MeViewModel> {

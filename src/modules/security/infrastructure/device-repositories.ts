@@ -53,17 +53,24 @@ export class DeviceRepositories {
     return result.deletedCount === 1;
   }
 
-  async deleteDevices(userId: string, deviceId: string) {
-    return this.deviceModel.deleteMany({ userId: userId, deviceId: { $ne: deviceId } });
+  async deleteDevices(userId: string, deviceId: string): Promise<boolean> {
+    const result = await this.deviceModel.deleteMany({ userId: userId, deviceId: { $ne: deviceId } });
+    return result.deletedCount === 1
+  }
+
+  async deleteDevicesForBaned(userId: string): Promise<boolean> {
+    const result = await this.deviceModel.deleteMany({ userId: userId });
+    return result.deletedCount === 1
   }
 
   async findByDeviceIdAndUserId(userId: string, deviceId: string): Promise<DeviceDBType> {
     return this.deviceModel.findOne({ userId, deviceId });
   }
 
-  async deleteDeviceByDeviceId(deviceId: string) {
+  async deleteDeviceByDeviceId(deviceId: string):Promise<boolean> {
     const result = await this.deviceModel.deleteMany({ deviceId: deviceId });
-    return result;
+    console.log("result", result);
+    return result.deletedCount === 1
   }
 
   async findDeviceForValid(userId: string, deviceId: string, iat: number): Promise<DeviceDBType> {

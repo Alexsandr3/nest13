@@ -1,3 +1,4 @@
+/*
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreatePostCommand } from "../create-post-command";
 import { PostsRepositories } from "../../../infrastructure/posts-repositories";
@@ -30,3 +31,4 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
 }
 
 
+*/

@@ -14,4 +14,4 @@ export class LikesStatus {
   @Prop({ type: String, default: 'None', enum: LikeStatusType })
   likeStatus: string;
 }
-export const likesStatusSchema = SchemaFactory.createForClass(LikesStatus);
+export const LikesStatusSchema = SchemaFactory.createForClass(LikesStatus);

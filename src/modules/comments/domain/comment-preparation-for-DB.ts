@@ -2,6 +2,7 @@
 
 export class PreparationCommentForDB {
   constructor(
+              public isBanned: boolean,
               public postId: string,
               public content: string,
               public userId: string,

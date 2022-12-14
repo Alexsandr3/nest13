@@ -8,12 +8,14 @@ export class JwtAuthGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {
   }
 
-  canActivate(context: ExecutionContext): boolean {
-    const req = context.switchToHttp().getRequest();
-    const token = this.getToken(req);
-    const userId = this.jwtService.getUserIdByToken(token);
-    if (!userId) throw new UnauthorizedExceptionMY(`not today`);
-    req.userId = userId;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.getToken(request);
+    const userId = await this.jwtService.getUserIdByToken(token);
+    if (!userId) {
+      throw new UnauthorizedExceptionMY(`Unauthorized user, did not come current userId`);
+    }
+    request.userId = userId;
     return true;
   }
 

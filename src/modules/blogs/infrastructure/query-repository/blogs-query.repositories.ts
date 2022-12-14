@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { BlogDocument, Blog } from "../../domain/blog-schema-Model";
-import { BlogViewModel } from "./blog-View-Model";
+import { FilterQuery, Model } from "mongoose";
+import { BlogDocument, Blog } from "../../../blogger/domain/blog-schema-Model";
+import { BlogOwnerInfoType, BlogViewForSaModel, BlogViewModel } from "./blog-View-Model";
 import { ObjectId } from "mongodb";
 import { PaginationViewModel } from "./pagination-View-Model";
-import { BlogsDBType } from "../../domain/blog-DB-Type";
+import { BlogsDBType } from "../../../blogger/domain/blog-DB-Type";
 import { PaginationDto } from "../../api/input-Dtos/pagination-Dto-Model";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
 
@@ -16,13 +16,28 @@ export class BlogsQueryRepositories {
   ) {
   }
 
-  private mapperForBlogView(object: BlogsDBType): BlogViewModel {
+  private mapperBlogForView(object: BlogsDBType): BlogViewModel {
     return new BlogViewModel(
       object._id.toString(),
       object.name,
       object.description,
       object.websiteUrl,
       object.createdAt
+    );
+  }
+
+  private mapperForBlogSaView(object: BlogsDBType): BlogViewForSaModel {
+    const blogOwnerInfo = new BlogOwnerInfoType(
+      object.userId,
+      object.userLogin
+    );
+    return new BlogViewForSaModel(
+      object._id.toString(),
+      object.name,
+      object.description,
+      object.websiteUrl,
+      object.createdAt,
+      blogOwnerInfo
     );
   }
 
@@ -35,10 +50,62 @@ export class BlogsQueryRepositories {
       .sort({ [data.sortBy]: data.sortDirection })
       .lean();
     //mapped for View
-    const mappedBlogs = foundBlogs.map((blog) => this.mapperForBlogView(blog));
+    const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForView(blog));
     //counting blogs
     const totalCount = await this.blogsModel
       .countDocuments(data.searchNameTerm ? { name: { $regex: data.searchNameTerm, $options: "i" } } : {});
+    const pagesCountRes = Math.ceil(totalCount / data.pageSize);
+    // Found Blogs with pagination!
+    return new PaginationViewModel(
+      pagesCountRes,
+      data.pageNumber,
+      data.pageSize,
+      totalCount,
+      mappedBlogs
+    );
+  }
+
+  async findBlogsForSa(data: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+    //search all blogs
+    const foundBlogs = await this.blogsModel
+      .find(data.searchNameTerm ? { name: { $regex: data.searchNameTerm, $options: "i" } } : {})
+      .skip((data.pageNumber - 1) * data.pageSize)
+      .limit(data.pageSize)
+      .sort({ [data.sortBy]: data.sortDirection })
+      .lean();
+    //mapped for View
+    const mappedBlogs = foundBlogs.map((blog) => this.mapperForBlogSaView(blog));
+    //counting blogs
+    const totalCount = await this.blogsModel
+      .countDocuments(data.searchNameTerm ? { name: { $regex: data.searchNameTerm, $options: "i" } } : {});
+    const pagesCountRes = Math.ceil(totalCount / data.pageSize);
+    // Found Blogs with pagination!
+    return new PaginationViewModel(
+      pagesCountRes,
+      data.pageNumber,
+      data.pageSize,
+      totalCount,
+      mappedBlogs
+    );
+  }
+
+  async findBlogsForCurrentUser(data: PaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>> {
+    const filter: FilterQuery<Blog> = { userId: userId };
+    if (data.searchNameTerm) {
+      filter.name = { $regex: data.searchNameTerm, $options: "i" };
+    }
+    //search all blogs for current user
+    const foundBlogs = await this.blogsModel
+      .find(filter)
+      .skip((data.pageNumber - 1) * data.pageSize)
+      .limit(data.pageSize)
+      .sort({ [data.sortBy]: data.sortDirection })
+      .lean();
+    //mapped for View
+    const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForView(blog));
+    //counting blogs user
+    const totalCount = await this.blogsModel
+      .countDocuments(filter);
     const pagesCountRes = Math.ceil(totalCount / data.pageSize);
     // Found Blogs with pagination!
     return new PaginationViewModel(
@@ -54,7 +121,8 @@ export class BlogsQueryRepositories {
     const blog = await this.blogsModel.findOne({ _id: new ObjectId(id) });
     if (!blog) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     //returning Blog for View
-    return this.mapperForBlogView(blog);
+    return this.mapperBlogForView(blog);
   }
+
 }
 

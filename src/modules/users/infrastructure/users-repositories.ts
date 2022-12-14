@@ -5,11 +5,14 @@ import { User, UserDocument } from "../domain/users-schema-Model";
 import { PreparationUserForDB } from "../domain/user-preparation-for-DB";
 import { ObjectId } from "mongodb";
 import { UsersDBType } from "../domain/user-DB-Type";
+import { UserBanInfo, UserBanInfoDocument } from "../domain/users-ban-info-schema-Model";
+import { PreparationUserBanInfoForDB } from "../domain/user-ban-info-preparation-for-DB";
 
 @Injectable()
 export class UsersRepositories {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>) {
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(UserBanInfo.name) private readonly userBanInfoModel: Model<UserBanInfoDocument>) {
   }
 
   async createUser(newUser: PreparationUserForDB): Promise<string> {
@@ -70,5 +73,29 @@ export class UsersRepositories {
       }
     });
     return result.modifiedCount === 1;
+  }
+
+  async createBanInfoUser(userBanInfo: PreparationUserBanInfoForDB): Promise<string> {
+    const createdBanInfo = new this.userBanInfoModel(userBanInfo);
+    const banInfo = await createdBanInfo.save();
+    return banInfo._id.toString();
+  }
+
+  async deleteUserBanInfo(id: string): Promise<boolean> {
+    const result = await this.userBanInfoModel.deleteOne({ userId: id });
+    return result.deletedCount === 1;
+  }
+
+  async updateBanInfo(userId: string, isBanned: boolean, banDate: string, banReason: string): Promise<boolean> {
+    const result = await this.userBanInfoModel.updateOne({ userId: userId }, {
+      $set: { isBanned: isBanned, banDate: banDate, banReason: banReason }
+    });
+    return result.modifiedCount === 1;
+  }
+
+  async findBanStatus(userId: string): Promise<UserBanInfoDocument> {
+    const banStatus = await this.userBanInfoModel.findOne({ userId: userId });
+    if(!banStatus) return null
+    return banStatus
   }
 }

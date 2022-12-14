@@ -11,15 +11,17 @@ import { PreparationUserForDB } from "../../../domain/user-preparation-for-DB";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../create-user-command";
 import { UsersService } from "../../../domain/users.service";
+import { PreparationUserBanInfoForDB } from "../../../domain/user-ban-info-preparation-for-DB";
 
 
 @CommandHandler(CreateUserCommand)
-export class CreateUserHandler implements ICommandHandler<CreateUserCommand>{
+export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(private readonly usersRepositories: UsersRepositories,
               private readonly usersQueryRepositories: UsersQueryRepositories,
               private readonly usersService: UsersService,
               private readonly mailService: MailService
-  ) {}
+  ) {
+  }
 
   async execute(command: CreateUserCommand): Promise<UsersViewType> {
     //email verification and login for uniqueness
@@ -48,6 +50,13 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand>{
       }
     );
     const userId = await this.usersRepositories.createUser(user);
+    const userBanInfo = new PreparationUserBanInfoForDB(
+      userId,
+      false,
+      null,
+      null
+    );
+    await this.usersRepositories.createBanInfoUser(userBanInfo)
     //finding user for View
     const foundUser = await this.usersQueryRepositories.findUser(userId);
     try {

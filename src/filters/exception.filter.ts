@@ -7,19 +7,6 @@ export class ErrorExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    //const status = exception.getStatus();
-    //const resp = exception.getResponse();
-    /*    if (status === 500){
-          response.status(400).send({
-            "errorsMessages": [
-              {
-                "message": resp.,
-                "field": "string"
-              }
-            ]
-          })
-
-        }*/
     if (process.env.envoirment !== `production`) {
       response.status(500).send({ error: exception.toString(), stack: exception.stack });
     } else {

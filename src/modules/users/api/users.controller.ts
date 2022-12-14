@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
 import { CreateUserDto } from "./input-Dto/create-User-Dto-Model";
 import { UsersService } from "../domain/users.service";
 import { UsersViewType } from "../infrastructure/query-reposirory/user-View-Model";
@@ -10,13 +10,23 @@ import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../application/use-cases/create-user-command";
 import { DeleteUserCommand } from "../application/use-cases/delete-user-command";
+import { UpdateBanInfoDto } from "./input-Dto/update-ban-info-Dto-Model";
+import { UpdateBanInfoCommand } from "../application/use-cases/updateBanInfoCommand";
 
 
-@Controller(`users`)
+@Controller(`sa/users`)
 export class UsersController {
   constructor(private readonly usersService: UsersService,
               private readonly usersQueryRepositories: UsersQueryRepositories,
               private commandBus: CommandBus) {
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @HttpCode(204)
+  @Put(`/:userId/ban`)
+  async updateBanInfo(@Body() updateBanInfoModel: UpdateBanInfoDto,
+                      @Param(`userId`, IdValidationPipe) userId: string): Promise<boolean> {
+    return this.commandBus.execute(new UpdateBanInfoCommand(updateBanInfoModel, userId));
   }
 
   @UseGuards(BasicAuthGuard)
@@ -36,7 +46,6 @@ export class UsersController {
   @Delete(`:id`)
   async deleteUser(@Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
     return await this.commandBus.execute(new DeleteUserCommand(id))
-
   }
 
 }

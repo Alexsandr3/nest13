@@ -6,6 +6,8 @@ export type CommentDocument = HydratedDocument<Comment>;
 
 @Schema()
 export class Comment {
+  @Prop({ type: Boolean, default: false })
+  isBanned: boolean;
   @Prop({ type: String, required: true})
   postId: string;
   @Prop({type: String, required: true, minlength: 20, maxlength: 300})

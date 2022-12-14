@@ -35,6 +35,11 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     const ipAddress = command.ip;
     const deviceName = command.deviceName;
     const user = await this.validateUser(loginInputModel);
+    const banStatus = await this.usersRepositories.findBanStatus(user._id.toString());
+    if (banStatus.isBanned === true) {
+      await this.deviceRepositories.deleteDevicesForBaned(banStatus.userId);
+      throw new UnauthorizedExceptionMY(`Did you get a ban!`)
+    }
     //preparation data for token
     const deviceId = randomUUID();
     const userId = user._id.toString();

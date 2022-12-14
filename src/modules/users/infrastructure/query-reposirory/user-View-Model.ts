@@ -3,6 +3,15 @@ export class UsersViewType {
     public id: string,
     public login: string,
     public email: string,
-    public createdAt: string) {
+    public createdAt: string,
+    public banInfo: BanInfoType) {
+  }
+}
+
+export class BanInfoType {
+  constructor(
+    public isBanned: boolean,
+    public banDate: string,
+    public banReason: string) {
   }
 }

@@ -13,6 +13,7 @@ export class CreateUserHandler implements ICommandHandler<DeleteUserCommand> {
   async execute(command: DeleteUserCommand): Promise<boolean> {
     const { id } = command;
     const result = await this.usersRepositories.deleteUser(id);
+    await this.usersRepositories.deleteUserBanInfo(id)
     if (!result) {
       throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     }

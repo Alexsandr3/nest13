@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { BlogDocument, Blog } from '../domain/blog-schema-Model';
-import { ObjectId } from 'mongodb';
-import { PreparationBlogForDB } from "../domain/blog-preparation-for-DB";
-import { UpdateBlogDto } from "../api/input-Dtos/update-Blog-Dto-Model";
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { BlogDocument, Blog } from "../../blogger/domain/blog-schema-Model";
+import { ObjectId } from "mongodb";
+import { PreparationBlogForDB } from "../../blogger/domain/blog-preparation-for-DB";
+import { UpdateBlogDto } from "../../blogger/api/input-dtos/update-Blog-Dto-Model";
+import { BlogsDBType } from "../../blogger/domain/blog-DB-Type";
 
 @Injectable()
 export class BlogsRepositories {
@@ -17,24 +18,36 @@ export class BlogsRepositories {
     return blog._id.toString();
   }
 
-  async deleteBlog(id: string): Promise<boolean> {
+  async deleteBlog(id: string, userId: string): Promise<boolean> {
     const result = await this.blogsModel
-      .deleteOne({ _id: new ObjectId(id) })
+      .deleteOne({ _id: new ObjectId(id), userId: userId })
       .exec();
     return result.deletedCount === 1;
   }
 
-  async updateBlog(id: string, data: UpdateBlogDto): Promise<boolean> {
+  async updateBlog(id: string, userId: string, data: UpdateBlogDto): Promise<boolean> {
     const result = await this.blogsModel.updateOne(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(id), userId: userId },
       {
         $set: {
           name: data.name,
           description: data.description,
-          websiteUrl: data.websiteUrl,
-        },
-      },
+          websiteUrl: data.websiteUrl
+        }
+      }
     );
+    return result.matchedCount === 1;
+  }
+
+  async findBlog(id: string, userId?: string): Promise<BlogsDBType> {
+    const blog = await this.blogsModel.findOne({ _id: new ObjectId(id), userId: userId });
+    if (!blog) return null;
+    return blog;
+  }
+
+  async updateOwnerBlog(blogId: string, userId: string): Promise<boolean> {
+    const result = await this.blogsModel.updateOne(
+      { _id: new ObjectId(blogId) }, { $set: { userId: userId } });
     return result.matchedCount === 1;
   }
 }

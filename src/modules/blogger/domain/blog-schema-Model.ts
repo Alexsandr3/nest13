@@ -5,6 +5,10 @@ export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema()
 export class Blog {
+  @Prop({ type: String})
+  userId: string;
+  @Prop({ type: String, required: true, minlength: 3, maxlength: 10 })
+  userLogin: string;
   @Prop({ type: String, required: true, maxlength: 15, trim: true })
   name: string;
   @Prop({ type: String, required: true, maxlength: 500, trim: true })

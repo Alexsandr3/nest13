@@ -17,7 +17,7 @@ describe('AppController (e2e)', () => {
   });
 
   describe('blogs_01', () => {
-    it.skip(`01 - should create new blog; status 201; content: created blog`, async () => {
+    it(`01 - should create new blog; status 201; content: created blog`, async () => {
       const createResponse = await request(app)
         .post(`/blogs`)
         //.set('Authorization', `Basic YWRtaW46cXdlcnR5`)
