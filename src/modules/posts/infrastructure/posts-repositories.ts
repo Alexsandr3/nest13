@@ -83,4 +83,10 @@ export class PostsRepositories {
       { $set: { isBanned: isBanned }});
     return result.matchedCount === 1;
   }
+
+  async updateStatusBanLikePost(userId: string, isBanned: boolean): Promise<boolean> {
+    const result = await this.likesPostsStatusModel.updateMany({ userId: userId },
+      { $set: { isBanned: isBanned }});
+    return result.matchedCount === 1;
+  }
 }

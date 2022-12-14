@@ -29,12 +29,14 @@ export class UpdateBanInfoHandler implements ICommandHandler<UpdateBanInfoComman
         message: `New data not received for update`, field: `database`
       })
       await this.postsRepositories.updateStatusBan(userId, isBanned)
+      await this.postsRepositories.updateStatusBanLikePost(userId, isBanned)
       await this.commentsRepositories.updateStatusBan(userId, isBanned)
       await this.commentsRepositories.updateStatusBanLike(userId, isBanned)
     } else {
       const banDate = new Date().toISOString();
       await this.usersRepositories.updateBanInfo(userId, isBanned, banDate, banReason);
       await this.postsRepositories.updateStatusBan(userId, isBanned)
+      await this.postsRepositories.updateStatusBanLikePost(userId, isBanned)
       await this.commentsRepositories.updateStatusBan(userId, isBanned)
       await this.commentsRepositories.updateStatusBanLike(userId, isBanned)
 
