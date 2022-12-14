@@ -123,6 +123,5 @@ export class BlogsQueryRepositories {
     //returning Blog for View
     return this.mapperBlogForView(blog);
   }
-
 }
 

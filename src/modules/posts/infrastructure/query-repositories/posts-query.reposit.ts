@@ -15,7 +15,6 @@ import { CommentsDBType } from "../../../comments/domain/comment-DB-Type";
 import { LikesStatus, LikesStatusDocument } from "../../../comments/domain/likesStatus-schema-Model";
 import { CommentsViewType, LikesInfoViewModel } from "../../../comments/infrastructure/comments-View-Model";
 
-
 @Injectable()
 export class PostsQueryRepositories {
   constructor(@InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
