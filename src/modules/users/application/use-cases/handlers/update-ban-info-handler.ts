@@ -30,11 +30,13 @@ export class UpdateBanInfoHandler implements ICommandHandler<UpdateBanInfoComman
       })
       await this.postsRepositories.updateStatusBan(userId, isBanned)
       await this.commentsRepositories.updateStatusBan(userId, isBanned)
+      await this.commentsRepositories.updateStatusBanLike(userId, isBanned)
     } else {
       const banDate = new Date().toISOString();
       await this.usersRepositories.updateBanInfo(userId, isBanned, banDate, banReason);
       await this.postsRepositories.updateStatusBan(userId, isBanned)
       await this.commentsRepositories.updateStatusBan(userId, isBanned)
+      await this.commentsRepositories.updateStatusBanLike(userId, isBanned)
 
       //comment , post by userId true
     }

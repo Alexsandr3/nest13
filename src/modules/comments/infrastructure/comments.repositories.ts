@@ -66,4 +66,10 @@ export class CommentsRepositories {
       { $set: { isBanned: isBanned }});
     return result.matchedCount === 1;
   }
+
+  async updateStatusBanLike(userId: string, isBanned: boolean): Promise<boolean> {
+    const result = await this.likesStatusModel.updateMany({ userId: userId },
+      { $set: { isBanned: isBanned }});
+    return result.matchedCount === 1;
+  }
 }
