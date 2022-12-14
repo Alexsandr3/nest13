@@ -39,10 +39,10 @@ export class PostsQueryRepositories {
         myStatus = result.likeStatus;
       }
     }
-    const totalCountLike = await this.likesStatusModel.countDocuments({ parentId: comment._id, likeStatus: "Like" });
+    const totalCountLike = await this.likesStatusModel.countDocuments({ parentId: comment._id, likeStatus: "Like", isBanned: false });
     const totalCountDislike = await this.likesStatusModel.countDocuments({
       parentId: comment._id,
-      likeStatus: "Dislike"
+      likeStatus: "Dislike", isBanned: false
     });
     const likesInfo = new LikesInfoViewModel(
       totalCountLike,
@@ -66,10 +66,10 @@ export class PostsQueryRepositories {
         myStatus = result.likeStatus;
       }
     }
-    const totalCountLike = await this.likesPostsStatusModel.countDocuments({ parentId: post._id, likeStatus: "Like" });
+    const totalCountLike = await this.likesPostsStatusModel.countDocuments({ parentId: post._id, likeStatus: "Like", isBanned: false });
     const totalCountDislike = await this.likesPostsStatusModel.countDocuments({
       parentId: post._id,
-      likeStatus: "Dislike"
+      likeStatus: "Dislike", isBanned: false
     });
     //finding the newest likes
     const newestLikes = await this.likesPostsStatusModel
