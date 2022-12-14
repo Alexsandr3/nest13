@@ -24,7 +24,7 @@ export class CommentsRepositories {
     try {
       await this.likesStatusModel.updateOne(
         {userId: userId, parentId: id},
-        {$set: {likeStatus}},
+        {$set: {likeStatus, isBanned: false}},
         {upsert: true})
       return true
     } catch (error) {

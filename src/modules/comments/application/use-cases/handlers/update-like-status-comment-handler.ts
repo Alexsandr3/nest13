@@ -10,8 +10,7 @@ export class UpdateLikeStatusCommentHandler implements ICommandHandler<UpdateLik
   }
 
   async execute(command: UpdateLikeStatusCommentCommand): Promise<boolean> {
-    const { id } = command;
-    const { userId } = command;
+    const { id, userId } = command;
     const { likeStatus } = command.updateLikeStatusInputModel;
     //finding comment by id from uri params
     const comment = await this.commentsRepositories.findCommentsById(id);

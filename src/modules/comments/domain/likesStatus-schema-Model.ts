@@ -7,6 +7,8 @@ export type LikesStatusDocument = HydratedDocument<LikesStatus>;
 
 @Schema()
 export class LikesStatus {
+  @Prop({ type: Boolean, default: false })
+  isBanned: boolean;
   @Prop({ type: String, required: true })
   userId: string;
   @Prop({ type: String, required: true })

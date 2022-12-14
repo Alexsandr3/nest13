@@ -11,9 +11,8 @@ export class UpdateCommentHandler implements ICommandHandler<UpdateCommentComman
   }
 
   async execute(command: UpdateCommentCommand) {
-    const { id } = command;
-    const { userId } = command;
-    const { content } = command.updateCommentInputModel
+    const { id, userId } = command;
+    const { content } = command.updateCommentInputModel;
     //finding and checking comment
     await this.commentsService.findComment(id, userId);
     //updating a comment in DB

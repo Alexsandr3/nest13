@@ -19,7 +19,7 @@ export class CommentsQueryRepositories {
     //finding like status by userId and commentId
     let myStatus: string = LikeStatusType.None;
     if (userId) {
-      const result = await this.likesStatusModel.findOne({ userId: userId, parentId: commentId });
+      const result = await this.likesStatusModel.findOne({ userId: userId, parentId: commentId, isBanned: false });
       if (result) {
         myStatus = result.likeStatus;
       }
