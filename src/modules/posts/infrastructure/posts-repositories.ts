@@ -50,7 +50,7 @@ export class PostsRepositories {
   async updateStatusPostById(id: string, userId: string, likeStatus: string, login: string): Promise<boolean> {
     const like = await this.likesPostsStatusModel.updateOne(
       { userId: userId, parentId: id },
-      { $set: { likeStatus: likeStatus, addedAt: new Date().toISOString(), login: login } },
+      { $set: { likeStatus: likeStatus, addedAt: new Date().toISOString(), login: login, isBanned: false } },
       { upsert: true });
     if (!like) return null;
     return true;

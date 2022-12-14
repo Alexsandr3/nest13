@@ -161,7 +161,7 @@ export class PostsQueryRepositories {
   async createPostForView(post: PostDBType): Promise<PostViewModel> {
     const postId = post._id.toString();
     const newestLikes = await this.likesPostsStatusModel
-      .find({ parentId: postId, likeStatus: "Like" })
+      .find({ parentId: postId, likeStatus: "Like", isBanned: false })
       .sort({ addedAt: "desc" })
       .limit(3)
       .lean();
