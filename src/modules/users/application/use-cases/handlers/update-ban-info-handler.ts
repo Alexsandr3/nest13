@@ -24,23 +24,31 @@ export class UpdateBanInfoHandler implements ICommandHandler<UpdateBanInfoComman
     if (isBanned === false) {
       const banDate = null;
       const banReason = null;
+      //update status ban user
       const banInfo = await this.usersRepositories.updateBanInfo(userId, isBanned, banDate, banReason);
       if (!banInfo) throw new BadRequestExceptionMY({
         message: `New data not received for update`, field: `database`
       })
+      //update status ban posts
       await this.postsRepositories.updateStatusBan(userId, isBanned)
+      //update status ban likes post
       await this.postsRepositories.updateStatusBanLikePost(userId, isBanned)
+      //update status ban comments
       await this.commentsRepositories.updateStatusBan(userId, isBanned)
+      //update status ban likes comments
       await this.commentsRepositories.updateStatusBanLike(userId, isBanned)
     } else {
       const banDate = new Date().toISOString();
+      //update status ban posts
       await this.usersRepositories.updateBanInfo(userId, isBanned, banDate, banReason);
+      //update status ban likes post
       await this.postsRepositories.updateStatusBan(userId, isBanned)
+      //update status ban likes post
       await this.postsRepositories.updateStatusBanLikePost(userId, isBanned)
+      //update status ban comments
       await this.commentsRepositories.updateStatusBan(userId, isBanned)
+      //update status ban likes comments
       await this.commentsRepositories.updateStatusBanLike(userId, isBanned)
-
-      //comment , post by userId true
     }
     return true;
   }

@@ -24,8 +24,8 @@ export class CommentsQueryRepositories {
         myStatus = result.likeStatus;
       }
     }
-    const totalCountLike = await this.likesStatusModel.countDocuments({ parentId: commentId, likeStatus: "Like" });
-    const totalCountDislike = await this.likesStatusModel.countDocuments({ parentId: commentId, likeStatus: "Dislike" });
+    const totalCountLike = await this.likesStatusModel.countDocuments({ parentId: commentId, likeStatus: "Like", isBanned: false });
+    const totalCountDislike = await this.likesStatusModel.countDocuments({ parentId: commentId, likeStatus: "Dislike", isBanned: false });
     const likesInfo = new LikesInfoViewModel(
       totalCountLike,
       totalCountDislike,
