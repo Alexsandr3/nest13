@@ -61,7 +61,7 @@ export class PostsQueryRepositories {
     //find likes status
     let myStatus: string = LikeStatusType.None;
     if (userId) {
-      const result = await this.likesPostsStatusModel.findOne({ userId: userId, parentId: post._id });
+      const result = await this.likesPostsStatusModel.findOne({ userId: userId, parentId: post._id, isBanned:false });
       if (result) {
         myStatus = result.likeStatus;
       }
