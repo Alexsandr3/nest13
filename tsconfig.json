@@ -20,6 +20,13 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true
   },
-  "exclude": ["dist", "node_modules"],
-  "include": ["src"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/*.spec.ts"
+  ]
+  //"exclude": ["dist", "node_modules"], //for 15 home works
+  //"include": ["src"] //for 15 home works
 }
