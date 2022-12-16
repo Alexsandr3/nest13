@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Put, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Put,
+  UseGuards
+} from "@nestjs/common";
 import { CommentsQueryRepositories } from "../infrastructure/query-repository/comments-query.repositories";
 import { CommentsViewType } from "../infrastructure/comments-View-Model";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
@@ -13,7 +22,6 @@ import { DeleteCommentCommand } from "../application/use-cases/delete-comment-co
 import { UpdateCommentCommand } from "../application/use-cases/update-comment-command";
 import { UpdateLikeStatusCommentCommand } from "../application/use-cases/update-like-status-comment-command";
 
-
 @Controller(`comments`)
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService,
@@ -27,9 +35,8 @@ export class CommentsController {
   async updateLikeStatus(@CurrentUserId() userId: string,
                          @Param(`id`, IdValidationPipe) id: string,
                          @Body() updateLikeStatusInputModel: UpdateLikeStatusDto): Promise<boolean> {
-    return await this.commandBus.execute(new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId))
+    return await this.commandBus.execute(new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId));
   }
-
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
@@ -37,7 +44,7 @@ export class CommentsController {
   async updateCommentsById(@CurrentUserId() userId: string,
                            @Param(`id`, IdValidationPipe) id: string,
                            @Body() updateCommentInputModel: UpdateCommentDto): Promise<boolean> {
-    await this.commandBus.execute(new UpdateCommentCommand(id, updateCommentInputModel, userId))
+    await this.commandBus.execute(new UpdateCommentCommand(id, updateCommentInputModel, userId));
     return true;
   }
 
@@ -46,7 +53,7 @@ export class CommentsController {
   @Delete(`/:id`)
   async deleteCommentById(@CurrentUserId() userId: string,
                           @Param(`id`, IdValidationPipe) id: string): Promise<boolean> {
-    await this.commandBus.execute(new DeleteCommentCommand(id, userId))
+    await this.commandBus.execute(new DeleteCommentCommand(id, userId));
     return true;
   }
 

@@ -1,5 +1,10 @@
 import {
-  Controller, Delete, Get, HttpCode, Param, UseGuards
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  UseGuards
 } from "@nestjs/common";
 import { DeviceQueryRepositories } from "../infrastructure/query-repository/device-query.repositories";
 import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
@@ -11,14 +16,11 @@ import { CommandBus } from "@nestjs/cqrs";
 import { DeleteDevicesCommand } from "../application/use-cases/delete-devices-command";
 import { DeleteDeviceByIdCommand } from "../application/use-cases/delete-device-by-id-command";
 
-
-
 @Controller(`security`)
 export class DevicesController {
   constructor(private commandBus: CommandBus,
               private readonly deviceQueryRepositories: DeviceQueryRepositories) {
   }
-
 
   @UseGuards(RefreshGuard)
   @Get(`/devices`)
@@ -30,7 +32,7 @@ export class DevicesController {
   @HttpCode(204)
   @Delete(`/devices`)
   async deleteDevices(@PayloadRefresh() payloadRefresh: PayloadType): Promise<boolean> {
-    return await this.commandBus.execute(new DeleteDevicesCommand(payloadRefresh))
+    return await this.commandBus.execute(new DeleteDevicesCommand(payloadRefresh));
   }
 
   @UseGuards(RefreshGuard)
@@ -38,7 +40,6 @@ export class DevicesController {
   @Delete(`/devices/:id`)
   async deleteByDeviceId(@PayloadRefresh() payloadRefresh: PayloadType,
                          @Param(`id`) id: string): Promise<boolean> {
-    return await this.commandBus.execute(new DeleteDeviceByIdCommand(id, payloadRefresh))
+    return await this.commandBus.execute(new DeleteDeviceByIdCommand(id, payloadRefresh));
   }
-
 }

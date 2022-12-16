@@ -7,7 +7,7 @@ export type PostDocument = HydratedDocument<Post>;
 export class Post {
   @Prop({ type: Boolean, default: false })
   isBanned: boolean;
-  @Prop({ type: String, required: true})
+  @Prop({ type: String, required: true })
   userId: string;
   @Prop({ type: String, required: true, maxlength: 30, trim: true })
   title: string;

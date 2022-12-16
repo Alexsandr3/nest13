@@ -1,26 +1,23 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from 'crypto';
 
 export class CompanyDto {
   companyId;
-  deviceId = randomUUID()
+  deviceId = randomUUID();
   constructor(user: any) {
     this.companyId = user._id;
   }
-
 }
-
 
 export class PreparationDeviceForDB {
   constructor(
-              public userId: string,
-              public ip: string,
-              public title: string,
-              public lastActiveDate: string,
-              public expiredDate: string,
-              public deviceId: string) {
-  }
+    public userId: string,
+    public ip: string,
+    public title: string,
+    public lastActiveDate: string,
+    public expiredDate: string,
+    public deviceId: string,
+  ) {}
 }
-
 
 /*
 

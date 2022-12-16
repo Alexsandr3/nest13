@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { LikeStatusType } from "../../posts/domain/likesPost-schema-Model";
-
+import { LikeStatusType } from '../../posts/domain/likesPost-schema-Model';
 
 export type LikesStatusDocument = HydratedDocument<LikesStatus>;
 

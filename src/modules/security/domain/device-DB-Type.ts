@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from 'mongodb';
 
 export class DeviceDBType {
   constructor(
@@ -8,8 +8,6 @@ export class DeviceDBType {
     public title: string,
     public lastActiveDate: string,
     public expiredDate: string,
-    public deviceId: string) {
-  }
+    public deviceId: string,
+  ) {}
 }
-
-

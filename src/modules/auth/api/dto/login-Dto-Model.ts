@@ -1,5 +1,5 @@
-import { IsString } from "class-validator";
-import { Transform } from "class-transformer";
+import { IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class LoginDto {
   /**

@@ -1,10 +1,8 @@
-import { Injectable } from "@nestjs/common";
-
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
-  constructor() {
-  }
+  constructor() {}
 
   /* private async validateUser(loginInputModel: LoginDto): Promise<UsersDBType> {
      //find user by login or email

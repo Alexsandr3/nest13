@@ -1,5 +1,14 @@
 import {
-  Body, Controller, Get, Query, Post, Param, Delete, Put, HttpCode, UseGuards
+  Body,
+  Controller,
+  Get,
+  Query,
+  Post,
+  Param,
+  Delete,
+  Put,
+  HttpCode,
+  UseGuards
 } from "@nestjs/common";
 import { CreatePostByBlogIdDto } from "../../posts/api/input-Dtos/create-Post-By-BlogId-Dto-Model";
 import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
@@ -24,8 +33,7 @@ import { UpdateBlogDto } from "./input-dtos/update-Blog-Dto-Model";
 @Controller(`blogger/blogs`)
 export class BloggersController {
   constructor(private readonly blogsQueryRepositories: BlogsQueryRepositories,
-              private commandBus: CommandBus
-  ) {
+              private commandBus: CommandBus) {
   }
 
   @HttpCode(204)
@@ -56,7 +64,8 @@ export class BloggersController {
                    @Param(`blogId`, IdValidationPipe) blogId: string,
                    @Param(`postId`, IdValidationPipe) postId: string,
                    @Body() postInputModel: CreatePostByBlogIdDto): Promise<boolean> {
-    return await this.commandBus.execute(new UpdatePostCommand(userId, blogId, postId, postInputModel));
+    return await this.commandBus.execute(new UpdatePostCommand(userId, blogId, postId, postInputModel)
+    );
   }
 
   @Delete(`:blogId/posts/:postId`)
@@ -77,6 +86,6 @@ export class BloggersController {
   @Get()
   async findAll(@CurrentUserIdBlogger() userId: string,
                 @Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
-    return await this.blogsQueryRepositories.findBlogsForCurrentUser(paginationInputModel, userId);
+    return await this.blogsQueryRepositories.findBlogsForCurrentBlogger(paginationInputModel, userId);
   }
 }

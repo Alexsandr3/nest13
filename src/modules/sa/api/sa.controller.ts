@@ -1,4 +1,12 @@
-import { Controller, Get, HttpCode, Param, Put, Query, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Put,
+  Query,
+  UseGuards
+} from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { BlogsQueryRepositories } from "../../blogs/infrastructure/query-repository/blogs-query.repositories";
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
@@ -12,20 +20,18 @@ import { BindBlogCommand } from "../application/use-cases/bindBlogCommand";
 @Controller(`sa/blogs`)
 export class SaController {
   constructor(private readonly blogsQueryRepositories: BlogsQueryRepositories,
-              private commandBus: CommandBus
-  ) {
+              private commandBus: CommandBus) {
   }
 
   @HttpCode(204)
   @Put(`/:blogId/bind-with-user/:userId`)
   async bindBlog(@Param(`blogId`, IdValidationPipe) blogId: string,
                  @Param(`userId`, IdValidationPipe) userId: string) {
-    return await this.commandBus.execute(new BindBlogCommand(blogId, userId))
+    return await this.commandBus.execute(new BindBlogCommand(blogId, userId));
   }
 
   @Get()
   async findAll(@Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     return await this.blogsQueryRepositories.findBlogsForSa(paginationInputModel);
   }
-  
 }

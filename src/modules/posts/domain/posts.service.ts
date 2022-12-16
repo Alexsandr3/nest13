@@ -1,10 +1,8 @@
-import { Injectable } from "@nestjs/common";
-
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PostsService {
-  constructor() {
-  }
+  constructor() {}
 
   /*async createPost(postInputModel: CreatePostDto): Promise<PostViewModel> {
     //finding Blog

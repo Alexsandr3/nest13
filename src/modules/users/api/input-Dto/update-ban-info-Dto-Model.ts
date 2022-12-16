@@ -1,5 +1,5 @@
-import { IsBoolean,  IsOptional, IsString, Length } from "class-validator";
-import { Transform } from "class-transformer";
+import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class UpdateBanInfoDto {
   /**
@@ -8,7 +8,7 @@ export class UpdateBanInfoDto {
   //@Transform(({ value }) => value.trim())
   @IsBoolean()
   @IsOptional()
-  isBanned: boolean = true;
+  isBanned = true;
   /**
    * password: password User
    */

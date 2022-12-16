@@ -12,7 +12,7 @@ export class PaginationDto {
    */
   @IsString()
   @IsOptional()
-  searchNameTerm: string = '';
+  searchNameTerm = '';
   /**
    *  pageNumber is number of portions that should be returned
    */

@@ -1,6 +1,5 @@
-import { HydratedDocument } from "mongoose";
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-
+import { HydratedDocument } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type UserBanInfoDocument = HydratedDocument<UserBanInfo>;
 
@@ -17,4 +16,3 @@ export class UserBanInfo {
 }
 
 export const UserBanInfoSchema = SchemaFactory.createForClass(UserBanInfo);
-

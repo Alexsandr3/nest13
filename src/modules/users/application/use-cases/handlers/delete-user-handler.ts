@@ -1,13 +1,11 @@
-import { UsersRepositories } from "../../../infrastructure/users-repositories";
-import { NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DeleteUserCommand } from "../delete-user-command";
-
+import { UsersRepositories } from '../../../infrastructure/users-repositories';
+import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { DeleteUserCommand } from '../delete-user-command';
 
 @CommandHandler(DeleteUserCommand)
 export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
-  constructor(private readonly usersRepositories: UsersRepositories) {
-  }
+  constructor(private readonly usersRepositories: UsersRepositories) {}
 
   async execute(command: DeleteUserCommand): Promise<boolean> {
     const { userId } = command;
@@ -15,9 +13,7 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
     if (!result) {
       throw new NotFoundExceptionMY(`Not found for id: ${userId}`);
     }
-    await this.usersRepositories.deleteUserBanInfo(userId)
+    await this.usersRepositories.deleteUserBanInfo(userId);
     return true;
   }
 }
-
-

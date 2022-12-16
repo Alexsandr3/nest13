@@ -1,5 +1,13 @@
 import {
-  Body, Controller, Get, Post, Request, HttpCode, UseGuards, Res, Ip
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  HttpCode,
+  UseGuards,
+  Res,
+  Ip
 } from "@nestjs/common";
 import { CreateUserDto } from "../../users/api/input-Dto/create-User-Dto-Model";
 import { ConfirmationCodeDto } from "../../users/api/input-Dto/confirmation-code-Dto-Model";
@@ -26,13 +34,11 @@ import { RecoveryCommand } from "../application/use-cases/recovery-command";
 import { LoginCommand } from "../application/use-cases/login-command";
 import { RefreshCommand } from "../application/use-cases/refresh-command";
 
-
 @Controller(`auth`)
 export class AuthController {
   constructor(private readonly usersQueryRepositories: UsersQueryRepositories,
               private commandBus: CommandBus) {
   }
-
 
   @HttpCode(204)
   @Post(`/password-recovery`)
@@ -46,7 +52,6 @@ export class AuthController {
     return await this.commandBus.execute(new NewPasswordCommand(newPasswordInputModel));
   }
 
-
   @HttpCode(200)
   @Post(`/login`)
   async login(@Request() req, @Ip() ip, @Body() loginInputModel: LoginDto,
@@ -54,7 +59,7 @@ export class AuthController {
     const deviceName = req.headers["user-agent"];
     const createdToken = await this.commandBus.execute(new LoginCommand(loginInputModel, ip, deviceName));
     res.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: true });
-    return { "accessToken": createdToken.accessToken };
+    return { accessToken: createdToken.accessToken };
   }
 
   @UseGuards(ThrottlerGuard)
@@ -65,7 +70,7 @@ export class AuthController {
                 @Res({ passthrough: true }) res): Promise<Pick<TokensType, "accessToken">> {
     const createdToken = await this.commandBus.execute(new RefreshCommand(payloadRefresh));
     res.cookie("refreshToken", createdToken.refreshToken, { httpOnly: true, secure: true });
-    return { "accessToken": createdToken.accessToken };
+    return { accessToken: createdToken.accessToken };
   }
 
   @HttpCode(204)
@@ -101,5 +106,4 @@ export class AuthController {
   async getProfile(@CurrentUserId() userId: string): Promise<MeViewModel> {
     return await this.usersQueryRepositories.getUserById(userId);
   }
-
 }

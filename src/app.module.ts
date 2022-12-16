@@ -8,13 +8,13 @@ import { CommentModule } from "./modules/comments/comment.module";
 import { UsersModule } from "./modules/users/usersModule";
 import { MailModule } from "./modules/mail/mail.module";
 import { AuthModule } from "./modules/auth/auth.module";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TestingModule } from "./modules/testing/testing.module";
 import { DeviceModule } from "./modules/security/device.module";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { BloggerModule } from "./modules/blogger/blogger.module";
 import { SaModule } from "./modules/sa/sa.module";
-
+import { ConfigType, getConfiguration } from "./config/configuration";
 
 @Module({
   imports: [
@@ -22,8 +22,14 @@ import { SaModule } from "./modules/sa/sa.module";
       ttl: 10,
       limit: 5
     }),
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URL),
+    ConfigModule.forRoot({ isGlobal: true, load: [getConfiguration] }),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<ConfigType>) => {
+        const database = configService.get("database", { infer: true });
+        return { uri: database.MONGO_URL };
+      }
+    }),
     BlogModule,
     PostModule,
     CommentModule,
@@ -31,7 +37,6 @@ import { SaModule } from "./modules/sa/sa.module";
     MailModule,
     AuthModule,
     DeviceModule,
-    ConfigModule.forRoot({ isGlobal: true}), // no need to import into other modules,
     TestingModule,
     BloggerModule,
     SaModule
@@ -39,4 +44,5 @@ import { SaModule } from "./modules/sa/sa.module";
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule {}
+export class AppModule {
+}

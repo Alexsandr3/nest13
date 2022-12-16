@@ -9,16 +9,17 @@ import { PostViewModel } from "../../posts/infrastructure/query-repositories/pos
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
 import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";
 
-
 @Controller(`blogs`)
 export class BlogsController {
-  constructor(private readonly blogsQueryRepositories: BlogsQueryRepositories,
-              private readonly postsQueryRepositories: PostsQueryRepositories
+  constructor(
+    private readonly blogsQueryRepositories: BlogsQueryRepositories,
+    private readonly postsQueryRepositories: PostsQueryRepositories
   ) {
   }
 
   @Get()
-  async findAll(@Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+  async findAll(
+    @Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     return await this.blogsQueryRepositories.findBlogs(paginationInputModel);
   }
 
@@ -35,5 +36,4 @@ export class BlogsController {
   async findOne(@Param(`id`, IdValidationPipe) id: string): Promise<BlogViewModel> {
     return await this.blogsQueryRepositories.findBlog(id);
   }
-
 }
