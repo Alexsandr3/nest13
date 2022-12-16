@@ -151,11 +151,7 @@ export class PostsQueryRepositories {
     );
   }
 
-  async findPosts(
-    data: PaginationDto,
-    userId: string | null,
-    blogId?: string,
-  ): Promise<PaginationViewModel<PostViewModel[]>> {
+  async findPosts(data: PaginationDto, userId: string | null, blogId?: string,): Promise<PaginationViewModel<PostViewModel[]>> {
     //search all posts with pagination by blogId
     const filter = blogId ? { blogId, isBanned: false } : { isBanned: false };
     const foundPosts = await this.postModel

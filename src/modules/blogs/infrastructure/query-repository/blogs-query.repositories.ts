@@ -1,23 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
-import { BlogDocument, Blog } from '../../../blogger/domain/blog-schema-Model';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { FilterQuery, Model } from "mongoose";
+import { BlogDocument, Blog } from "../../../blogger/domain/blog-schema-Model";
 import {
   BlogOwnerInfoType,
   BlogViewForSaModel,
-  BlogViewModel,
-} from './blog-View-Model';
-import { ObjectId } from 'mongodb';
-import { PaginationViewModel } from './pagination-View-Model';
-import { BlogsDBType } from '../../../blogger/domain/blog-DB-Type';
-import { PaginationDto } from '../../api/input-Dtos/pagination-Dto-Model';
-import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
+  BlogViewModel
+} from "./blog-View-Model";
+import { PaginationViewModel } from "./pagination-View-Model";
+import { BlogsDBType } from "../../../blogger/domain/blog-DB-Type";
+import { PaginationDto } from "../../api/input-Dtos/pagination-Dto-Model";
+import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
 
 @Injectable()
 export class BlogsQueryRepositories {
   constructor(
-    @InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>,
-  ) {}
+    @InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>
+  ) {
+  }
 
   private mapperBlogForView(object: BlogsDBType): BlogViewModel {
     return new BlogViewModel(
@@ -25,14 +25,14 @@ export class BlogsQueryRepositories {
       object.name,
       object.description,
       object.websiteUrl,
-      object.createdAt,
+      object.createdAt
     );
   }
 
   private mapperBlogForSaView(object: BlogsDBType): BlogViewForSaModel {
     const blogOwnerInfo = new BlogOwnerInfoType(
       object.userId,
-      object.userLogin,
+      object.userLogin
     );
     return new BlogViewForSaModel(
       object._id.toString(),
@@ -40,7 +40,7 @@ export class BlogsQueryRepositories {
       object.description,
       object.websiteUrl,
       object.createdAt,
-      blogOwnerInfo,
+      blogOwnerInfo
     );
   }
 
@@ -49,8 +49,8 @@ export class BlogsQueryRepositories {
     const foundBlogs = await this.blogsModel
       .find(
         data.searchNameTerm
-          ? { name: { $regex: data.searchNameTerm, $options: 'i' } }
-          : {},
+          ? { name: { $regex: data.searchNameTerm, $options: "i" } }
+          : {}
       )
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
@@ -61,8 +61,8 @@ export class BlogsQueryRepositories {
     //counting blogs
     const totalCount = await this.blogsModel.countDocuments(
       data.searchNameTerm
-        ? { name: { $regex: data.searchNameTerm, $options: 'i' } }
-        : {},
+        ? { name: { $regex: data.searchNameTerm, $options: "i" } }
+        : {}
     );
     const pagesCountRes = Math.ceil(totalCount / data.pageSize);
     // Found Blogs with pagination!
@@ -71,7 +71,7 @@ export class BlogsQueryRepositories {
       data.pageNumber,
       data.pageSize,
       totalCount,
-      mappedBlogs,
+      mappedBlogs
     );
   }
 
@@ -80,8 +80,8 @@ export class BlogsQueryRepositories {
     const foundBlogs = await this.blogsModel
       .find(
         data.searchNameTerm
-          ? { name: { $regex: data.searchNameTerm, $options: 'i' } }
-          : {},
+          ? { name: { $regex: data.searchNameTerm, $options: "i" } }
+          : {}
       )
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
@@ -89,13 +89,13 @@ export class BlogsQueryRepositories {
       .lean();
     //mapped for View
     const mappedBlogs = foundBlogs.map((blog) =>
-      this.mapperBlogForSaView(blog),
+      this.mapperBlogForSaView(blog)
     );
     //counting blogs
     const totalCount = await this.blogsModel.countDocuments(
       data.searchNameTerm
-        ? { name: { $regex: data.searchNameTerm, $options: 'i' } }
-        : {},
+        ? { name: { $regex: data.searchNameTerm, $options: "i" } }
+        : {}
     );
     const pagesCountRes = Math.ceil(totalCount / data.pageSize);
     // Found Blogs with pagination!
@@ -104,14 +104,14 @@ export class BlogsQueryRepositories {
       data.pageNumber,
       data.pageSize,
       totalCount,
-      mappedBlogs,
+      mappedBlogs
     );
   }
 
   async findBlogsForCurrentBlogger(data: PaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>> {
     const filter: FilterQuery<Blog> = { userId: userId };
     if (data.searchNameTerm) {
-      filter.name = { $regex: data.searchNameTerm, $options: 'i' };
+      filter.name = { $regex: data.searchNameTerm, $options: "i" };
     }
     //search all blogs for current user
     const foundBlogs = await this.blogsModel
@@ -131,12 +131,12 @@ export class BlogsQueryRepositories {
       data.pageNumber,
       data.pageSize,
       totalCount,
-      mappedBlogs,
+      mappedBlogs
     );
   }
 
   async findBlog(id: string): Promise<BlogViewModel> {
-    const blog = await this.blogsModel.findOne({ _id: new ObjectId(id) });
+    const blog = await this.blogsModel.findOne({ id });
     if (!blog) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     //returning Blog for View
     return this.mapperBlogForView(blog);

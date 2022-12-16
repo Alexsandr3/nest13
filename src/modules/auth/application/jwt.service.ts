@@ -21,7 +21,6 @@ export class JwtService {
 
     const accessToken = jwt.sign({ userId: userId }, secret.ACCESS_TOKEN_SECRET, { expiresIn: "5m" });
     const refreshToken = jwt.sign({ userId: userId, deviceId: deviceId }, secret.REFRESH_TOKEN_SECRET, { expiresIn: "15m" });
-    console.log(secret.ACCESS_TOKEN_SECRET);
     return new TokensType(accessToken, refreshToken);
   }
 

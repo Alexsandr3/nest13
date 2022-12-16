@@ -1,5 +1,5 @@
 export const getConfiguration = () => ({
-  PORT: parseInt(process.env.PORT2, 10) || 3000,
+  PORT: parseInt(process.env.PORT, 10) ?? 3010,
   tokens: {
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET ?? "858585858",
     REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
