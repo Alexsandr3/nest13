@@ -20,6 +20,11 @@ jobs:
         run: yarn test:e2e # запускаем скрипт тестами
         env:
           MONGO_URL: ${{ secrets.MONGO_URL }}
+          ACCESS_TOKEN_SECRET: ${{secrets.ACCESS_TOKEN_SECRET}}
+          REFRESH_TOKEN_SECRET: ${{secrets.REFRESH_TOKEN_SECRET}}
+          MAIL_USER: ${{secrets.MAIL_USER}}
+          MAIL_PASSWORD: ${{secrets.MAIL_PASSWORD}}
+          MAIL_FROM: ${{secrets.MAIL_FROM}}
 
   Sync-main-branch:
     name: Sync-main-branch

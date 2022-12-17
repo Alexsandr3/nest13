@@ -80,7 +80,6 @@ describe("AppController (e2e)", () => {
 
       const response = await request(app.getHttpServer())
         .post(`/auth/login`)
-        //.auth("admin", "qwerty", { type: "basic" })
         .send({ loginOrEmail: "", password: "asirius321" });
 
       expect(response.status).toBe(400);
@@ -92,8 +91,7 @@ describe("AppController (e2e)", () => {
       });
 
       await request(app.getHttpServer())
-        .post("/auth/login")
-        //.auth("admin", "qwerty", { type: "basic" })
+        .post(`/auth/login`)
         .send({ loginOrEmail: "asirius@jiveeee.com", password: "password" })
         .expect(401);
     });
@@ -116,7 +114,6 @@ describe("AppController (e2e)", () => {
       expect(refreshTokenKey).toBe(`refreshToken`);
       expect(result.headers["set-cookie"][0].includes(`HttpOnly`)).toBeTruthy();
       expect(result.headers["set-cookie"][0].includes(`Secure`)).toBeTruthy();
-
     });
     it("GET shouldn`t get data about user by bad token", async () => {
       await request(app.getHttpServer())
