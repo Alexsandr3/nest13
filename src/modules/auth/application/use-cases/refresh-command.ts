@@ -1,8 +1,5 @@
-import { PayloadType } from "../payloadType";
-
+import { PayloadType } from '../payloadType';
 
 export class RefreshCommand {
-  constructor(public readonly payloadRefresh: PayloadType) {
-  }
-
+  constructor(public readonly payloadRefresh: PayloadType) {}
 }

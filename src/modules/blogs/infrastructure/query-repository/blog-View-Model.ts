@@ -8,8 +8,6 @@ export class BlogViewModel {
   ) {}
 }
 
-
-
 export class BlogViewForSaModel {
   constructor(
     public id: string,
@@ -17,13 +15,10 @@ export class BlogViewForSaModel {
     public description: string,
     public websiteUrl: string,
     public createdAt: string,
-    public blogOwnerInfo:BlogOwnerInfoType
+    public blogOwnerInfo: BlogOwnerInfoType,
   ) {}
 }
 
-
 export class BlogOwnerInfoType {
-  constructor(public userId: string,
-              public userLogin: string) {
-  }
+  constructor(public userId: string, public userLogin: string) {}
 }

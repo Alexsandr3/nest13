@@ -1,12 +1,17 @@
-import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
-import { Injectable } from "@nestjs/common";
-import { BlogsQueryRepositories } from "../modules/blogs/infrastructure/query-repository/blogs-query.repositories";
+import {
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
+import { Injectable } from '@nestjs/common';
+import { BlogsQueryRepositories } from '../modules/blogs/infrastructure/query-repository/blogs-query.repositories';
 
-@ValidatorConstraint({ name: "IsMongoIdObject", async: true })
+@ValidatorConstraint({ name: 'IsMongoIdObject', async: true })
 @Injectable()
 export class BlogIdValidator implements ValidatorConstraintInterface {
-  constructor(private readonly blogsQueryRepositories: BlogsQueryRepositories) {
-  }
+  constructor(
+    private readonly blogsQueryRepositories: BlogsQueryRepositories,
+  ) {}
 
   async validate(blogId: string) {
     try {
@@ -21,5 +26,4 @@ export class BlogIdValidator implements ValidatorConstraintInterface {
   defaultMessage(validationArguments?: ValidationArguments): string {
     return "Blog doesn't exist";
   }
-
 }

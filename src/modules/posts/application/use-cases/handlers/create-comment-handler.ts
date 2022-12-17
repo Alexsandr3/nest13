@@ -1,19 +1,21 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { PostsRepositories } from "../../../infrastructure/posts-repositories";
-import { CreateCommentCommand } from "../create-comment-command";
-import { CommentsViewType } from "../../../../comments/infrastructure/comments-View-Model";
-import { NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { PreparationCommentForDB } from "../../../../comments/domain/comment-preparation-for-DB";
-import { UsersQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-query.reposit";
-import { CommentsRepositories } from "../../../../comments/infrastructure/comments.repositories";
-
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { PostsRepositories } from '../../../infrastructure/posts-repositories';
+import { CreateCommentCommand } from '../create-comment-command';
+import { CommentsViewType } from '../../../../comments/infrastructure/comments-View-Model';
+import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
+import { PreparationCommentForDB } from '../../../../comments/domain/comment-preparation-for-DB';
+import { UsersQueryRepositories } from '../../../../users/infrastructure/query-reposirory/users-query.reposit';
+import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
 
 @CommandHandler(CreateCommentCommand)
-export class CreateCommentHandler implements ICommandHandler<CreateCommentCommand> {
-  constructor(private readonly postsRepositories: PostsRepositories,
-              private readonly commentsRepositories: CommentsRepositories,
-              private readonly usersQueryRepositories: UsersQueryRepositories) {
-  }
+export class CreateCommentHandler
+  implements ICommandHandler<CreateCommentCommand>
+{
+  constructor(
+    private readonly postsRepositories: PostsRepositories,
+    private readonly commentsRepositories: CommentsRepositories,
+    private readonly usersQueryRepositories: UsersQueryRepositories,
+  ) {}
 
   async execute(command: CreateCommentCommand): Promise<CommentsViewType> {
     const { content } = command.inputCommentModel;
@@ -30,9 +32,8 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
       content,
       userId,
       user.login,
-      new Date().toISOString());
+      new Date().toISOString(),
+    );
     return await this.commentsRepositories.createCommentByIdPost(newComment);
   }
 }
-
-

@@ -1,14 +1,16 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DeleteCommentCommand } from "../delete-comment-command";
-import { CommentsRepositories } from "../../../infrastructure/comments.repositories";
-import { CommentsService } from "../../../domain/comments.service";
-
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { DeleteCommentCommand } from '../delete-comment-command';
+import { CommentsRepositories } from '../../../infrastructure/comments.repositories';
+import { CommentsService } from '../../../domain/comments.service';
 
 @CommandHandler(DeleteCommentCommand)
-export class DeleteCommentHandler implements ICommandHandler<DeleteCommentCommand> {
-  constructor(private readonly commentsRepositories: CommentsRepositories,
-              private readonly commentsService: CommentsService) {
-  }
+export class DeleteCommentHandler
+  implements ICommandHandler<DeleteCommentCommand>
+{
+  constructor(
+    private readonly commentsRepositories: CommentsRepositories,
+    private readonly commentsService: CommentsService,
+  ) {}
 
   async execute(command: DeleteCommentCommand): Promise<boolean> {
     const { id } = command;
@@ -20,7 +22,4 @@ export class DeleteCommentHandler implements ICommandHandler<DeleteCommentComman
     if (!result) throw new Error(`not today`);
     return true;
   }
-
 }
-
-

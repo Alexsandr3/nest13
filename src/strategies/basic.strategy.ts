@@ -1,11 +1,10 @@
-import { BasicStrategy as Strategy } from "passport-http";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-
+import { BasicStrategy as Strategy } from 'passport-http';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
 
 const basicConstant = {
-  userName: process.env.SA_LOGIN || "admin",
-  password: process.env.SA_PASSWORD || "qwerty"
+  userName: process.env.SA_LOGIN || 'admin',
+  password: process.env.SA_PASSWORD || 'qwerty',
 };
 
 @Injectable()

@@ -1,15 +1,17 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { PostsRepositories } from "../../../infrastructure/posts-repositories";
-import { UpdateLikeStatusCommand } from "../update-like-status-command";
-import { UsersQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-query.reposit";
-
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
+import { PostsRepositories } from '../../../infrastructure/posts-repositories';
+import { UpdateLikeStatusCommand } from '../update-like-status-command';
+import { UsersQueryRepositories } from '../../../../users/infrastructure/query-reposirory/users-query.reposit';
 
 @CommandHandler(UpdateLikeStatusCommand)
-export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatusCommand> {
-  constructor(private readonly postsRepositories: PostsRepositories,
-              private readonly usersQueryRepositories: UsersQueryRepositories) {
-  }
+export class UpdateLikeStatusHandler
+  implements ICommandHandler<UpdateLikeStatusCommand>
+{
+  constructor(
+    private readonly postsRepositories: PostsRepositories,
+    private readonly usersQueryRepositories: UsersQueryRepositories,
+  ) {}
 
   async execute(command: UpdateLikeStatusCommand): Promise<boolean> {
     const { id, userId } = command;
@@ -20,10 +22,13 @@ export class UpdateLikeStatusHandler implements ICommandHandler<UpdateLikeStatus
     //finding user by userId for update like status
     const user = await this.usersQueryRepositories.findUser(userId);
     //update like status
-    const result = await this.postsRepositories.updateStatusPostById(id, userId, likeStatus, user.login);
+    const result = await this.postsRepositories.updateStatusPostById(
+      id,
+      userId,
+      likeStatus,
+      user.login,
+    );
     if (!result) throw new NotFoundExceptionMY(`Like doesn't exists`);
     return result;
   }
 }
-
-

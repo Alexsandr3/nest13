@@ -1,10 +1,8 @@
-import { Injectable } from "@nestjs/common";
-
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DevicesService {
-  constructor() {
-  }
+  constructor() {}
 
   /* async deleteDevices(payload: PayloadType): Promise<boolean> {
      await this.deviceRepositories.deleteDevices(payload);

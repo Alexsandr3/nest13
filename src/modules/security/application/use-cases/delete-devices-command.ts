@@ -1,8 +1,5 @@
-import { PayloadType } from "../../../auth/application/payloadType";
+import { PayloadType } from '../../../auth/application/payloadType';
 
 export class DeleteDevicesCommand {
-  constructor(public readonly payloadRefresh: PayloadType) {
-  }
-
+  constructor(public readonly payloadRefresh: PayloadType) {}
 }
-

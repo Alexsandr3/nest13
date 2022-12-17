@@ -1,5 +1,9 @@
-import { BadRequestException, ForbiddenException, NotFoundException, UnauthorizedException } from "@nestjs/common";
-
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 //model for 404 - `Not Found` error
 export class NotFoundExceptionMY {
@@ -7,7 +11,6 @@ export class NotFoundExceptionMY {
     throw new NotFoundException(message);
   }
 }
-
 
 //model for 400 - `BAD_REQUEST` error
 export class BadRequestExceptionMY {
@@ -30,7 +33,6 @@ export class ForbiddenExceptionMY {
   }
 }
 
-
 export const HTTP_STATUSES = {
   OK_200: 200,
   CREATED_201: 201,
@@ -42,5 +44,5 @@ export const HTTP_STATUSES = {
   NOT_FOUND_404: 404,
   TOO_MUCH_REQUESTS_429: 429,
 
-  INTERNET_SERVER_ERROR: 500
-}
+  INTERNET_SERVER_ERROR: 500,
+};

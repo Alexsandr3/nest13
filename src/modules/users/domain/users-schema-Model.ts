@@ -1,6 +1,5 @@
-import { HydratedDocument } from "mongoose";
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-
+import { HydratedDocument } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema()
 class AccountData {
@@ -22,8 +21,8 @@ class EmailConfirmation {
   @Prop()
   expirationDate: Date;
   @Prop({ type: Boolean, default: false })
-  isConfirmation: Boolean;
-};
+  isConfirmation: boolean;
+}
 
 //const EmailConfirmationSchema = SchemaFactory.createForClass(EmailConfirmation);
 @Schema()
@@ -33,10 +32,9 @@ class EmailRecovery {
   @Prop()
   expirationDate: Date;
   @Prop({ type: Boolean, default: false })
-  isConfirmation: Boolean;
-};
+  isConfirmation: boolean;
+}
 //const EmailRecoverySchema = SchemaFactory.createForClass(EmailRecovery);
-
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -51,4 +49,3 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-

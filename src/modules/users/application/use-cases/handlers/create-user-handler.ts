@@ -16,21 +16,21 @@ import { PreparationUserBanInfoForDB } from "../../../domain/user-ban-info-prepa
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
-  constructor(private readonly usersRepositories: UsersRepositories,
-              private readonly usersQueryRepositories: UsersQueryRepositories,
-              private readonly usersService: UsersService,
-              private readonly mailService: MailService
+  constructor(
+    private readonly usersRepositories: UsersRepositories,
+    private readonly usersQueryRepositories: UsersQueryRepositories,
+    private readonly usersService: UsersService,
+    private readonly mailService: MailService
   ) {
   }
 
   async execute(command: CreateUserCommand): Promise<UsersViewType> {
+    const { email, login, password } = command.userInputModel;
     //email verification and login for uniqueness
     await this.validateUser(command.userInputModel);
     //generation Hash
-    const passwordHash = await this.usersService.generateHash(command.userInputModel.password);
+    const passwordHash = await this.usersService.generateHash(password);
     // preparation data User for DB
-    const login = command.userInputModel.login;
-    const email = command.userInputModel.email;
     const user = new PreparationUserForDB(
       {
         login,
@@ -56,37 +56,45 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       null,
       null
     );
-    await this.usersRepositories.createBanInfoUser(userBanInfo)
+    await this.usersRepositories.createBanInfoUser(userBanInfo);
     //finding user for View
     const foundUser = await this.usersQueryRepositories.findUser(userId);
     try {
       //send mail for confirmation
-      await this.mailService.sendUserConfirmation(foundUser.email, user.emailConfirmation.confirmationCode);
+      await this.mailService.sendUserConfirmation(
+        foundUser.email,
+        user.emailConfirmation.confirmationCode
+      );
     } catch (error) {
       console.error(error);
       //if not saved user - him need remove ??
       //await this.usersRepositories.deleteUser(userId);
-      throw new HttpException("Service is unavailable. Please try again later. We need saved User", 421);
+      throw new HttpException(
+        "Service is unavailable. Please try again later. We need saved User",
+        421
+      );
     }
     return foundUser;
   }
 
   private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
     //find user
-    const checkEmail = await this.usersRepositories.findByLoginOrEmail(userInputModel.email);
-    if (checkEmail) throw new BadRequestExceptionMY({
-      message: `${userInputModel.email}  already in use, do you need choose new data`,
-      field: `email`
-    });
-    const checkLogin = await this.usersRepositories.findByLoginOrEmail(userInputModel.login);
-    if (checkLogin) throw new BadRequestExceptionMY({
-      message: `${userInputModel.login}  already in use, do you need choose new data`,
-      field: `login`
-    });
+    const checkEmail = await this.usersRepositories.findByLoginOrEmail(
+      userInputModel.email
+    );
+    if (checkEmail)
+      throw new BadRequestExceptionMY({
+        message: `${userInputModel.email}  already in use, do you need choose new data`,
+        field: `email`
+      });
+    const checkLogin = await this.usersRepositories.findByLoginOrEmail(
+      userInputModel.login
+    );
+    if (checkLogin)
+      throw new BadRequestExceptionMY({
+        message: `${userInputModel.login}  already in use, do you need choose new data`,
+        field: `login`
+      });
     return true;
   }
-
-
 }
-
-

@@ -1,12 +1,12 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DeleteDevicesCommand } from "../delete-devices-command";
-import { DeviceRepositories } from "../../../infrastructure/device-repositories";
-
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { DeleteDevicesCommand } from '../delete-devices-command';
+import { DeviceRepositories } from '../../../infrastructure/device-repositories';
 
 @CommandHandler(DeleteDevicesCommand)
-export class DeleteDevicesHandler implements ICommandHandler<DeleteDevicesCommand> {
-  constructor(private readonly deviceRepositories: DeviceRepositories) {
-  }
+export class DeleteDevicesHandler
+  implements ICommandHandler<DeleteDevicesCommand>
+{
+  constructor(private readonly deviceRepositories: DeviceRepositories) {}
 
   async execute(command: DeleteDevicesCommand): Promise<boolean> {
     const { userId, deviceId } = command.payloadRefresh;
@@ -14,5 +14,3 @@ export class DeleteDevicesHandler implements ICommandHandler<DeleteDevicesComman
     return true;
   }
 }
-
-

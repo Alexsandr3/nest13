@@ -1,31 +1,40 @@
-import { UnauthorizedExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { DeviceRepositories } from "../../../../security/infrastructure/device-repositories";
-import { LoginCommand } from "../login-command";
-import { UsersService } from "../../../../users/domain/users.service";
-import { JwtService, TokensType } from "../../jwt.service";
-import { UsersRepositories } from "../../../../users/infrastructure/users-repositories";
-import { LoginDto } from "../../../api/dto/login-Dto-Model";
-import { UsersDBType } from "../../../../users/domain/user-DB-Type";
-import * as bcrypt from "bcrypt";
-import { randomUUID } from "crypto";
-import { PreparationDeviceForDB } from "../../../../security/domain/device-preparation-for-DB";
-
+import { UnauthorizedExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { DeviceRepositories } from '../../../../security/infrastructure/device-repositories';
+import { LoginCommand } from '../login-command';
+import { UsersService } from '../../../../users/domain/users.service';
+import { JwtService, TokensType } from '../../jwt.service';
+import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
+import { LoginDto } from '../../../api/dto/login-Dto-Model';
+import { UsersDBType } from '../../../../users/domain/user-DB-Type';
+import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
+import { PreparationDeviceForDB } from '../../../../security/domain/device-preparation-for-DB';
 
 @CommandHandler(LoginCommand)
 export class LoginHandler implements ICommandHandler<LoginCommand> {
-  constructor(private readonly usersService: UsersService,
-              private readonly jwtService: JwtService,
-              private readonly deviceRepositories: DeviceRepositories,
-              private readonly usersRepositories: UsersRepositories) {
-  }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly deviceRepositories: DeviceRepositories,
+    private readonly usersRepositories: UsersRepositories,
+  ) {}
 
   private async validateUser(loginInputModel: LoginDto): Promise<UsersDBType> {
+
     //find user by login or email
-    const user = await this.usersRepositories.findByLoginOrEmail(loginInputModel.loginOrEmail);
-    if (!user) throw new UnauthorizedExceptionMY(`User '${loginInputModel.loginOrEmail}' is not authorized `);
+    const user = await this.usersRepositories.findByLoginOrEmail(
+      loginInputModel.loginOrEmail,
+    );
+    if (!user)
+      throw new UnauthorizedExceptionMY(
+        `User '${loginInputModel.loginOrEmail}' is not authorized `,
+      );
     //check passwordHash
-    const result = await bcrypt.compare(loginInputModel.password, user.accountData.passwordHash);
+    const result = await bcrypt.compare(
+      loginInputModel.password,
+      user.accountData.passwordHash,
+    );
     if (!result) throw new UnauthorizedExceptionMY(`Incorrect password`);
     return user;
   }
@@ -35,32 +44,33 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     const ipAddress = command.ip;
     const deviceName = command.deviceName;
     const user = await this.validateUser(loginInputModel);
-    const banStatus = await this.usersRepositories.findBanStatus(user._id.toString());
+    const banStatus = await this.usersRepositories.findBanStatus(
+      user._id.toString(),
+    );
     if (banStatus.isBanned === true) {
       await this.deviceRepositories.deleteDevicesForBaned(banStatus.userId);
-      throw new UnauthorizedExceptionMY(`Did you get a ban!`)
+      throw new UnauthorizedExceptionMY(`Did you get a ban!`);
     }
     //preparation data for token
     const deviceId = randomUUID();
     const userId = user._id.toString();
     //generation of a new pair of tokens
     const token = await this.jwtService.createJwt(userId, deviceId);
-    const payloadNew = await this.jwtService.verifyRefreshToken(token.refreshToken);
+    const payloadNew = await this.jwtService.verifyRefreshToken(
+      token.refreshToken,
+    );
     //preparation data for save device
-    const dateCreatedToken = (new Date(payloadNew.iat * 1000)).toISOString();
-    const dateExpiredToken = (new Date(payloadNew.exp * 1000)).toISOString();
+    const dateCreatedToken = new Date(payloadNew.iat * 1000).toISOString();
+    const dateExpiredToken = new Date(payloadNew.exp * 1000).toISOString();
     const device = new PreparationDeviceForDB(
       userId,
       ipAddress,
       deviceName,
       dateCreatedToken,
       dateExpiredToken,
-      deviceId
+      deviceId,
     );
     await this.deviceRepositories.createDevice(device);
     return token;
   }
-
 }
-
-

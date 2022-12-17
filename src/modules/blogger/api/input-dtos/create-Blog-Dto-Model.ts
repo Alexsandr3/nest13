@@ -1,5 +1,5 @@
-import { IsString, IsUrl, Length } from "class-validator";
-import { Transform } from "class-transformer";
+import { IsString, IsUrl, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateBlogDto {
   /**

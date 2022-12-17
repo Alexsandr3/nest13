@@ -1,10 +1,8 @@
-
-
 export class PreparationUserBanInfoForDB {
   constructor(
-              public userId: string,
-              public isBanned: boolean,
-              public banDate: string,
-              public banReason: string) {
-  }
+    public userId: string,
+    public isBanned: boolean,
+    public banDate: string,
+    public banReason: string,
+  ) {}
 }

@@ -5,7 +5,7 @@ export type BlogDocument = HydratedDocument<Blog>;
 
 @Schema()
 export class Blog {
-  @Prop({ type: String})
+  @Prop({ type: String })
   userId: string;
   @Prop({ type: String, required: true, minlength: 3, maxlength: 10 })
   userLogin: string;
@@ -18,4 +18,7 @@ export class Blog {
   @Prop({ type: String, required: true })
   createdAt: string;
 }
+
 export const BlogSchema = SchemaFactory.createForClass(Blog);
+
+

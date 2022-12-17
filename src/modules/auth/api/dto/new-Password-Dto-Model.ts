@@ -1,5 +1,5 @@
-import { IsString, Length } from "class-validator";
-import { Transform } from "class-transformer";
+import { IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class NewPasswordDto {
   /**
@@ -16,4 +16,3 @@ export class NewPasswordDto {
   @IsString()
   recoveryCode: string;
 }
-
