@@ -3,7 +3,6 @@ import { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
 import { AppModule } from "../src/app.module";
-import mongoose from "mongoose";
 import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/user-View-Model";
 import { createdApp } from "../src/helpers/createdApp";
 import { AccessTokenType } from "./types/types";
@@ -45,7 +44,7 @@ describe("AppController (e2e)", () => {
   });
   afterAll(async () => {
     await app.close();
-    await mongoose.disconnect();
+    //await mongoose.disconnect();
     //await mongoServer.stop();
   });
 
