@@ -264,6 +264,13 @@ describe("AppController (e2e)", () => {
         .expect(401);
     });
   });
+  describe(`sa`, ()=>{
+    beforeAll(async () => {
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`).expect(204);
+    });
+
+  })
 
 
   it("/ (GET)", () => {
