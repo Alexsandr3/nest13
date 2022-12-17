@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
 import { AppModule } from "../src/app.module";
 import { UsersViewType } from "../src/modules/users/infrastructure/query-reposirory/user-View-Model";
 import { createdApp } from "../src/helpers/createdApp";
@@ -18,7 +17,7 @@ const delay = async (delay: number = 1000) => {
 
 jest.setTimeout(120000)
 
-describe("AppController (e2e)", () => {
+describe("Auth (e2e)", () => {
 
   let app: INestApplication;
   //let mongoServer: MongoMemoryServer;
@@ -261,113 +260,11 @@ describe("AppController (e2e)", () => {
         .expect(401);
     });
   });
-  describe.skip(`sa`, ()=>{
-
-
-  })
-
-
   it("/ (GET)", () => {
     return request(app.getHttpServer())
       .get("/")
       .expect(200)
       .expect("Hello free Belarus!");
-  });
-
-  it.skip(`create blog`, async () => {
-    const createdBlog = await request(app.getHttpServer())
-      .post(`/blogger/blogs`)
-      .send({
-        name: "supertest_01",
-        description: "Data for constructing new Blog entity",
-        websiteUrl: "https://www.youtube.com/watch?v=cHVhpNrjcPs&list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk"
-      })
-      .expect(401);
-    console.log("createdBlog", createdBlog.body);
-
-
-    expect(createdBlog.body).toEqual({
-      id: expect.any(String),
-      name: "supertest_01",
-      description: "Data for constructing new Blog entity",
-      websiteUrl: "https://www.youtube.com/watch?v=cHVhpNrjcPs&list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk",
-      createdAt: expect.any(String)
-    });
-  });
-
-
-  it(`should be return all blogs (array[]) wit pagination`, async () => {
-    let result = {
-      pagesCount: 0,
-      page: 1,
-      pageSize: 10,
-      totalCount: 0,
-      items: []
-    };
-    //jest.spyOn(blogsQueryRepositories, "findBlogs").mockImplementation(() => result);
-
-    const blogs = await request(app.getHttpServer())
-      .get(`/blogs`)
-      .set(`Authorization`, `Basic YWRtaW46cXdlcnR5`)
-      .expect(200);
-    const res = blogs.body;
-    //e2e
-    expect(res).toStrictEqual(result);
-    //expect(blogsQueryRepositories.findBlogs(paginationInputModel)).toBeCalled()
-
-    // expect(await blogsController.findAll(paginationInputModel)).toEqual(result);
-    // expect(await blogsQueryRepositories.findBlogs(paginationInputModel)).toEqual(result);
-
-
-  });
-  it.skip("POST / should create a new user", () => {
-    // Send a request to create a new user
-    console.log("here");
-
-    return request(app.getHttpServer())
-      .post("sa/users")
-      .set("Authorization", `Basic YWRtaW46cXdlcnR5`)
-      .send({
-        login: "asirius23",
-        password: "asirius2332",
-        email: "fam@com.com"
-      })
-      .expect(201);
-
-
-    /* expect(createdUser.body).toEqual({
-       id: expect.any(String),
-       login: "asirius23",
-       email: "fam@com.com",
-       createdAt: expect.any(String),
-       banInfo: {
-         isBanned: false,
-         banDate: null,
-         banReason: null
-       }
-     });*/
-
-  });
-  it.skip(`01 - should create new blog; status 201; content: created blog`, async () => {
-    const createResponse = await request(app.getHttpServer())
-      .post(`/blogger/blogs`)
-      //.set('Authorization', `Basic YWRtaW46cXdlcnR5`)
-      .send({
-        name: "supertest_01",
-        description: "Data for constructing new Blog entity",
-        websiteUrl:
-          "https://www.youtube.com/watch?v=cHVhpNrjcPs&list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk"
-      })
-      .expect(201);
-
-    const createBlog: BlogViewModel = createResponse.body;
-    expect(createBlog).toEqual({
-      id: expect.any(String),
-      name: "supertest_01",
-      description: "Data for constructing new Blog entity",
-      websiteUrl: "https://www.youtube.com/watch?v=cHVhpNrjcPs&list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk",
-      createdAt: expect.any(String)
-    });
   });
 });
 

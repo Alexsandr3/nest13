@@ -45,91 +45,79 @@ export class BlogsQueryRepositories {
   }
 
   async findBlogs(data: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     //search all blogs
     const foundBlogs = await this.blogsModel
-      .find(
-        data.searchNameTerm
-          ? { name: { $regex: data.searchNameTerm, $options: "i" } }
-          : {}
-      )
-      .skip((data.pageNumber - 1) * data.pageSize)
-      .limit(data.pageSize)
-      .sort({ [data.sortBy]: data.sortDirection })
+      .find(searchNameTerm? { name: { $regex: searchNameTerm, $options: "i" } }: {})
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ [sortBy]: sortDirection })
       .lean();
     //mapped for View
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForView(blog));
     //counting blogs
-    const totalCount = await this.blogsModel.countDocuments(
-      data.searchNameTerm
-        ? { name: { $regex: data.searchNameTerm, $options: "i" } }
-        : {}
-    );
-    const pagesCountRes = Math.ceil(totalCount / data.pageSize);
+    const totalCount = await this.blogsModel.countDocuments(searchNameTerm
+      ? { name: { $regex: searchNameTerm, $options: "i" } } : {});
+    const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found Blogs with pagination!
     return new PaginationViewModel(
       pagesCountRes,
-      data.pageNumber,
-      data.pageSize,
+      pageNumber,
+      pageSize,
       totalCount,
       mappedBlogs
     );
   }
 
   async findBlogsForSa(data: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+    console.log(data);
+    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     //search all blogs
     const foundBlogs = await this.blogsModel
-      .find(
-        data.searchNameTerm
-          ? { name: { $regex: data.searchNameTerm, $options: "i" } }
-          : {}
-      )
-      .skip((data.pageNumber - 1) * data.pageSize)
-      .limit(data.pageSize)
-      .sort({ [data.sortBy]: data.sortDirection })
+      .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {})
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ [sortBy]: sortDirection })
       .lean();
     //mapped for View
-    const mappedBlogs = foundBlogs.map((blog) =>
-      this.mapperBlogForSaView(blog)
-    );
+    const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForSaView(blog));
     //counting blogs
     const totalCount = await this.blogsModel.countDocuments(
-      data.searchNameTerm
-        ? { name: { $regex: data.searchNameTerm, $options: "i" } }
-        : {}
-    );
-    const pagesCountRes = Math.ceil(totalCount / data.pageSize);
+      searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {});
+    const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found Blogs with pagination!
     return new PaginationViewModel(
       pagesCountRes,
-      data.pageNumber,
-      data.pageSize,
+      pageNumber,
+      pageSize,
       totalCount,
       mappedBlogs
     );
   }
 
   async findBlogsForCurrentBlogger(data: PaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>> {
+    const {searchNameTerm, pageSize, pageNumber, sortDirection, sortBy} = data
     const filter: FilterQuery<Blog> = { userId: userId };
-    if (data.searchNameTerm) {
-      filter.name = { $regex: data.searchNameTerm, $options: "i" };
+    if (searchNameTerm) {
+      filter.name = { $regex: searchNameTerm, $options: "i" };
     }
     //search all blogs for current user
     const foundBlogs = await this.blogsModel
       .find(filter)
-      .skip((data.pageNumber - 1) * data.pageSize)
-      .limit(data.pageSize)
-      .sort({ [data.sortBy]: data.sortDirection })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ [sortBy]: sortDirection })
       .lean();
     //mapped for View
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForView(blog));
     //counting blogs user
     const totalCount = await this.blogsModel.countDocuments(filter);
-    const pagesCountRes = Math.ceil(totalCount / data.pageSize);
+    const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found Blogs with pagination!
     return new PaginationViewModel(
       pagesCountRes,
-      data.pageNumber,
-      data.pageSize,
+      pageNumber,
+      pageSize,
       totalCount,
       mappedBlogs
     );
