@@ -45,7 +45,7 @@ jobs:
 
   Deploy-To-Vercel:
     runs-on: ubuntu-latest
-    needs: Sync-main-branch
+    needs: Tests
     steps:
       - uses: actions/checkout@v3
       - name: Install Vercel CLI
