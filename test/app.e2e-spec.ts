@@ -16,6 +16,8 @@ const delay = async (delay: number = 1000) => {
   });
 };
 
+jest.setTimeout(10000)
+
 describe("AppController (e2e)", () => {
 
   let app: INestApplication;
