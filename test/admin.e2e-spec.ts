@@ -13,7 +13,7 @@ import { AccessTokenType } from "./types/types";
 
 jest.setTimeout(120000);
 
-describe("Admin endpoints (e2e)", () => {
+describe.skip("Admin endpoints (e2e)", () => {
   let app: INestApplication;
   beforeAll(async () => {
     // Create a NestJS application
@@ -38,7 +38,7 @@ describe("Admin endpoints (e2e)", () => {
     //await mongoose.disconnect();
     //await mongoServer.stop();
   });
-  describe.skip(`/sa`, () => {
+  describe(`/sa`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
         .delete(`/testing/all-data`).expect(204);

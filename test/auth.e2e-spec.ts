@@ -84,6 +84,7 @@ describe("Auth (e2e)", () => {
 
       const response = await request(app.getHttpServer())
         .post(`/auth/login`)
+        .set(`User-Agent`, `for test`)
         .send({ loginOrEmail: "", password: "asirius321" });
 
       expect(response.status).toBe(400);
@@ -96,6 +97,7 @@ describe("Auth (e2e)", () => {
 
       await request(app.getHttpServer())
         .post(`/auth/login`)
+        .set(`User-Agent`, `for test`)
         .send({ loginOrEmail: "asirius@jiveeee.com", password: "password" })
         .expect(401);
     });
@@ -265,7 +267,7 @@ describe("Auth (e2e)", () => {
         .expect(401);
     });
   });
-  describe(`auth/registration-email-resending and registration`, ()=> {
+  describe(`/auth/registration-email-resending and registration`, ()=> {
     let validAccessToken: AccessTokenType;
     let refreshTokenKey: string;
     beforeAll(async () => {
