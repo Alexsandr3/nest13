@@ -14,7 +14,7 @@ import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter"
 import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
 import {
   BanInfoType,
-  UsersForBanBlogViewType,
+  UsersForBanBlogViewType
 } from "../../../users/infrastructure/query-reposirory/user-View-Model";
 import { BanStatusBlogDBType } from "../../../blogger/domain/ban-user-for-blog-preparation-for-DB";
 
@@ -77,7 +77,7 @@ export class BlogsQueryRepositories {
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForView(blog));
     //counting blogs
     const totalCount = await this.blogsModel.countDocuments(searchNameTerm
-      ? { name: { $regex: searchNameTerm, $options: "i" } } : {});
+      ? { name: { $regex: searchNameTerm, $options: "i" }, isBanned: false } : { isBanned: false });
     const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found Blogs with pagination!
     return new PaginationViewModel(
@@ -93,7 +93,7 @@ export class BlogsQueryRepositories {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     //search all blogs
     const foundBlogs = await this.blogsModel
-      .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {})
+      .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" }, isBanned: false } : { isBanned: false })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection })
@@ -102,7 +102,7 @@ export class BlogsQueryRepositories {
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForSaView(blog));
     //counting blogs
     const totalCount = await this.blogsModel.countDocuments(
-      searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {});
+      searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" }, isBanned: false } : { isBanned: false });
     const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found Blogs with pagination!
     return new PaginationViewModel(
