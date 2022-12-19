@@ -19,7 +19,7 @@ export class BlogsRepositories {
   async createBlog(newBlog: PreparationBlogForDB): Promise<string> {
     const smartBlog = new this.blogsModel(newBlog);
     const blog = await smartBlog.save();
-    return blog.id;
+    return blog.id
   }
 
   async deleteBlog(id: string, userId: string): Promise<boolean> {

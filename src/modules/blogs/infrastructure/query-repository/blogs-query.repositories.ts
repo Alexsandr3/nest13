@@ -143,7 +143,7 @@ export class BlogsQueryRepositories {
   }
 
   async findBlog(id: string): Promise<BlogViewModel> {
-    const blog = await this.blogsModel.findOne({ id, isBanned: false });
+    const blog = await this.blogsModel.findOne({ _id: new Object(id), isBanned: false });
     if (!blog) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     //returning Blog for View
     return this.mapperBlogForView(blog);
@@ -151,7 +151,7 @@ export class BlogsQueryRepositories {
 
   async getBanedUserForBlog(id: string, paginationInputModel: PaginationDto) {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
-    const filter: FilterQuery<Blog> = { id, isBanned: true };
+    const filter: FilterQuery<Blog> = { id };
     if (searchNameTerm) {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
