@@ -180,6 +180,7 @@ export class PostsQueryRepositories {
       _id: new ObjectId(id),
       isBanned: false
     });
+
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     //returning post for View
     return this.postForView(post, userId);
