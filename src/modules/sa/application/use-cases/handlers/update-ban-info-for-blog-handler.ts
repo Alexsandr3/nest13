@@ -19,7 +19,7 @@ export class UpdateBanInfoForBlogHandler
     const banStatus = await this.blogsRepositories.updateBanStatusForBlog(blogId, isBanned)
     if (!banStatus) throw new Error("not save ban Status")
     const banStatusPost = await this.postsRepositories.updateStatusBanPost(blogId, isBanned)
-    if (!banStatusPost) throw new Error("not save ban Status")
+    //if (!banStatusPost) throw new Error("not save ban Status")
     return true;
   }
 }
