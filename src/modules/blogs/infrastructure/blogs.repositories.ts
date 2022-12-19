@@ -19,7 +19,7 @@ export class BlogsRepositories {
   async createBlog(newBlog: PreparationBlogForDB): Promise<string> {
     const smartBlog = new this.blogsModel(newBlog);
     const blog = await smartBlog.save();
-    return blog.id
+    return blog.id;
   }
 
   async deleteBlog(id: string, userId: string): Promise<boolean> {
@@ -80,7 +80,12 @@ export class BlogsRepositories {
   }
 
   async updateBanStatusForBlog(blogId: string, isBanned: boolean): Promise<boolean> {
-    const result = await this.blogsModel.updateOne({ blogId }, { $set: { isBanned } });
+    const result = await this.blogsModel.updateOne({ blogId }, {
+      $set: {
+        isBanned,
+        banDate: new Date().toISOString()
+      }
+    });
     return result.matchedCount === 1;
   }
 }

@@ -3,6 +3,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { FilterQuery, Model } from "mongoose";
 import { BlogDocument, Blog } from "../../../blogger/domain/blog-schema-Model";
 import {
+  BanInfoForBlogType,
   BlogOwnerInfoType,
   BlogViewForSaModel,
   BlogViewModel
@@ -54,13 +55,19 @@ export class BlogsQueryRepositories {
       object.userId,
       object.userLogin
     );
+    const banInfoForBlog = new BanInfoForBlogType(
+      object.isBanned,
+      object.banDate
+    );
+
     return new BlogViewForSaModel(
       object._id.toString(),
       object.name,
       object.description,
       object.websiteUrl,
       object.createdAt,
-      blogOwnerInfo
+      blogOwnerInfo,
+      banInfoForBlog
     );
   }
 
@@ -93,7 +100,7 @@ export class BlogsQueryRepositories {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     //search all blogs
     const foundBlogs = await this.blogsModel
-      .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" }, isBanned: false } : { isBanned: false })
+      .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {})
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection })
@@ -102,7 +109,7 @@ export class BlogsQueryRepositories {
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForSaView(blog));
     //counting blogs
     const totalCount = await this.blogsModel.countDocuments(
-      searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" }, isBanned: false } : { isBanned: false });
+      searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {});
     const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found Blogs with pagination!
     return new PaginationViewModel(
