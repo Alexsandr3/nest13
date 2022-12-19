@@ -44,7 +44,7 @@ export class BlogsRepositories {
   }
 
   async findBlog(id: string): Promise<BlogsDBType> {
-    const blog = await this.blogsModel.findOne({ id });
+    const blog = await this.blogsModel.findOne({ _id: new Object(id) });
     if (!blog) return null;
     return blog;
   }

@@ -26,6 +26,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
       throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`);
     if (userId !== blog.userId)
       throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
+    if (blog.isBanned === true) throw new NotFoundExceptionMY(`Not found data for id: ${blogId}`)
     //preparation Post for save in DB
     const newPost = new PreparationPostForDB(
       false,

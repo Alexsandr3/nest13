@@ -13,6 +13,7 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
   }
 
   async execute(command: CreateBlogCommand): Promise<string> {
+    debugger
     const { name, description, websiteUrl } = command.blogInputModel;
     const { userId } = command;
     const user = await this.usersQueryRepositories.findUser(userId);
