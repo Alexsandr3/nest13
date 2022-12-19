@@ -11,11 +11,18 @@ import { PaginationViewModel } from "./pagination-View-Model";
 import { BlogsDBType } from "../../../blogger/domain/blog-DB-Type";
 import { PaginationDto } from "../../api/input-Dtos/pagination-Dto-Model";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
+import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
+import {
+  BanInfoType,
+  UsersForBanBlogViewType,
+} from "../../../users/infrastructure/query-reposirory/user-View-Model";
+import { BanStatusBlogDBType } from "../../../blogger/domain/ban-user-for-blog-preparation-for-DB";
 
 @Injectable()
 export class BlogsQueryRepositories {
   constructor(
-    @InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>
+    @InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>,
+    @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
   ) {
   }
 
@@ -26,6 +33,19 @@ export class BlogsQueryRepositories {
       object.description,
       object.websiteUrl,
       object.createdAt
+    );
+  }
+
+  private mapperBanInfo(object: BanStatusBlogDBType): UsersForBanBlogViewType {
+    const banInfo = new BanInfoType(
+      object.isBanned,
+      object.banDate,
+      object.banReason
+    );
+    return new UsersForBanBlogViewType(
+      object.userId,
+      object.login,
+      banInfo
     );
   }
 
@@ -48,7 +68,7 @@ export class BlogsQueryRepositories {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     //search all blogs
     const foundBlogs = await this.blogsModel
-      .find(searchNameTerm? { name: { $regex: searchNameTerm, $options: "i" } }: {})
+      .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" }, isBanned: false } : { isBanned: false })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection })
@@ -70,7 +90,6 @@ export class BlogsQueryRepositories {
   }
 
   async findBlogsForSa(data: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
-    console.log(data);
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     //search all blogs
     const foundBlogs = await this.blogsModel
@@ -96,8 +115,8 @@ export class BlogsQueryRepositories {
   }
 
   async findBlogsForCurrentBlogger(data: PaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>> {
-    const {searchNameTerm, pageSize, pageNumber, sortDirection, sortBy} = data
-    const filter: FilterQuery<Blog> = { userId: userId };
+    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
+    const filter: FilterQuery<Blog> = { userId: userId, isBanned: false };
     if (searchNameTerm) {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
@@ -124,9 +143,37 @@ export class BlogsQueryRepositories {
   }
 
   async findBlog(id: string): Promise<BlogViewModel> {
-    const blog = await this.blogsModel.findOne({ id });
+    const blog = await this.blogsModel.findOne({ id, isBanned: false });
     if (!blog) throw new NotFoundExceptionMY(`Not found for id:${id}`);
     //returning Blog for View
     return this.mapperBlogForView(blog);
+  }
+
+  async getBanedUserForBlog(id: string, paginationInputModel: PaginationDto) {
+    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
+    const filter: FilterQuery<Blog> = { id, isBanned: true };
+    if (searchNameTerm) {
+      filter.name = { $regex: searchNameTerm, $options: "i" };
+    }
+    const foundBanStatusForBlog = await this.blogBanInfoModel
+      .find(filter)
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .sort({ [sortBy]: sortDirection })
+      .lean();
+    //mapped for View
+    const mappedBlogs = foundBanStatusForBlog.map((blog) => this.mapperBanInfo(blog));
+    //counting blogs user
+    const totalCount = await this.blogBanInfoModel.countDocuments(filter);
+    const pagesCountRes = Math.ceil(totalCount / pageSize);
+    // Found Blogs with pagination!
+    return new PaginationViewModel(
+      pagesCountRes,
+      pageNumber,
+      pageSize,
+      totalCount,
+      mappedBlogs
+    );
+
   }
 }

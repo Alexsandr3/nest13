@@ -11,17 +11,12 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TestingModule } from "./modules/testing/testing.module";
 import { DeviceModule } from "./modules/security/device.module";
-import { ThrottlerModule } from "@nestjs/throttler";
 import { BloggerModule } from "./modules/blogger/blogger.module";
 import { SaModule } from "./modules/sa/sa.module";
 import { ConfigType, getConfiguration } from "./config/configuration";
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot({
-      ttl: 10,
-      limit: 5
-    }),
     ConfigModule.forRoot({ isGlobal: true, load: [getConfiguration] }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],

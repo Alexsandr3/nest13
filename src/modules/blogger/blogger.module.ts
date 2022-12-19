@@ -35,6 +35,10 @@ import {
   UserBanInfoSchema,
 } from '../users/domain/users-ban-info-schema-Model';
 import { User, UserSchema } from '../users/domain/users-schema-Model';
+import { BlogBanInfo, BlogBanInfoSchema } from "./domain/ban-user-for-current-blog-schema-Model";
+import {
+  UpdateBanUserForCurrentBlogHandler
+} from "./application/use-cases/handlers/update-ban-user-for-current-blog-handler";
 
 const handlers = [
   CreateBlogHandler,
@@ -43,6 +47,7 @@ const handlers = [
   CreatePostHandler,
   DeletePostHandler,
   UpdatePostHandler,
+  UpdateBanUserForCurrentBlogHandler
 ];
 const adapters = [
   BlogsRepositories,
@@ -64,6 +69,7 @@ const guards = [JwtAuthGuard];
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
       { name: User.name, schema: UserSchema },
       { name: UserBanInfo.name, schema: UserBanInfoSchema },
+      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
     CqrsModule,
   ],

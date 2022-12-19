@@ -8,8 +8,10 @@ import { BlogsQueryRepositories } from '../blogs/infrastructure/query-repository
 import { Blog, BlogSchema } from '../blogger/domain/blog-schema-Model';
 import { BindBlogHandler } from './application/use-cases/handlers/bind-blog-handler';
 import { BlogsRepositories } from '../blogs/infrastructure/blogs.repositories';
+import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { UpdateBanInfoForBlogHandler } from "./application/use-cases/handlers/update-ban-info-for-blog-handler";
 
-const handlers = [BindBlogHandler];
+const handlers = [BindBlogHandler, UpdateBanInfoForBlogHandler];
 const adapters = [BlogsQueryRepositories, BlogsRepositories];
 const guards = [BasicAuthGuard];
 
@@ -17,6 +19,7 @@ const guards = [BasicAuthGuard];
   imports: [
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
+      { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
       // { name: Post.name, schema: PostSchema },
       //{ name: Comment.name, schema: CommentSchema },
       //{ name: LikesStatus.name, schema: likesStatusSchema },

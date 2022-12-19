@@ -35,11 +35,14 @@ import {
   UserBanInfo,
   UserBanInfoSchema,
 } from '../users/domain/users-ban-info-schema-Model';
+import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
 
 const handlers = [CreateCommentHandler, UpdateLikeStatusHandler];
 const adapters = [
   PostsRepositories,
   PostsQueryRepositories,
+  BlogsRepositories,
   BlogsQueryRepositories,
   CommentsRepositories,
   CommentsQueryRepositories,
@@ -58,6 +61,7 @@ const guards = [JwtAuthGuard, BasicAuthGuard, JwtForGetGuard];
       { name: Comment.name, schema: CommentSchema },
       { name: User.name, schema: UserSchema },
       { name: UserBanInfo.name, schema: UserBanInfoSchema },
+      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
     CqrsModule,
   ],

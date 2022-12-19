@@ -22,3 +22,7 @@ export class BlogViewForSaModel {
 export class BlogOwnerInfoType {
   constructor(public userId: string, public userLogin: string) {}
 }
+
+
+
+

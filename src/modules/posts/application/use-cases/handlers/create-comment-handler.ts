@@ -2,10 +2,11 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepositories } from '../../../infrastructure/posts-repositories';
 import { CreateCommentCommand } from '../create-comment-command';
 import { CommentsViewType } from '../../../../comments/infrastructure/comments-View-Model';
-import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
+import { NotFoundExceptionMY, UnauthorizedExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 import { PreparationCommentForDB } from '../../../../comments/domain/comment-preparation-for-DB';
 import { UsersQueryRepositories } from '../../../../users/infrastructure/query-reposirory/users-query.reposit';
 import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
+import { BlogsRepositories } from "../../../../blogs/infrastructure/blogs.repositories";
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentHandler
@@ -13,8 +14,10 @@ export class CreateCommentHandler
 {
   constructor(
     private readonly postsRepositories: PostsRepositories,
+    private readonly blogsRepositories: BlogsRepositories,
     private readonly commentsRepositories: CommentsRepositories,
     private readonly usersQueryRepositories: UsersQueryRepositories,
+
   ) {}
 
   async execute(command: CreateCommentCommand): Promise<CommentsViewType> {
@@ -25,6 +28,11 @@ export class CreateCommentHandler
     const post = await this.postsRepositories.findPost(id);
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     const user = await this.usersQueryRepositories.findUser(userId);
+
+    //check status ban user
+    const statusBan = await this.blogsRepositories.findStatusBan(userId, post.blogId)
+    console.log("statusBan--", statusBan);
+    if(statusBan.isBanned === true) throw new UnauthorizedExceptionMY(`For user comment banned`)
     //preparation comment for save in DB
     const newComment = new PreparationCommentForDB(
       false,
