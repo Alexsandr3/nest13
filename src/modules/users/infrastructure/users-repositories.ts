@@ -5,17 +5,11 @@ import { User, UserDocument } from "../domain/users-schema-Model";
 import { PreparationUserForDB } from "../domain/user-preparation-for-DB";
 import { ObjectId } from "mongodb";
 import { UsersDBType } from "../domain/user-DB-Type";
-import {
-  UserBanInfo,
-  UserBanInfoDocument
-} from "../domain/users-ban-info-schema-Model";
 
 @Injectable()
 export class UsersRepositories {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(UserBanInfo.name)
-    private readonly userBanInfoModel: Model<UserBanInfoDocument>
   ) {
   }
 

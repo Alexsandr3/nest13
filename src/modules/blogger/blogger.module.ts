@@ -30,15 +30,12 @@ import {
 import { DeletePostHandler } from './application/use-cases/handlers/delete-post-handler';
 import { UpdatePostHandler } from './application/use-cases/handlers/update-post-handler';
 import { UsersQueryRepositories } from '../users/infrastructure/query-reposirory/users-query.reposit';
-import {
-  UserBanInfo,
-  UserBanInfoSchema,
-} from '../users/domain/users-ban-info-schema-Model';
 import { User, UserSchema } from '../users/domain/users-schema-Model';
 import { BlogBanInfo, BlogBanInfoSchema } from "./domain/ban-user-for-current-blog-schema-Model";
 import {
   UpdateBanUserForCurrentBlogHandler
 } from "./application/use-cases/handlers/update-ban-user-for-current-blog-handler";
+import { UsersRepositories } from "../users/infrastructure/users-repositories";
 
 const handlers = [
   CreateBlogHandler,
@@ -54,6 +51,7 @@ const adapters = [
   BlogsQueryRepositories,
   PostsRepositories,
   PostsQueryRepositories,
+  UsersRepositories,
   UsersQueryRepositories,
   JwtService,
 ];
@@ -68,7 +66,7 @@ const guards = [JwtAuthGuard];
       { name: LikesStatus.name, schema: LikesStatusSchema },
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
       { name: User.name, schema: UserSchema },
-      { name: UserBanInfo.name, schema: UserBanInfoSchema },
+      //{ name: UserBanInfo.name, schema: UserBanInfoSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
     CqrsModule,
