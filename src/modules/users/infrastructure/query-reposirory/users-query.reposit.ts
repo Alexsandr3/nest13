@@ -44,23 +44,25 @@ export class UsersQueryRepositories {
 
   async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
     const { banStatus, pageNumber, pageSize, searchEmailTerm, searchLoginTerm, sortDirection, sortBy } = data;
-    let isBanned;
-    if (banStatus === "true") {
-      isBanned = true;
+    const filter: FilterQuery<User> = {};
+    if (banStatus === "banned") {
+      filter["banInfo.isBanned"] = true;
     }
-    if (banStatus === "false") {
-      isBanned = false;
+    if (banStatus === "notBanned") {
+      filter["banInfo.isBanned"] = false;
     }
-    const filter: FilterQuery<User> = banStatus ? {
-      "accountData.email": { $regex: searchEmailTerm, $options: "i" }, "banInfo.isBanned": isBanned
-    } : { "accountData.email": { $regex: searchEmailTerm, $options: "i" } };
-    const filter2: FilterQuery<User> = banStatus ? {
-      "accountData.login": { $regex: searchLoginTerm, $options: "i" }, "banInfo.isBanned": isBanned
-    } : { "accountData.login": { $regex: searchLoginTerm, $options: "i" } };
-    console.log("filter2", filter2);
-    console.log("filter", filter);
+    if (searchEmailTerm.trim().length > 0 && searchLoginTerm.trim().length === 0) {
+      filter["accountData.email"] = { $regex: searchEmailTerm, $options: "i" };
+    }
+    if (searchLoginTerm.trim().length > 0 && searchEmailTerm.trim().length === 0) {
+      filter["accountData.login"] = { $regex: searchLoginTerm, $options: "i" };
+    }
+    if (searchLoginTerm.trim().length > 0 && searchEmailTerm.trim().length > 0) {
+      filter["$or"] = [{ "accountData.login": { $regex: searchLoginTerm, $options: "i" } },
+        { "accountData.email": { $regex: searchEmailTerm, $options: "i" } }];
+    }
     const foundsUsers = await this.userModel
-      .find({ $or: [filter, filter2] })
+      .find(filter)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [`accountData.${sortBy}`]: sortDirection })
@@ -69,7 +71,7 @@ export class UsersQueryRepositories {
     const mappedUsers = foundsUsers.map((user) => this.mappedForUser(user));
     const items = await Promise.all(mappedUsers);
     //counting users
-    const totalCount = await this.userModel.countDocuments({ $or: [filter, filter2] });
+    const totalCount = await this.userModel.countDocuments(filter);
     const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found Users with pagination!
     return new PaginationViewModel(

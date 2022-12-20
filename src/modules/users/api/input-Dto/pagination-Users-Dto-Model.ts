@@ -1,9 +1,15 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
-import { Transform } from 'class-transformer';
+import { Transform } from "class-transformer";
 
 export enum SortDirectionType {
-  Asc = 'asc',
-  Desc = 'desc',
+  Asc = "asc",
+  Desc = "desc",
+}
+
+export enum BanStatusType {
+  all = "all",
+  banned = "banned",
+  notBanned = "notBanned",
 }
 
 export class PaginationUsersDto {
@@ -11,8 +17,9 @@ export class PaginationUsersDto {
    * banStatus by parameters
    */
   @IsString()
+  @IsEnum(BanStatusType)
   @IsOptional()
-  banStatus: string;
+  banStatus: BanStatusType = BanStatusType.all;
   /**
    *  pageNumber is number of portions that should be returned
    */
@@ -33,7 +40,7 @@ export class PaginationUsersDto {
   @Transform(({ value }) => value.trim())
   @IsString()
   @IsOptional()
-  sortBy = 'createdAt';
+  sortBy = "createdAt";
   /**
    * Sort by desc or asc
    */
@@ -46,11 +53,11 @@ export class PaginationUsersDto {
    */
   @IsString()
   @IsOptional()
-  searchLoginTerm = '';
+  searchLoginTerm = "";
   /**
    *  Search term for user Email: Email should contains this term in any position
    */
   @IsString()
   @IsOptional()
-  searchEmailTerm = '';
+  searchEmailTerm = "";
 }
