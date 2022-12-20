@@ -25,9 +25,7 @@ export class UsersQueryRepositories {
   ) {
   }
 
-  private async mappedForUser(
-    user: LeanDocument<UserDocument>
-  ): Promise<UsersViewType> {
+  private async mappedForUser(user: LeanDocument<UserDocument>): Promise<UsersViewType> {
     const banInfoDocument = await this.userBanInfoModel.findOne({
       userId: user._id.toString()
     });
@@ -53,9 +51,7 @@ export class UsersQueryRepositories {
     return this.mappedForUser(user);
   }
 
-  async findUsers(
-    data: PaginationUsersDto
-  ): Promise<PaginationViewModel<UsersViewType[]>> {
+  async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
     const { pageNumber, pageSize, searchEmailTerm, searchLoginTerm, sortDirection, sortBy } = data;
     const foundsUsers = await this.userModel
       .find({

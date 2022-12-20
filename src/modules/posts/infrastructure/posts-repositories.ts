@@ -77,6 +77,7 @@ export class PostsRepositories {
     );
     return result.matchedCount === 1;
   }
+
   async updateStatusBanPost(blogId: string, isBanned: boolean): Promise<boolean> {
     const result = await this.postModel.updateMany(
       { blogId },

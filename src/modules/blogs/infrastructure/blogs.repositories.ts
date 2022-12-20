@@ -80,7 +80,7 @@ export class BlogsRepositories {
   }
 
   async updateBanStatusForBlog(blogId: string, isBanned: boolean): Promise<boolean> {
-    const result = await this.blogsModel.updateOne({ blogId }, {
+    const result = await this.blogsModel.updateOne({ _id: new Object(blogId) }, {
       $set: {
         isBanned,
         banDate: new Date().toISOString()

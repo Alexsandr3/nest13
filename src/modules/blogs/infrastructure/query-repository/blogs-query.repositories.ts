@@ -59,7 +59,6 @@ export class BlogsQueryRepositories {
       object.isBanned,
       object.banDate
     );
-
     return new BlogViewForSaModel(
       object._id.toString(),
       object.name,
