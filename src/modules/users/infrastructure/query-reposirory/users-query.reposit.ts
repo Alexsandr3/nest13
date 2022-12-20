@@ -35,9 +35,9 @@ export class UsersQueryRepositories {
   }
 
   async findUser(id: string): Promise<UsersViewType> {
-    const user = await this.userModel.findOne({ _id: new Object(id) }).lean();
+    const user = await this.userModel.findOne({ _id: new Object(id) });
     if (!user) {
-      throw new NotFoundExceptionMY(`Not found for id: ${id}`);
+      throw new NotFoundExceptionMY(`Not found user with id: ${id}`);
     }
     return this.mappedForUser(user);
   }
