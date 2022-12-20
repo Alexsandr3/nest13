@@ -20,6 +20,7 @@ import { UpdateBlogDto } from "./input-dtos/update-Blog-Dto-Model";
 import { UpdateBanInfoForUserDto } from "./input-dtos/update-ban-info-for-User-Dto-Model";
 import { UpdateBanUserForCurrentBlogCommand } from "../application/use-cases/update-ban-User-For-Current-Blog-command";
 import { PostsQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-query.reposit";
+import { ForbiddenExceptionMY } from "../../../helpers/My-HttpExceptionFilter";
 
 @UseGuards(JwtAuthGuard)
 @Controller(`blogger`)
@@ -100,7 +101,8 @@ export class BloggersController {
   async getBanedUser(@CurrentUserIdBlogger() userId: string,
                      @Param(`id`, IdValidationPipe) id: string,
                      @Query() paginationInputModel: PaginationDto) {
-    await this.blogsQueryRepositories.findBlog(id)
+    const blog = await this.blogsQueryRepositories.findBlogWithMap(id)
+    if(blog.userId === userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`)
     return await this.blogsQueryRepositories.getBanedUserForBlog(id, paginationInputModel);
   }
 

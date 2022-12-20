@@ -158,6 +158,12 @@ export class BlogsQueryRepositories {
     //returning Blog for View
     return this.mapperBlogForView(blog);
   }
+  async findBlogWithMap(id: string): Promise<BlogDocument> {
+    const blog = await this.blogsModel.findOne({ _id: new Object(id), isBanned: false });
+    if (!blog) throw new NotFoundExceptionMY(`Not found for id:${id}`);
+    //returning Blog for View
+    return blog;
+  }
 
   async getBanedUserForBlog(id: string, paginationInputModel: PaginationDto) {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
