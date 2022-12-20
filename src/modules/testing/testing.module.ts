@@ -18,10 +18,6 @@ import {
   LikesPostsStatus,
   LikesPostsStatusSchema,
 } from '../posts/domain/likesPost-schema-Model';
-import {
-  UserBanInfo,
-  UserBanInfoSchema,
-} from '../users/domain/users-ban-info-schema-Model';
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 
 @Module({
@@ -34,7 +30,6 @@ import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-c
       { name: Device.name, schema: DeviceSchema },
       { name: LikesStatus.name, schema: LikesStatusSchema },
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
-      { name: UserBanInfo.name, schema: UserBanInfoSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
   ],

@@ -100,6 +100,7 @@ export class BloggersController {
   async getBanedUser(@CurrentUserIdBlogger() userId: string,
                      @Param(`id`, IdValidationPipe) id: string,
                      @Query() paginationInputModel: PaginationDto) {
+    await this.blogsQueryRepositories.findBlog(id)
     return await this.blogsQueryRepositories.getBanedUserForBlog(id, paginationInputModel);
   }
 

@@ -8,10 +8,6 @@ import {
 } from '../comments/domain/comments-schema-Model';
 import { Post, PostDocument } from '../posts/domain/post-schema-Model';
 import { User, UserDocument } from '../users/domain/users-schema-Model';
-import {
-  UserBanInfo,
-  UserBanInfoDocument,
-} from '../users/domain/users-ban-info-schema-Model';
 import { Device, DeviceDocument } from '../security/domain/device-schema-Model';
 import {
   LikesPostsStatus,
@@ -37,8 +33,6 @@ export class TestingService {
     private readonly likesStatusModel: Model<LikesStatusDocument>,
     @InjectModel(LikesPostsStatus.name)
     private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>,
-    @InjectModel(UserBanInfo.name)
-    private readonly userBanInfoModel: Model<UserBanInfoDocument>,
     @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
   ) {}
   async deleteAll() {
@@ -49,8 +43,6 @@ export class TestingService {
     await this.deviceModel.deleteMany();
     await this.likesStatusModel.deleteMany();
     await this.likesPostsStatusModel.deleteMany();
-    await this.userBanInfoModel.deleteMany();
-    await this.userBanInfoModel.deleteMany();
     await this.blogBanInfoModel.deleteMany();
     return;
   }

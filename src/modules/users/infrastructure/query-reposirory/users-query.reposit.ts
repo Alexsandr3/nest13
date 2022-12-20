@@ -55,11 +55,10 @@ export class UsersQueryRepositories {
       "accountData.email": { $regex: searchEmailTerm, $options: "i" }, "banInfo.isBanned": isBanned
     } : { "accountData.email": { $regex: searchEmailTerm, $options: "i" } };
     const filter2: FilterQuery<User> = banStatus ? {
-      "accountData.login": {
-        $regex: searchLoginTerm,
-        $options: "i"
-      }, "banInfo.isBanned": isBanned
+      "accountData.login": { $regex: searchLoginTerm, $options: "i" }, "banInfo.isBanned": isBanned
     } : { "accountData.login": { $regex: searchLoginTerm, $options: "i" } };
+    console.log("filter2", filter2);
+    console.log("filter", filter);
     const foundsUsers = await this.userModel
       .find({ $or: [filter, filter2] })
       .skip((pageNumber - 1) * pageSize)

@@ -22,10 +22,6 @@ import { NewPasswordHandler } from "./application/use-cases/handlers/new-passwor
 import { RecoveryHandler } from "./application/use-cases/handlers/recovery-handler";
 import { LoginHandler } from "./application/use-cases/handlers/login-handler";
 import { RefreshHandler } from "./application/use-cases/handlers/refresh-handler";
-import {
-  UserBanInfo,
-  UserBanInfoSchema
-} from "../users/domain/users-ban-info-schema-Model";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 const handlers = [
@@ -55,7 +51,6 @@ const guards = [RefreshGuard, JwtAuthGuard];
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Device.name, schema: DeviceSchema },
-      { name: UserBanInfo.name, schema: UserBanInfoSchema }
     ]),
     /*    JwtModule.register({
           secret: settings.ACCESS_TOKEN_SECRET,
