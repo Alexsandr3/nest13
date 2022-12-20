@@ -1,24 +1,23 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PostsRepositories } from '../../../infrastructure/posts-repositories';
-import { CreateCommentCommand } from '../create-comment-command';
-import { CommentsViewType } from '../../../../comments/infrastructure/comments-View-Model';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { PostsRepositories } from "../../../infrastructure/posts-repositories";
+import { CreateCommentCommand } from "../create-comment-command";
+import { CommentsViewType } from "../../../../comments/infrastructure/comments-View-Model";
 import { NotFoundExceptionMY, UnauthorizedExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { PreparationCommentForDB } from '../../../../comments/domain/comment-preparation-for-DB';
-import { UsersQueryRepositories } from '../../../../users/infrastructure/query-reposirory/users-query.reposit';
-import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
+import { PreparationCommentForDB } from "../../../../comments/domain/comment-preparation-for-DB";
+import { UsersQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-query.reposit";
+import { CommentsRepositories } from "../../../../comments/infrastructure/comments.repositories";
 import { BlogsRepositories } from "../../../../blogs/infrastructure/blogs.repositories";
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentHandler
-  implements ICommandHandler<CreateCommentCommand>
-{
+  implements ICommandHandler<CreateCommentCommand> {
   constructor(
     private readonly postsRepositories: PostsRepositories,
     private readonly blogsRepositories: BlogsRepositories,
     private readonly commentsRepositories: CommentsRepositories,
-    private readonly usersQueryRepositories: UsersQueryRepositories,
-
-  ) {}
+    private readonly usersQueryRepositories: UsersQueryRepositories
+  ) {
+  }
 
   async execute(command: CreateCommentCommand): Promise<CommentsViewType> {
     const { content } = command.inputCommentModel;
@@ -29,8 +28,10 @@ export class CreateCommentHandler
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     const user = await this.usersQueryRepositories.findUser(userId);
     //check status ban user
-    const statusBan = await this.blogsRepositories.findStatusBan(userId, post.blogId)
-    if(statusBan.isBanned === true) throw new UnauthorizedExceptionMY(`For user comment banned`)
+    const statusBan = await this.blogsRepositories.findStatusBan(userId, post.blogId);
+    if (statusBan && statusBan.isBanned === true) {
+      throw new UnauthorizedExceptionMY(`For user comment banned`);
+    }
     //preparation comment for save in DB
     const newComment = new PreparationCommentForDB(
       false,
@@ -38,7 +39,7 @@ export class CreateCommentHandler
       content,
       userId,
       user.login,
-      new Date().toISOString(),
+      new Date().toISOString()
     );
     return await this.commentsRepositories.createCommentByIdPost(newComment);
   }
