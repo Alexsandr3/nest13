@@ -63,7 +63,6 @@ export class BlogsRepositories {
       { blogId, userId },
       { $set: { isBanned, banReason, banDate, login, ownerId, email, createdAt } }
     );
-
     return result.matchedCount === 1;
   }
 

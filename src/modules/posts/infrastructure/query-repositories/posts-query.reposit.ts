@@ -258,7 +258,6 @@ export class PostsQueryRepositories {
   }
 
   private async mappedCommentsForBlogger(post: PostDBType, userId: string | null, paginationInputModel: PaginationDto) {
-
     const { sortDirection, sortBy, pageSize, pageNumber } = paginationInputModel;
     const postId = post._id.toString();
     const filter = { postId };

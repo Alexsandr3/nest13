@@ -2,7 +2,10 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { PostsRepositories } from "../../../infrastructure/posts-repositories";
 import { CreateCommentCommand } from "../create-comment-command";
 import { CommentsViewType } from "../../../../comments/infrastructure/comments-View-Model";
-import { NotFoundExceptionMY, UnauthorizedExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
+import {
+  ForbiddenExceptionMY,
+  NotFoundExceptionMY,
+} from "../../../../../helpers/My-HttpExceptionFilter";
 import { PreparationCommentForDB } from "../../../../comments/domain/comment-preparation-for-DB";
 import { UsersQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-query.reposit";
 import { CommentsRepositories } from "../../../../comments/infrastructure/comments.repositories";
@@ -30,7 +33,7 @@ export class CreateCommentHandler
     //check status ban user
     const statusBan = await this.blogsRepositories.findStatusBan(userId, post.blogId);
     if (statusBan && statusBan.isBanned === true) {
-      throw new UnauthorizedExceptionMY(`For user comment banned`);
+      throw new ForbiddenExceptionMY(`For user comment banned`);
     }
     //preparation comment for save in DB
     const newComment = new PreparationCommentForDB(
