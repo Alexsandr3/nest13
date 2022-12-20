@@ -28,10 +28,8 @@ export class CreateCommentHandler
     const post = await this.postsRepositories.findPost(id);
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
     const user = await this.usersQueryRepositories.findUser(userId);
-
     //check status ban user
     const statusBan = await this.blogsRepositories.findStatusBan(userId, post.blogId)
-    console.log("statusBan--", statusBan);
     if(statusBan.isBanned === true) throw new UnauthorizedExceptionMY(`For user comment banned`)
     //preparation comment for save in DB
     const newComment = new PreparationCommentForDB(

@@ -61,8 +61,6 @@ export class CommentsRepositories {
     newComment: PreparationCommentForDB,
   ): Promise<CommentsViewType> {
     const createComment = await this.commentsModel.create(newComment);
-    //TODO I need check???
-    if (!createComment) throw new Error(`not today`);
     //default items
     const likesInfo = new LikesInfoViewModel(0, 0, LikeStatusType.None);
     //returning comment for View
