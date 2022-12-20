@@ -88,7 +88,6 @@ export class PostsQueryRepositories {
     );
   }
 
-
   private async postForView(post: PostDBType, userId: string | null): Promise<PostViewModel> {
     //find likes status
     let myStatus: string = LikeStatusType.None;
@@ -144,7 +143,6 @@ export class PostsQueryRepositories {
       extendedLikesInfo
     );
   }
-
 
   async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
     //search all posts with pagination by blogId
@@ -248,29 +246,20 @@ export class PostsQueryRepositories {
     );
   }
 
-  async findCommentsBloggerForPosts(userId: string, paginationInputModel: PaginationDto) {
-    const filter = { userId };
-    //search all posts with pagination by blogId
-    const foundPosts = await this.postModel.find(filter);
-    //mapped posts for view
-    const mappedPosts = foundPosts.map((post) => this.mappedCommentsForBlogger(post, userId, paginationInputModel));
-    return await Promise.all(mappedPosts);
-  }
 
-  private async mappedCommentsForBlogger(post: PostDBType, userId: string | null, paginationInputModel: PaginationDto) {
+
+  async findCommentsBloggerForPosts(userId: string, paginationInputModel: PaginationDto) {
     const { sortDirection, sortBy, pageSize, pageNumber } = paginationInputModel;
-    const postId = post._id.toString();
-    const filter = { postId };
-    //find comments
-    const comments = await this.commentModel.find(filter)
+    //search all comments with pagination
+    const foundComments = await this.commentModel.find({ ownerId: userId })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection })
       .lean();
-    //mapped comments
-    const mappedComments = comments.map((comment) => this.bloggerCommentViewModel(comment, post, userId));
-    const items = await Promise.all(mappedComments);
-    const totalCount = await this.commentModel.countDocuments(filter);
+    //mapped posts for view
+    const mappedPosts = foundComments.map((comment) => this.bloggerCommentViewModel(comment, userId));
+    const items = await Promise.all(mappedPosts);
+    const totalCount = await this.commentModel.countDocuments({ ownerId: userId });
     //pages count
     const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found posts with pagination
@@ -282,8 +271,7 @@ export class PostsQueryRepositories {
       items
     );
   }
-
-  private async bloggerCommentViewModel(comment: CommentsDBType, post: PostDBType, userId: string | null) {
+  private async bloggerCommentViewModel(comment: CommentsDBType, userId: string | null) {
     //const { blogId } = post;
     //const banStatus = await this.blogBanInfoModel.findOne({ blogId, userId: comment.userId, isBanned: false });
 
@@ -309,6 +297,8 @@ export class PostsQueryRepositories {
       totalCountDislike,
       myStatus
     );
+
+    const post = await this.postModel.findOne({_id: new Object(comment.postId)})
     const commentatorInfo = new CommentatorInfoModel(
       comment.userId,
       comment.userLogin

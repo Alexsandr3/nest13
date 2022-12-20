@@ -39,6 +39,7 @@ export class CreateCommentHandler
     const newComment = new PreparationCommentForDB(
       false,
       post._id.toString(),
+      post.userId,
       content,
       userId,
       user.login,
