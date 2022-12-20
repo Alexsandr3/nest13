@@ -21,15 +21,9 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
   ) {}
 
   private async validateUser(loginInputModel: LoginDto): Promise<UsersDBType> {
-
     //find user by login or email
-    const user = await this.usersRepositories.findByLoginOrEmail(
-      loginInputModel.loginOrEmail,
-    );
-    if (!user)
-      throw new UnauthorizedExceptionMY(
-        `User '${loginInputModel.loginOrEmail}' is not authorized `,
-      );
+    const user = await this.usersRepositories.findByLoginOrEmail(loginInputModel.loginOrEmail,);
+    if (!user) throw new UnauthorizedExceptionMY(`User '${loginInputModel.loginOrEmail}' is not authorized `,);
     //check passwordHash
     const result = await bcrypt.compare(
       loginInputModel.password,
