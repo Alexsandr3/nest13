@@ -60,8 +60,8 @@ export class BlogsRepositories {
   async updateBanStatus(banStatus: BanUserForBlogPreparationForDB): Promise<boolean> {
     const { blogId, isBanned, banReason, banDate, userId, login, ownerId, email, createdAt } = banStatus;
     const result = await this.blogBanInfoModel.updateOne(
-      { blogId: blogId },
-      { $set: { userId, isBanned, banReason, banDate, login, ownerId, email, createdAt } }
+      { blogId, userId },
+      { $set: { isBanned, banReason, banDate, login, ownerId, email, createdAt } }
     );
 
     return result.matchedCount === 1;

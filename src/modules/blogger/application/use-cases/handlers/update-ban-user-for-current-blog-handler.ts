@@ -25,7 +25,7 @@ export class UpdateBanUserForCurrentBlogHandler
     if (!foundBlog) throw new NotFoundExceptionMY(`Not found blog with id: ${id}`);
     if (userId !== foundBlog.userId)
       throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
-    const banStatus = new BanUserForBlogPreparationForDB(
+  /*  const banStatus = new BanUserForBlogPreparationForDB(
       foundBlog._id.toString(),
       userId,
       foundUser.id,
@@ -36,7 +36,7 @@ export class UpdateBanUserForCurrentBlogHandler
       null,
       null
     );
-    await this.blogsRepositories.createBanStatus(banStatus)
+    await this.blogsRepositories.createBanStatus(banStatus)*/
     if (isBanned === false) {
       const banDate = null;
       const banReason = null;
@@ -70,8 +70,8 @@ export class UpdateBanUserForCurrentBlogHandler
         banDate,
         banReason
       );
-      const banInfo = await this.blogsRepositories.updateBanStatus(banStatus);
-      if (!banInfo)
+      const banInfoId = await this.blogsRepositories.createBanStatus(banStatus);
+      if (!banInfoId)
         throw new BadRequestExceptionMY({
           message: `New data not received for update`,
           field: `database`
