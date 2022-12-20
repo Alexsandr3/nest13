@@ -11,7 +11,6 @@ import { PreparationUserForDB } from "../../../domain/user-preparation-for-DB";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../create-user-command";
 import { UsersService } from "../../../domain/users.service";
-import { PreparationUserBanInfoForDB } from "../../../domain/user-ban-info-preparation-for-DB";
 
 
 @CommandHandler(CreateUserCommand)
@@ -47,16 +46,14 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         recoveryCode: randomUUID(),
         expirationDate: add(new Date(), { hours: 1 }),
         isConfirmation: false
+      },
+      {
+        isBanned: false,
+        banDate: null,
+        banReason: null
       }
     );
     const userId = await this.usersRepositories.createUser(user);
-    const userBanInfo = new PreparationUserBanInfoForDB(
-      userId,
-      false,
-      null,
-      null
-    );
-    await this.usersRepositories.createBanInfoUser(userBanInfo);
     //finding user for View
     const foundUser = await this.usersQueryRepositories.findUser(userId);
     try {

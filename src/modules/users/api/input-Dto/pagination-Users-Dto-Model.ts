@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { Transform } from 'class-transformer';
 
 export enum SortDirectionType {
@@ -7,6 +7,12 @@ export enum SortDirectionType {
 }
 
 export class PaginationUsersDto {
+  /**
+   * banStatus by parameters
+   */
+  @IsString()
+  @IsOptional()
+  banStatus: string;
   /**
    *  pageNumber is number of portions that should be returned
    */

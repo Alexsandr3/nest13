@@ -72,9 +72,13 @@ export class BlogsQueryRepositories {
 
   async findBlogs(data: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
+    let filter: FilterQuery<Blog> = searchNameTerm ? {
+      name: { $regex: searchNameTerm, $options: "i" },
+      isBanned: false
+    } : { isBanned: false };
     //search all blogs
     const foundBlogs = await this.blogsModel
-      .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" }, isBanned: false } : { isBanned: false })
+      .find(filter)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection })

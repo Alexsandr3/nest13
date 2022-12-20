@@ -1,8 +1,11 @@
+import { PreparationUserBanInfoForDB } from "./user-ban-info-preparation-for-DB";
+
 export class PreparationUserForDB {
   constructor(
     public accountData: AccountDataType,
     public emailConfirmation: EmailConfirmationType,
     public emailRecovery: EmailRecoveryType,
+    public banInfo: PreparationUserBanInfoForDB,
   ) {}
 }
 
