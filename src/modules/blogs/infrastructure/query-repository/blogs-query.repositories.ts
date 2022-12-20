@@ -166,9 +166,9 @@ export class BlogsQueryRepositories {
     return blog;
   }
 
-  async getBanedUserForBlog(id: string, paginationInputModel: PaginationDto) {
+  async getBanedUserForBlog(blogId: string, paginationInputModel: PaginationDto) {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
-    const filter: FilterQuery<BlogBanInfo> = { id, isBanned: true };
+    const filter: FilterQuery<BlogBanInfo> = { blogId, isBanned: true };
     if (searchNameTerm) {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
