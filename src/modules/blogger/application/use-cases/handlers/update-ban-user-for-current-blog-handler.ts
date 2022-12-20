@@ -1,7 +1,11 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UpdateBanUserForCurrentBlogCommand } from "../update-ban-User-For-Current-Blog-command";
 import { UsersQueryRepositories } from "../../../../users/infrastructure/query-reposirory/users-query.reposit";
-import { BadRequestExceptionMY, NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
+import {
+  BadRequestExceptionMY,
+  ForbiddenExceptionMY,
+  NotFoundExceptionMY
+} from "../../../../../helpers/My-HttpExceptionFilter";
 import { BlogsRepositories } from "../../../../blogs/infrastructure/blogs.repositories";
 import { BanUserForBlogPreparationForDB } from "../../../domain/ban-user-for-blog-preparation-for-DB";
 
@@ -19,6 +23,8 @@ export class UpdateBanUserForCurrentBlogHandler
     if (!foundUser) throw new NotFoundExceptionMY(`Not found user with id: ${id}`);
     const foundBlog = await this.blogsRepositories.findBlog(blogId)
     if (!foundBlog) throw new NotFoundExceptionMY(`Not found blog with id: ${id}`);
+    if (userId !== foundBlog.userId)
+      throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     const banStatus = new BanUserForBlogPreparationForDB(
       foundBlog._id.toString(),
       userId,
@@ -75,6 +81,4 @@ export class UpdateBanUserForCurrentBlogHandler
   }
 }
 
-/*
 
-*/
