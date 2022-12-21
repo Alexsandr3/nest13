@@ -49,7 +49,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v1
       - name: Deploy to Vercel Action
-        uses: BetaHuhn/deploy-to-vercel-action@v2
+        uses: BetaHuhn/deploy-to-vercel-action@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
