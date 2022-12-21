@@ -1,5 +1,6 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { Trim } from "../../../../helpers/decorator-trim";
+import { Transform } from "class-transformer";
 
 export enum SortDirectionType {
   Asc = "asc",
@@ -23,12 +24,14 @@ export class PaginationUsersDto {
   /**
    *  pageNumber is number of portions that should be returned
    */
+  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
   pageNumber = 1;
   /**
    * pageSize is portions size that should be returned
    */
+  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
   pageSize = 10;
