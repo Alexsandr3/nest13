@@ -12,9 +12,5 @@
       "src": "/(.*)",
       "dest": "src/main.ts"
     }
-  ],
-  "github": {
-    "enabled": false,
-    "silent": true
-  }
+  ]
 }
