@@ -1,23 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from '../domain/users-schema-Model';
-import { PreparationUserForDB } from '../domain/user-preparation-for-DB';
-import { ObjectId } from 'mongodb';
-import { UsersDBType } from '../domain/user-DB-Type';
-import {
-  UserBanInfo,
-  UserBanInfoDocument,
-} from '../domain/users-ban-info-schema-Model';
-import { PreparationUserBanInfoForDB } from '../domain/user-ban-info-preparation-for-DB';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { User, UserDocument } from "../domain/users-schema-Model";
+import { PreparationUserForDB } from "../domain/user-preparation-for-DB";
+import { ObjectId } from "mongodb";
+import { UsersDBType } from "../domain/user-DB-Type";
 
 @Injectable()
 export class UsersRepositories {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(UserBanInfo.name)
-    private readonly userBanInfoModel: Model<UserBanInfoDocument>,
-  ) {}
+  ) {
+  }
 
   async createUser(newUser: PreparationUserForDB): Promise<string> {
     const createdUser = new this.userModel(newUser);
@@ -33,17 +27,15 @@ export class UsersRepositories {
   async findByLoginOrEmail(loginOrEmail: string): Promise<UsersDBType> {
     return this.userModel.findOne({
       $or: [
-        { 'accountData.email': loginOrEmail },
-        { 'accountData.login': loginOrEmail },
-      ],
+        { "accountData.email": loginOrEmail },
+        { "accountData.login": loginOrEmail }
+      ]
     });
   }
 
-  async findUserByConfirmationCode(
-    confirmationCode: string,
-  ): Promise<UsersDBType> {
+  async findUserByConfirmationCode(confirmationCode: string): Promise<UsersDBType> {
     return this.userModel.findOne({
-      'emailConfirmation.confirmationCode': confirmationCode,
+      "emailConfirmation.confirmationCode": confirmationCode
     });
   }
 
@@ -51,31 +43,27 @@ export class UsersRepositories {
     const result = await this.userModel.updateOne(
       { _id: _id },
       {
-        $set: { 'emailConfirmation.isConfirmation': true },
-      },
+        $set: { "emailConfirmation.isConfirmation": true }
+      }
     );
     return result.modifiedCount === 1;
   }
 
   async findUserByRecoveryCode(recoveryCode: string): Promise<UsersDBType> {
     return this.userModel.findOne({
-      'emailRecovery.recoveryCode': recoveryCode,
+      "emailRecovery.recoveryCode": recoveryCode
     });
   }
 
-  async updateCodeRecovery(
-    _id: ObjectId,
-    code: string,
-    expirationDate: Date,
-  ): Promise<boolean> {
+  async updateCodeRecovery(_id: ObjectId, code: string, expirationDate: Date): Promise<boolean> {
     const result = await this.userModel.updateOne(
       { _id: _id },
       {
         $set: {
-          'emailRecovery.recoveryCode': code,
-          'emailRecovery.expirationDate': expirationDate,
-        },
-      },
+          "emailRecovery.recoveryCode": code,
+          "emailRecovery.expirationDate": expirationDate
+        }
+      }
     );
     return result.modifiedCount === 1;
   }
@@ -85,62 +73,43 @@ export class UsersRepositories {
       { _id: _id },
       {
         $set: {
-          'accountData.passwordHash': passwordHash,
-          'emailRecovery.isConfirmation': true,
-        },
-      },
+          "accountData.passwordHash": passwordHash,
+          "emailRecovery.isConfirmation": true
+        }
+      }
     );
     return result.modifiedCount === 1;
   }
 
-  async updateCodeConfirmation(
-    _id: ObjectId,
-    code: string,
-    expirationDate: Date,
-  ): Promise<boolean> {
+  async updateCodeConfirmation(_id: ObjectId, code: string, expirationDate: Date): Promise<boolean> {
     const result = await this.userModel.updateOne(
       { _id: _id },
       {
         $set: {
-          'emailConfirmation.confirmationCode': code,
-          'emailConfirmation.expirationDate': expirationDate,
-        },
-      },
+          "emailConfirmation.confirmationCode": code,
+          "emailConfirmation.expirationDate": expirationDate
+        }
+      }
     );
     return result.modifiedCount === 1;
   }
 
-  async createBanInfoUser(
-    userBanInfo: PreparationUserBanInfoForDB,
-  ): Promise<string> {
-    const createdBanInfo = new this.userBanInfoModel(userBanInfo);
-    const banInfo = await createdBanInfo.save();
-    return banInfo._id.toString();
-  }
-
-  async deleteUserBanInfo(id: string): Promise<boolean> {
-    const result = await this.userBanInfoModel.deleteOne({ userId: id });
-    return result.deletedCount === 1;
-  }
-
-  async updateBanInfo(
-    userId: string,
-    isBanned: boolean,
-    banDate: string,
-    banReason: string,
-  ): Promise<boolean> {
-    const result = await this.userBanInfoModel.updateOne(
-      { userId: userId },
-      {
-        $set: { isBanned: isBanned, banDate: banDate, banReason: banReason },
-      },
+  async updateBanInfoUser(userId: string, isBanned: boolean, banDate: string, banReason: string): Promise<boolean> {
+    const result = await this.userModel.updateOne({ _id: new Object(userId) },
+      { $set: { "banInfo.isBanned": isBanned, "banInfo.banDate": banDate, "banInfo.banReason": banReason } }
     );
     return result.modifiedCount === 1;
   }
 
-  async findBanStatus(userId: string): Promise<UserBanInfoDocument> {
-    const banStatus = await this.userBanInfoModel.findOne({ userId: userId });
+  async findBanStatusUser(userId: string): Promise<UserDocument> {
+    const banStatus = await this.userModel.findOne({ userId: userId });
     if (!banStatus) return null;
     return banStatus;
+  }
+
+  async findUserByIdWithMapped(userId: string): Promise<UserDocument> {
+    const user = await this.userModel.findOne({ _id: new Object(userId) });
+    if (!user) return null;
+    return user;
   }
 }

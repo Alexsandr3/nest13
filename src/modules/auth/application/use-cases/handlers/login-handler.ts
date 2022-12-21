@@ -5,7 +5,7 @@ import { LoginCommand } from '../login-command';
 import { UsersService } from '../../../../users/domain/users.service';
 import { JwtService, TokensType } from '../../jwt.service';
 import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
-import { LoginDto } from '../../../api/dto/login-Dto-Model';
+import { LoginDto } from '../../../api/input-dtos/login-Dto-Model';
 import { UsersDBType } from '../../../../users/domain/user-DB-Type';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
@@ -21,15 +21,9 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
   ) {}
 
   private async validateUser(loginInputModel: LoginDto): Promise<UsersDBType> {
-
     //find user by login or email
-    const user = await this.usersRepositories.findByLoginOrEmail(
-      loginInputModel.loginOrEmail,
-    );
-    if (!user)
-      throw new UnauthorizedExceptionMY(
-        `User '${loginInputModel.loginOrEmail}' is not authorized `,
-      );
+    const user = await this.usersRepositories.findByLoginOrEmail(loginInputModel.loginOrEmail,);
+    if (!user) throw new UnauthorizedExceptionMY(`User '${loginInputModel.loginOrEmail}' is not authorized `,);
     //check passwordHash
     const result = await bcrypt.compare(
       loginInputModel.password,
@@ -43,12 +37,15 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     const { loginInputModel } = command;
     const ipAddress = command.ip;
     const deviceName = command.deviceName;
+    //validate user by login or email
     const user = await this.validateUser(loginInputModel);
-    const banStatus = await this.usersRepositories.findBanStatus(
+    //finding user and check ban status
+    const foundUser = await this.usersRepositories.findBanStatusUser(
       user._id.toString(),
     );
-    if (banStatus.isBanned === true) {
-      await this.deviceRepositories.deleteDevicesForBaned(banStatus.userId);
+    if (foundUser.banInfo.isBanned === true) {
+      //deleting a devices-sessions if the user is banned
+      await this.deviceRepositories.deleteDevicesForBannedUser(foundUser.id);
       throw new UnauthorizedExceptionMY(`Did you get a ban!`);
     }
     //preparation data for token

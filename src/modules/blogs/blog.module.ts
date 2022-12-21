@@ -22,6 +22,7 @@ import {
   LikesStatus,
   LikesStatusSchema,
 } from '../comments/domain/likesStatus-schema-Model';
+import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 
 const handlers = [];
 const adapters = [BlogsQueryRepositories, PostsQueryRepositories, JwtService];
@@ -34,6 +35,7 @@ const adapters = [BlogsQueryRepositories, PostsQueryRepositories, JwtService];
       { name: Comment.name, schema: CommentSchema },
       { name: LikesStatus.name, schema: LikesStatusSchema },
       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
+      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
     CqrsModule,
   ],

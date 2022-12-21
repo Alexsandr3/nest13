@@ -15,6 +15,7 @@ import { CurrentUserIdDevice } from "../../../decorators/current-device.param.de
 import { CommandBus } from "@nestjs/cqrs";
 import { DeleteDevicesCommand } from "../application/use-cases/delete-devices-command";
 import { DeleteDeviceByIdCommand } from "../application/use-cases/delete-device-by-id-command";
+import { DeviceIdDto } from "./input-dtos/deviceId-Dto-Model";
 
 @Controller(`security`)
 export class DevicesController {
@@ -37,9 +38,9 @@ export class DevicesController {
 
   @UseGuards(RefreshGuard)
   @HttpCode(204)
-  @Delete(`/devices/:id`)
+  @Delete(`/devices/:deviceId`)
   async deleteByDeviceId(@PayloadRefresh() payloadRefresh: PayloadType,
-                         @Param(`id`) id: string): Promise<boolean> {
-    return await this.commandBus.execute(new DeleteDeviceByIdCommand(id, payloadRefresh));
+                         @Param(`deviceId`) inputId: DeviceIdDto): Promise<boolean> {
+    return await this.commandBus.execute(new DeleteDeviceByIdCommand(inputId.deviceId, payloadRefresh));
   }
 }

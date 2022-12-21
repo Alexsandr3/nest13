@@ -11,9 +11,9 @@ import {
 } from "@nestjs/common";
 import { CreateUserDto } from "../../users/api/input-Dto/create-User-Dto-Model";
 import { ConfirmationCodeDto } from "../../users/api/input-Dto/confirmation-code-Dto-Model";
-import { LoginDto } from "./dto/login-Dto-Model";
-import { EmailRecoveryDto } from "./dto/email-Recovery-Dto-Model";
-import { NewPasswordDto } from "./dto/new-Password-Dto-Model";
+import { LoginDto } from "./input-dtos/login-Dto-Model";
+import { EmailRecoveryDto } from "./input-dtos/email-Recovery-Dto-Model";
+import { NewPasswordDto } from "./input-dtos/new-Password-Dto-Model";
 import { TokensType } from "../application/jwt.service";
 import { PayloadType } from "../application/payloadType";
 import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";

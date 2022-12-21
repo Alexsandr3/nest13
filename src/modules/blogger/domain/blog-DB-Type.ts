@@ -8,4 +8,6 @@ export interface BlogsDBType {
   description: string;
   websiteUrl: string;
   createdAt: string;
+  isBanned: boolean;
+  banDate: string;
 }

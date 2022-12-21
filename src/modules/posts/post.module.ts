@@ -27,19 +27,17 @@ import { User, UserSchema } from '../users/domain/users-schema-Model';
 import { JwtService } from '../auth/application/jwt.service';
 import { BasicAuthGuard } from '../../guards/basic-auth.guard';
 import { JwtForGetGuard } from '../../guards/jwt-auth-bearer-for-get.guard';
-import { BlogIdValidator } from '../../validators/blog-id-validator.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateCommentHandler } from './application/use-cases/handlers/create-comment-handler';
 import { UpdateLikeStatusHandler } from './application/use-cases/handlers/update-like-status-handler';
-import {
-  UserBanInfo,
-  UserBanInfoSchema,
-} from '../users/domain/users-ban-info-schema-Model';
+import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
 
 const handlers = [CreateCommentHandler, UpdateLikeStatusHandler];
 const adapters = [
   PostsRepositories,
   PostsQueryRepositories,
+  BlogsRepositories,
   BlogsQueryRepositories,
   CommentsRepositories,
   CommentsQueryRepositories,
@@ -57,14 +55,13 @@ const guards = [JwtAuthGuard, BasicAuthGuard, JwtForGetGuard];
       { name: LikesStatus.name, schema: LikesStatusSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: User.name, schema: UserSchema },
-      { name: UserBanInfo.name, schema: UserBanInfoSchema },
+      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
     CqrsModule,
   ],
   controllers: [PostsController],
   providers: [
     PostsService,
-    BlogIdValidator,
     ...guards,
     ...adapters,
     ...handlers,

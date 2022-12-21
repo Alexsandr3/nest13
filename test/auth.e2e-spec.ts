@@ -17,7 +17,7 @@ const delay = async (delay: number = 1000) => {
 
 jest.setTimeout(120000)
 
-describe("Auth (e2e)", () => {
+describe.skip("Auth (e2e)", () => {
 
   let app: INestApplication;
   //let mongoServer: MongoMemoryServer;
@@ -48,7 +48,12 @@ describe("Auth (e2e)", () => {
     //await mongoose.disconnect();
     //await mongoServer.stop();
   });
-
+  it("/ (GET)", () => {
+    return request(app.getHttpServer())
+      .get("/")
+      .expect(200)
+      .expect("Hello free Belarus!");
+  });
   describe(`/auth`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
@@ -79,6 +84,7 @@ describe("Auth (e2e)", () => {
 
       const response = await request(app.getHttpServer())
         .post(`/auth/login`)
+        .set(`User-Agent`, `for test`)
         .send({ loginOrEmail: "", password: "asirius321" });
 
       expect(response.status).toBe(400);
@@ -91,6 +97,7 @@ describe("Auth (e2e)", () => {
 
       await request(app.getHttpServer())
         .post(`/auth/login`)
+        .set(`User-Agent`, `for test`)
         .send({ loginOrEmail: "asirius@jiveeee.com", password: "password" })
         .expect(401);
     });
@@ -260,14 +267,153 @@ describe("Auth (e2e)", () => {
         .expect(401);
     });
   });
-  it("/ (GET)", () => {
-    return request(app.getHttpServer())
-      .get("/")
-      .expect(200)
-      .expect("Hello free Belarus!");
-  });
-});
+  describe(`/auth/registration-email-resending and registration`, ()=> {
+    let validAccessToken: AccessTokenType;
+    let refreshTokenKey: string;
+    beforeAll(async () => {
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`).expect(204);
+    });
+    it('POST - `/auth/registration` should create user and send email, status - 204', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration')
+        .send({
+          login: "asirius1",
+          password: "asirius12",
+          email: "asirius1@jive.com"
+        })
+        .expect(204)
+    })
+    it('POST - `/auth/registration` shouldn`t create user with valid login or email, return - 400 status code errors', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration')
+        .send({
+          login: "asirius1",
+          password: "asirius1",
+          email: "asirius12@jive.com"
+        })
+        .expect(400)
+      await request(app.getHttpServer())
+        .post('/auth/registration')
+        .send({
+          login: "asirius12",
+          password: "asirius1",
+          email: "asirius1@jive.com"
+        })
+        .expect(400)
+      await request(app.getHttpServer())
+        .post('/auth/registration')
+        .send({
+          login: "asirius1",
+          password: "",
+          email: "asirius1@jive.com"
+        })
+        .expect(400)
+    })
+    it('POST - `/auth/registration-email-resending` should resend email and return status code 204', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration-email-resending')
+        .send({
+          email: "asirius1@jive.com"
+        })
+        .expect(204)
+    })
+    it('POST - `/auth/registration-email-resending` shouldn`t resend email because time to resend isn`t come, 400 code', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration-email-resending')
+        .send({
+          email: "asirius@jive.com"
+        })
+        .expect(400)
+    })
+    it('POST - `/auth/registration-email-resending` shouldn`t resend email, 400', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration-email-resending')
+        .send({
+          email: "test@test.ts"
+        })
+        .expect(400)
+    })
+    it('POST - `/auth/registration-confirmation` shouldn`t confirm registration because code is old, 400', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration-confirmation')
+        .send({
+          code: "test"
+        })
+        .expect(400)
+    })
+    it('POST - `/auth/login` shouldn`t authenticate not confirmed user, - 401 ', async function() {
+      await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          loginOrEmail: "NewUser",
+          password: "password",
+        })
+        .expect(401)
+    });
+    it('POST - `/auth/login` should authenticate confirmed user, - 200 ', async function() {
+      const response = await request(app.getHttpServer())
+        .post(`/auth/login`)
+        .set(`User-Agent`, `for test`)
+        .send({
+          loginOrEmail: "asirius1",
+          password: "asirius12",
+        })
+        .expect(200)
+      validAccessToken = response.body
+      refreshTokenKey = response.headers['set-cookie']
 
+    });
+    it('POST - `/auth/registration-confirmation` shouldn`t confirm registration if already confirm, - 400', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration-confirmation')
+        .send({
+          code: "test"
+        })
+        .expect(400)
+    })
+    it('POST - `/auth/registration-confirmation` shouldn`t confirm registration if valid code, - 400', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration-confirmation')
+        .send({
+          code: "6"
+        })
+        .expect(400)
+    })
+    it('POST shouldn`t resend email if registration already confirmed, - 204', async () => {
+      await request(app.getHttpServer())
+        .post('/auth/registration-email-resending')
+        .send({
+          email: "asirius1@jive.com"
+        })
+        .expect(204)
+    })
+    it('GET - `/sa/users` should return created user with pagination and status code - 200', async () => {
+      const users = await request(app.getHttpServer())
+        .get('/sa/users')
+        .auth('admin', 'qwerty', {type: 'basic'})
+        .expect(200)
+
+      expect(users.body).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        items: [{
+          "id": expect.any(String),
+          "login": expect.any(String),
+          "email": expect.any(String),
+          "createdAt": expect.any(String),
+          "banInfo": {
+            "isBanned": false,
+            "banDate": null,
+            "banReason": null
+          }
+        }]
+      })
+    })
+  })
+});
 
 
 

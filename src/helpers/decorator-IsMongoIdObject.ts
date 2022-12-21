@@ -1,5 +1,5 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
-import { BlogIdValidator } from '../validators/blog-id-validator.service';
+import { BlogIdValidator } from "../validators/is-mongo-id-validator.service";
 
 export function IsMongoIdObject(validationOptions?: ValidationOptions) {
   return function (object: any, propertyName: string) {

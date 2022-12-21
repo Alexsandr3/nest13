@@ -8,19 +8,25 @@ import { BlogsQueryRepositories } from '../blogs/infrastructure/query-repository
 import { Blog, BlogSchema } from '../blogger/domain/blog-schema-Model';
 import { BindBlogHandler } from './application/use-cases/handlers/bind-blog-handler';
 import { BlogsRepositories } from '../blogs/infrastructure/blogs.repositories';
+import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { UpdateBanInfoForBlogHandler } from "./application/use-cases/handlers/update-ban-info-for-blog-handler";
+import { Post, PostSchema } from "../posts/domain/post-schema-Model";
+import { LikesPostsStatus, LikesPostsStatusSchema } from "../posts/domain/likesPost-schema-Model";
+import { PostsRepositories } from "../posts/infrastructure/posts-repositories";
 
-const handlers = [BindBlogHandler];
-const adapters = [BlogsQueryRepositories, BlogsRepositories];
+const handlers = [BindBlogHandler, UpdateBanInfoForBlogHandler];
+const adapters = [BlogsQueryRepositories, BlogsRepositories, PostsRepositories];
 const guards = [BasicAuthGuard];
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
-      // { name: Post.name, schema: PostSchema },
+      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
+      { name: Post.name, schema: PostSchema },
       //{ name: Comment.name, schema: CommentSchema },
-      //{ name: LikesStatus.name, schema: likesStatusSchema },
-      // { name: LikesPostsStatus.name, schema: likesPostsStatusSchema }
+      //{ name: LikesStatus.name, schema: LikesStatusSchema },
+       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema }
     ]),
     CqrsModule,
   ],

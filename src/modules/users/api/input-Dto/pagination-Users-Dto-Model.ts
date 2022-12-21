@@ -1,37 +1,48 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export enum SortDirectionType {
-  Asc = 'asc',
-  Desc = 'desc',
+  Asc = "asc",
+  Desc = "desc",
+}
+
+export enum BanStatusType {
+  all = "all",
+  banned = "banned",
+  notBanned = "notBanned",
 }
 
 export class PaginationUsersDto {
   /**
+   * banStatus by parameters
+   */
+  @IsString()
+  @IsEnum(BanStatusType)
+  @IsOptional()
+  banStatus: BanStatusType = BanStatusType.all;
+  /**
    *  pageNumber is number of portions that should be returned
    */
-  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
   pageNumber = 1;
   /**
    * pageSize is portions size that should be returned
    */
-  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
   pageSize = 10;
   /**
    * Sort by parameters
    */
-  @Transform(({ value }) => value.trim())
+  @Trim()
   @IsString()
   @IsOptional()
-  sortBy = 'createdAt';
+  sortBy = "createdAt";
   /**
    * Sort by desc or asc
    */
-  @Transform(({ value }) => value.trim())
+  @Trim()
   @IsEnum(SortDirectionType)
   @IsOptional()
   sortDirection: SortDirectionType = SortDirectionType.Desc;
@@ -40,11 +51,11 @@ export class PaginationUsersDto {
    */
   @IsString()
   @IsOptional()
-  searchLoginTerm = '';
+  searchLoginTerm = "";
   /**
    *  Search term for user Email: Email should contains this term in any position
    */
   @IsString()
   @IsOptional()
-  searchEmailTerm = '';
+  searchEmailTerm = "";
 }

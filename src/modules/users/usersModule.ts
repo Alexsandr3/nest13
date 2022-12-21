@@ -13,10 +13,6 @@ import { MailModule } from '../mail/mail.module';
 import { BasicAuthGuard } from '../../guards/basic-auth.guard';
 import { CreateUserHandler } from './application/use-cases/handlers/create-user-handler';
 import { CqrsModule } from '@nestjs/cqrs';
-import {
-  UserBanInfo,
-  UserBanInfoSchema,
-} from './domain/users-ban-info-schema-Model';
 import { UpdateBanInfoHandler } from './application/use-cases/handlers/update-ban-info-handler';
 import { Post, PostSchema } from '../posts/domain/post-schema-Model';
 import {
@@ -52,7 +48,6 @@ const guards = [BasicAuthGuard];
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Device.name, schema: DeviceSchema },
-      { name: UserBanInfo.name, schema: UserBanInfoSchema },
       { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: LikesStatus.name, schema: LikesStatusSchema },

@@ -9,6 +9,8 @@ export class Comment {
   isBanned: boolean;
   @Prop({ type: String, required: true })
   postId: string;
+  @Prop({ type: String, required: true })
+  ownerId: string;
   @Prop({ type: String, required: true, minlength: 20, maxlength: 300 })
   content: string;
   @Prop({ type: String, required: true })

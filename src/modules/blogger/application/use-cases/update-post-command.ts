@@ -1,10 +1,10 @@
-import { CreatePostByBlogIdDto } from '../../../posts/api/input-Dtos/create-Post-By-BlogId-Dto-Model';
+import { CreatePostDto } from '../../../posts/api/input-Dtos/create-Post-Dto-Model';
 
 export class UpdatePostCommand {
   constructor(
     public readonly userId: string,
     public readonly blogId: string,
     public readonly postId: string,
-    public readonly postInputModel: CreatePostByBlogIdDto,
+    public readonly postInputModel: CreatePostDto,
   ) {}
 }

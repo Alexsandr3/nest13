@@ -17,6 +17,10 @@ export class Blog {
   websiteUrl: string;
   @Prop({ type: String, required: true })
   createdAt: string;
+  @Prop({ type: Boolean, default: false })
+  isBanned: boolean;
+  @Prop({ type: String, default: null })
+  banDate: string;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
