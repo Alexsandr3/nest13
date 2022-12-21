@@ -33,9 +33,7 @@ export class UsersRepositories {
     });
   }
 
-  async findUserByConfirmationCode(
-    confirmationCode: string
-  ): Promise<UsersDBType> {
+  async findUserByConfirmationCode(confirmationCode: string): Promise<UsersDBType> {
     return this.userModel.findOne({
       "emailConfirmation.confirmationCode": confirmationCode
     });
@@ -57,11 +55,7 @@ export class UsersRepositories {
     });
   }
 
-  async updateCodeRecovery(
-    _id: ObjectId,
-    code: string,
-    expirationDate: Date
-  ): Promise<boolean> {
+  async updateCodeRecovery(_id: ObjectId, code: string, expirationDate: Date): Promise<boolean> {
     const result = await this.userModel.updateOne(
       { _id: _id },
       {
@@ -87,11 +81,7 @@ export class UsersRepositories {
     return result.modifiedCount === 1;
   }
 
-  async updateCodeConfirmation(
-    _id: ObjectId,
-    code: string,
-    expirationDate: Date
-  ): Promise<boolean> {
+  async updateCodeConfirmation(_id: ObjectId, code: string, expirationDate: Date): Promise<boolean> {
     const result = await this.userModel.updateOne(
       { _id: _id },
       {
@@ -104,22 +94,20 @@ export class UsersRepositories {
     return result.modifiedCount === 1;
   }
 
-
-
-  async updateBanInfo(userId: string, isBanned: boolean, banDate: string, banReason: string): Promise<boolean> {
+  async updateBanInfoUser(userId: string, isBanned: boolean, banDate: string, banReason: string): Promise<boolean> {
     const result = await this.userModel.updateOne({ _id: new Object(userId) },
       { $set: { "banInfo.isBanned": isBanned, "banInfo.banDate": banDate, "banInfo.banReason": banReason } }
     );
     return result.modifiedCount === 1;
   }
 
-  async findBanStatus(userId: string): Promise<UserDocument> {
+  async findBanStatusUser(userId: string): Promise<UserDocument> {
     const banStatus = await this.userModel.findOne({ userId: userId });
     if (!banStatus) return null;
     return banStatus;
   }
 
-  async findUser(userId: string): Promise<UserDocument> {
+  async findUserByIdWithMapped(userId: string): Promise<UserDocument> {
     const user = await this.userModel.findOne({ _id: new Object(userId) });
     if (!user) return null;
     return user;

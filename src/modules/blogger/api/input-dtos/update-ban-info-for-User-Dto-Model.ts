@@ -1,27 +1,27 @@
-import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { IsMongoIdObject } from "../../../../helpers/decorator-IsMongoIdObject";
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export class UpdateBanInfoForUserDto {
   /**
    * isBanned: User
    */
-  //@Transform(({ value }) => value.trim())
   @IsBoolean()
   @IsOptional()
   isBanned = true;
   /**
    * password: password User
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(20)
+  @IsString()
   banReason: string;
   /**
    * id for Blog
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
+  @IsNotEmpty()
   @IsMongoIdObject()
+  @IsString()
   blogId: string;
 }

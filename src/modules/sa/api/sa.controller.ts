@@ -14,7 +14,7 @@ import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { BlogViewModel } from "../../blogs/infrastructure/query-repository/blog-View-Model";
 import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
-import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
+import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { BindBlogCommand } from "../application/use-cases/bindBlogCommand";
 import { UpdateBanInfoForBlogDto } from "./dtos/update-ban-info-for-blog-Dto-Model";
 import { UpdateBanInfoForBlogCommand } from "../application/use-cases/updateBanInfoForBlogCommand";
@@ -27,11 +27,10 @@ export class SaController {
   }
 
 
-
   @HttpCode(204)
   @Put(`/:blogId/ban`)
   async updateBanInfoForBlog(@Body() updateBanInfoForBlogModel: UpdateBanInfoForBlogDto,
-                      @Param(`blogId`, IdValidationPipe) blogId: string): Promise<boolean> {
+                             @Param(`blogId`, IdValidationPipe) blogId: string): Promise<boolean> {
     return this.commandBus.execute(new UpdateBanInfoForBlogCommand(updateBanInfoForBlogModel, blogId));
   }
 

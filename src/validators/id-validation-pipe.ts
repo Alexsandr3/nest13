@@ -1,6 +1,6 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { NotFoundExceptionMY } from './My-HttpExceptionFilter';
+import { NotFoundExceptionMY } from '../helpers/My-HttpExceptionFilter';
 
 //checking id from uri params
 @Injectable()

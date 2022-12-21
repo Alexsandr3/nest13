@@ -1,34 +1,26 @@
 import { IsString, Length } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { IsMongoIdObject } from '../../../../helpers/decorator-IsMongoIdObject';
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export class CreatePostDto {
   /**
-   * Title Posts
+   * Title for create Post
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(1, 30)
+  @IsString()
   title: string;
   /**
-   * Short description for Posts
+   * Short description for create Post
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(1, 100)
+  @IsString()
   shortDescription: string;
   /**
-   * content for Posts
+   * content for create Post
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(1, 1000)
-  content: string;
-  /**
-   * id for Blog
-   */
-  @Transform(({ value }) => value.trim())
   @IsString()
-  @IsMongoIdObject()
-  blogId: string;
+  content: string;
 }

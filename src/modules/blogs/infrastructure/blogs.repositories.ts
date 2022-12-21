@@ -57,12 +57,13 @@ export class BlogsRepositories {
     return result.matchedCount === 1;
   }
 
-  async updateBanStatus(banStatus: BanUserForBlogPreparationForDB): Promise<boolean> {
-    const { blogId, isBanned, banReason, banDate, userId, login, ownerId, email, createdAt } = banStatus;
-    const result = await this.blogBanInfoModel.updateOne(
-      { blogId, userId },
-      { $set: { isBanned, banReason, banDate, login, ownerId, email, createdAt } }
-    );
+  async updateBanStatusForBlog(blogId: string, isBanned: boolean): Promise<boolean> {
+    const result = await this.blogsModel.updateOne({ _id: new Object(blogId) }, {
+      $set: {
+        isBanned,
+        banDate: new Date().toISOString()
+      }
+    });
     return result.matchedCount === 1;
   }
 
@@ -72,19 +73,18 @@ export class BlogsRepositories {
     return banStatusInfo.id;
   }
 
+  async updateBanStatus(banStatus: BanUserForBlogPreparationForDB): Promise<boolean> {
+    const { blogId, isBanned, banReason, banDate, userId, login, ownerId, email, createdAt } = banStatus;
+    const result = await this.blogBanInfoModel.updateOne(
+      { blogId, userId },
+      { $set: { isBanned, banReason, banDate, login, ownerId, email, createdAt } }
+    );
+    return result.matchedCount === 1;
+  }
+
   async findStatusBan(userId: string, blogId: string): Promise<BlogBanInfoDocument> {
     const statusBan = await this.blogBanInfoModel.findOne({ blogId, userId });
     if (!statusBan) return null;
     return statusBan;
-  }
-
-  async updateBanStatusForBlog(blogId: string, isBanned: boolean): Promise<boolean> {
-    const result = await this.blogsModel.updateOne({ _id: new Object(blogId) }, {
-      $set: {
-        isBanned,
-        banDate: new Date().toISOString()
-      }
-    });
-    return result.matchedCount === 1;
   }
 }

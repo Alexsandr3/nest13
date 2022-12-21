@@ -1,18 +1,18 @@
 import { IsNotEmpty, IsString } from "class-validator";
-import { Transform } from 'class-transformer';
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export class LoginDto {
   /**
-   * login: Login User
+   * login: Login or Email  -  User
    */
-  @Transform(({ value }) => value.trim())
+  @Trim()
   @IsNotEmpty()
   @IsString()
   loginOrEmail: string;
   /**
    * password: password User
    */
-  @Transform(({ value }) => value.trim())
+  @Trim()
   @IsNotEmpty()
   @IsString()
   password: string;

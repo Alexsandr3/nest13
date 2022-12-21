@@ -1,4 +1,4 @@
-import { LoginDto } from '../../api/dto/login-Dto-Model';
+import { LoginDto } from '../../api/input-dtos/login-Dto-Model';
 
 export class LoginCommand {
   constructor(

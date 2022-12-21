@@ -16,7 +16,7 @@ import { UsersViewType } from "../infrastructure/query-reposirory/user-View-Mode
 import { PaginationUsersDto } from "./input-Dto/pagination-Users-Dto-Model";
 import { UsersQueryRepositories } from "../infrastructure/query-reposirory/users-query.reposit";
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
-import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
+import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../application/use-cases/create-user-command";

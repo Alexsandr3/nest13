@@ -2,9 +2,8 @@ import { IsBoolean, IsOptional } from "class-validator";
 
 export class UpdateBanInfoForBlogDto {
   /**
-   * isBanned: User
+   * isBanned: "boolean" for update status ban or unban User
    */
-    //@Transform(({ value }) => value.trim())
   @IsBoolean()
   @IsOptional()
   isBanned = true;

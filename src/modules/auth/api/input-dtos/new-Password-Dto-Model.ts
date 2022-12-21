@@ -1,18 +1,19 @@
-import { IsString, Length } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsString, Length } from "class-validator";
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export class NewPasswordDto {
   /**
    * New account recovery password.
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(6, 20)
+  @IsString()
   newPassword: string;
   /**
    * Code that be sent via Email inside link
    */
-  @Transform(({ value }) => value.trim())
+  @Trim()
+  @IsNotEmpty()
   @IsString()
   recoveryCode: string;
 }

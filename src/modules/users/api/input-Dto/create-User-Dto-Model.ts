@@ -1,27 +1,27 @@
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export class CreateUserDto {
   /**
-   * login: Login User
+   * login: Login for create/registration User
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(3, 10)
+  @IsString()
   login: string;
   /**
-   * password: password User
+   * password: password for create/registration User
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(6, 20)
+  @IsString()
   password: string;
   /**
-   * email: email User
+   * email: email for create/registration User
    */
-  //@Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @IsNotEmpty()
   @IsEmail()
+  @IsString()
   email: string;
 }

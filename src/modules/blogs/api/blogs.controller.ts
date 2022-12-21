@@ -4,7 +4,7 @@ import { BlogViewModel } from "../infrastructure/query-repository/blog-View-Mode
 import { PaginationDto } from "./input-Dtos/pagination-Dto-Model";
 import { PaginationViewModel } from "../infrastructure/query-repository/pagination-View-Model";
 import { PostsQueryRepositories } from "../../posts/infrastructure/query-repositories/posts-query.reposit";
-import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
+import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";
 import { JwtForGetGuard } from "../../../guards/jwt-auth-bearer-for-get.guard";

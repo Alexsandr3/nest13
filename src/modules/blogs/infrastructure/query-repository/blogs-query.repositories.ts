@@ -37,19 +37,6 @@ export class BlogsQueryRepositories {
     );
   }
 
-  private mapperBanInfo(object: BanStatusBlogDBType): UsersForBanBlogViewType {
-    const banInfo = new BanInfoType(
-      object.isBanned,
-      object.banDate,
-      object.banReason
-    );
-    return new UsersForBanBlogViewType(
-      object.userId,
-      object.login,
-      banInfo
-    );
-  }
-
   private mapperBlogForSaView(object: BlogsDBType): BlogViewForSaModel {
     const blogOwnerInfo = new BlogOwnerInfoType(
       object.userId,
@@ -67,6 +54,19 @@ export class BlogsQueryRepositories {
       object.createdAt,
       blogOwnerInfo,
       banInfoForBlog
+    );
+  }
+
+  private mapperBanInfo(object: BanStatusBlogDBType): UsersForBanBlogViewType {
+    const banInfo = new BanInfoType(
+      object.isBanned,
+      object.banDate,
+      object.banReason
+    );
+    return new UsersForBanBlogViewType(
+      object.userId,
+      object.login,
+      banInfo
     );
   }
 
@@ -162,11 +162,11 @@ export class BlogsQueryRepositories {
   async findBlogWithMap(id: string): Promise<BlogDocument> {
     const blog = await this.blogsModel.findOne({ _id: new Object(id), isBanned: false });
     if (!blog) throw new NotFoundExceptionMY(`Not found for id:${id}`);
-    //returning Blog for View
+    //returning Blog with View
     return blog;
   }
 
-  async getBanedUserForBlog(blogId: string, paginationInputModel: PaginationDto) {
+  async getBannedUsersForBlog(blogId: string, paginationInputModel: PaginationDto) {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
     const filter: FilterQuery<BlogBanInfo> = { blogId, isBanned: true };
     if (searchNameTerm) {
@@ -191,6 +191,5 @@ export class BlogsQueryRepositories {
       totalCount,
       mappedBlogs
     );
-
   }
 }

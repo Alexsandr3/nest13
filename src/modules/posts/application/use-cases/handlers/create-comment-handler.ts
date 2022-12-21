@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { PostsRepositories } from "../../../infrastructure/posts-repositories";
 import { CreateCommentCommand } from "../create-comment-command";
-import { CommentsViewType } from "../../../../comments/infrastructure/comments-View-Model";
+import { CommentsViewType } from "../../../../comments/infrastructure/query-repository/comments-View-Model";
 import {
   ForbiddenExceptionMY,
   NotFoundExceptionMY,

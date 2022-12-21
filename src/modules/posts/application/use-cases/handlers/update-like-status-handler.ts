@@ -22,7 +22,7 @@ export class UpdateLikeStatusHandler
     //finding user by userId for update like status
     const user = await this.usersQueryRepositories.findUser(userId);
     //update like status
-    const result = await this.postsRepositories.updateStatusPostById(
+    const result = await this.postsRepositories.updateLikeStatusPost(
       id,
       userId,
       likeStatus,

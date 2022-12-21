@@ -1,12 +1,12 @@
 import { IsEnum, IsOptional } from 'class-validator';
-import { Transform } from 'class-transformer';
 import { LikeStatusType } from '../../domain/likesPost-schema-Model';
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export class UpdateLikeStatusDto {
   /**
-   * Send None if you want to unlike\undislike
+   * Send "None" if you want to un "like" or "undislike"
    */
-  @Transform(({ value }) => value.trim())
+  @Trim()
   @IsEnum(LikeStatusType)
   @IsOptional()
   'likeStatus': LikeStatusType = LikeStatusType.None;

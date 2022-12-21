@@ -1,12 +1,12 @@
 import { IsString, Length } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export class ConfirmationCodeDto {
   /**
    * Code that be sent via Email inside link
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(1, 100)
+  @IsString()
   code: string;
 }

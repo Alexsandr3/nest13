@@ -27,7 +27,6 @@ import { User, UserSchema } from '../users/domain/users-schema-Model';
 import { JwtService } from '../auth/application/jwt.service';
 import { BasicAuthGuard } from '../../guards/basic-auth.guard';
 import { JwtForGetGuard } from '../../guards/jwt-auth-bearer-for-get.guard';
-import { BlogIdValidator } from '../../validators/blog-id-validator.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateCommentHandler } from './application/use-cases/handlers/create-comment-handler';
 import { UpdateLikeStatusHandler } from './application/use-cases/handlers/update-like-status-handler';
@@ -63,7 +62,6 @@ const guards = [JwtAuthGuard, BasicAuthGuard, JwtForGetGuard];
   controllers: [PostsController],
   providers: [
     PostsService,
-    BlogIdValidator,
     ...guards,
     ...adapters,
     ...handlers,

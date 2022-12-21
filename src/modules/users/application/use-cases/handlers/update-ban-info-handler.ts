@@ -29,7 +29,7 @@ export class UpdateBanInfoHandler
       const banDate = null;
       const banReason = null;
       //update status ban user
-      const banInfo = await this.usersRepositories.updateBanInfo(
+      const banInfo = await this.usersRepositories.updateBanInfoUser(
         userId,
         isBanned,
         banDate,
@@ -40,29 +40,29 @@ export class UpdateBanInfoHandler
           message: `New data not received for update`,
           field: `database`,
         });
-      //update status ban posts
-      await this.postsRepositories.updateStatusBan(userId, isBanned);
+      //update status ban posts for User
+      await this.postsRepositories.updateStatusBanPostForUser(userId, isBanned);
       //update status ban likes post
       await this.postsRepositories.updateStatusBanLikePost(userId, isBanned);
       //update status ban comments
-      await this.commentsRepositories.updateStatusBan(userId, isBanned);
+      await this.commentsRepositories.updateStatusBanComments(userId, isBanned);
       //update status ban likes comments
       await this.commentsRepositories.updateStatusBanLike(userId, isBanned);
     } else {
       const banDate = new Date().toISOString();
       //update status ban posts
-      await this.usersRepositories.updateBanInfo(
+      await this.usersRepositories.updateBanInfoUser(
         userId,
         isBanned,
         banDate,
         banReason,
       );
       //update status ban likes post
-      await this.postsRepositories.updateStatusBan(userId, isBanned);
+      await this.postsRepositories.updateStatusBanPostForUser(userId, isBanned);
       //update status ban likes post
       await this.postsRepositories.updateStatusBanLikePost(userId, isBanned);
       //update status ban comments
-      await this.commentsRepositories.updateStatusBan(userId, isBanned);
+      await this.commentsRepositories.updateStatusBanComments(userId, isBanned);
       //update status ban likes comments
       await this.commentsRepositories.updateStatusBanLike(userId, isBanned);
     }

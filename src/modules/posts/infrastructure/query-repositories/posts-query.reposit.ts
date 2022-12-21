@@ -30,7 +30,7 @@ import {
   BloggerCommentsViewType, CommentatorInfoModel,
   CommentsViewType,
   LikesInfoViewModel, PostInfoModel
-} from "../../../comments/infrastructure/comments-View-Model";
+} from "../../../comments/infrastructure/query-repository/comments-View-Model";
 import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
 
 @Injectable()
@@ -272,9 +272,6 @@ export class PostsQueryRepositories {
     );
   }
   private async bloggerCommentViewModel(comment: CommentsDBType, userId: string | null) {
-    //const { blogId } = post;
-    //const banStatus = await this.blogBanInfoModel.findOne({ blogId, userId: comment.userId, isBanned: false });
-
     let myStatus: string = LikeStatusType.None;
     if (userId) {
       const result = await this.likesStatusModel.findOne({ userId: userId, parentId: comment._id.toString() });

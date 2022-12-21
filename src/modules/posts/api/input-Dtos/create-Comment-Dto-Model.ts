@@ -1,12 +1,12 @@
 import { IsString, Length } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Trim } from "../../../../helpers/decorator-trim";
 
 export class CreateCommentDto {
   /**
-   * content for Posts
+   * content for create Comment
    */
-  @Transform(({ value }) => value.trim())
-  @IsString()
+  @Trim()
   @Length(20, 300)
+  @IsString()
   content: string;
 }

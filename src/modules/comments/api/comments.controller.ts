@@ -9,8 +9,8 @@ import {
   UseGuards
 } from "@nestjs/common";
 import { CommentsQueryRepositories } from "../infrastructure/query-repository/comments-query.repositories";
-import { CommentsViewType } from "../infrastructure/comments-View-Model";
-import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
+import { CommentsViewType } from "../infrastructure/query-repository/comments-View-Model";
+import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { UpdateLikeStatusDto } from "../../posts/api/input-Dtos/update-Like-Status-Model";
 import { CommentsService } from "../domain/comments.service";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";

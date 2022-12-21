@@ -17,7 +17,7 @@ export class UpdateLikeStatusCommentHandler
     if (!comment)
       throw new NotFoundExceptionMY(`comment with specified id doesn't exists`);
     //update a like status for comment
-    return this.commentsRepositories.updateStatusCommentById(
+    return this.commentsRepositories.updateLikeStatusForComment(
       id,
       userId,
       likeStatus,

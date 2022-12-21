@@ -9,7 +9,7 @@ import {
 } from '../domain/likesPost-schema-Model';
 import { ObjectId } from 'mongodb';
 import { PostDBType } from '../domain/post-DB-Type';
-import { CreatePostByBlogIdDto } from '../api/input-Dtos/create-Post-By-BlogId-Dto-Model';
+import { CreatePostDto } from '../api/input-Dtos/create-Post-Dto-Model';
 
 @Injectable()
 export class PostsRepositories {
@@ -25,14 +25,7 @@ export class PostsRepositories {
     return post;
   }
 
-  async deletePost(id: string, userId: string): Promise<boolean> {
-    const result = await this.postModel
-      .deleteOne({ _id: new ObjectId(id), userId: userId })
-      .exec();
-    return result.deletedCount === 1;
-  }
-
-  async updatePost(id: string, data: CreatePostByBlogIdDto, blogId: string, userId: string,): Promise<boolean> {
+  async updatePost(id: string, data: CreatePostDto, blogId: string, userId: string,): Promise<boolean> {
     const result = await this.postModel.updateOne(
       { _id: new ObjectId(id), userId: userId },
       {
@@ -47,13 +40,36 @@ export class PostsRepositories {
     return result.matchedCount === 1;
   }
 
+  async deletePost(id: string, userId: string): Promise<boolean> {
+    const result = await this.postModel
+      .deleteOne({ _id: new ObjectId(id), userId: userId })
+      .exec();
+    return result.deletedCount === 1;
+  }
+
   async findPost(id: string): Promise<PostDBType> {
     const post = await this.postModel.findOne({ _id: new ObjectId(id) });
     if (!post) return null;
     return post;
   }
 
-  async updateStatusPostById(id: string, userId: string, likeStatus: string, login: string,): Promise<boolean> {
+  async updateStatusBanPostForUser(userId: string, isBanned: boolean): Promise<boolean> {
+    const result = await this.postModel.updateMany(
+      { userId: userId },
+      { $set: { isBanned: isBanned } },
+    );
+    return result.matchedCount === 1;
+  }
+
+  async updateStatusBanPostForBlogger(blogId: string, isBanned: boolean): Promise<boolean> {
+    const result = await this.postModel.updateMany(
+      { blogId },
+      { $set: { isBanned: isBanned } },
+    );
+    return result.matchedCount === 1;
+  }
+
+  async updateLikeStatusPost(id: string, userId: string, likeStatus: string, login: string,): Promise<boolean> {
     const like = await this.likesPostsStatusModel.updateOne(
       { userId: userId, parentId: id },
       {
@@ -68,22 +84,6 @@ export class PostsRepositories {
     );
     if (!like) return null;
     return true;
-  }
-
-  async updateStatusBan(userId: string, isBanned: boolean): Promise<boolean> {
-    const result = await this.postModel.updateMany(
-      { userId: userId },
-      { $set: { isBanned: isBanned } },
-    );
-    return result.matchedCount === 1;
-  }
-
-  async updateStatusBanPost(blogId: string, isBanned: boolean): Promise<boolean> {
-    const result = await this.postModel.updateMany(
-      { blogId },
-      { $set: { isBanned: isBanned } },
-    );
-    return result.matchedCount === 1;
   }
 
   async updateStatusBanLikePost(userId: string, isBanned: boolean,): Promise<boolean> {

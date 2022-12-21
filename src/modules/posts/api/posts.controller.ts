@@ -13,8 +13,8 @@ import { PostsQueryRepositories } from "../infrastructure/query-repositories/pos
 import { PaginationDto } from "../../blogs/api/input-Dtos/pagination-Dto-Model";
 import { PaginationViewModel } from "../../blogs/infrastructure/query-repository/pagination-View-Model";
 import { PostViewModel } from "../infrastructure/query-repositories/post-View-Model";
-import { CommentsViewType } from "../../comments/infrastructure/comments-View-Model";
-import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
+import { CommentsViewType } from "../../comments/infrastructure/query-repository/comments-View-Model";
+import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { JwtAuthGuard } from "../../../guards/jwt-auth-bearer.guard";
 import { UpdateLikeStatusDto } from "./input-Dtos/update-Like-Status-Model";
 import { CurrentUserId } from "../../../decorators/current-user-id.param.decorator";

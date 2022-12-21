@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
-import { CreatePostByBlogIdDto } from "../../posts/api/input-Dtos/create-Post-By-BlogId-Dto-Model";
-import { IdValidationPipe } from "../../../helpers/IdValidationPipe";
+import { CreatePostDto } from "../../posts/api/input-Dtos/create-Post-Dto-Model";
+import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { PostViewModel } from "../../posts/infrastructure/query-repositories/post-View-Model";
 import { CommandBus } from "@nestjs/cqrs";
 import { CreateBlogCommand } from "../application/use-cases/create-blog-command";
@@ -33,7 +33,7 @@ export class BloggersController {
   @Get(`blogs/comments`)
   async getComments(@CurrentUserIdBlogger() userId: string,
                     @Query() paginationInputModel: PaginationDto) {
-    return await this.postsQueryRepositories.findCommentsBloggerForPosts(userId, paginationInputModel)
+    return await this.postsQueryRepositories.findCommentsBloggerForPosts(userId, paginationInputModel);
   }
 
   @HttpCode(204)
@@ -54,7 +54,7 @@ export class BloggersController {
   @Post(`blogs/:blogId/posts`)
   async createPost(@CurrentUserIdBlogger() userId: string,
                    @Param(`blogId`, IdValidationPipe) blogId: string,
-                   @Body() postInputModel: CreatePostByBlogIdDto): Promise<PostViewModel> {
+                   @Body() postInputModel: CreatePostDto): Promise<PostViewModel> {
     return this.commandBus.execute(new CreatePostCommand(postInputModel, blogId, userId));
   }
 
@@ -63,7 +63,7 @@ export class BloggersController {
   async updatePost(@CurrentUserIdBlogger() userId: string,
                    @Param(`blogId`, IdValidationPipe) blogId: string,
                    @Param(`postId`, IdValidationPipe) postId: string,
-                   @Body() postInputModel: CreatePostByBlogIdDto): Promise<boolean> {
+                   @Body() postInputModel: CreatePostDto): Promise<boolean> {
     return await this.commandBus.execute(new UpdatePostCommand(userId, blogId, postId, postInputModel)
     );
   }
@@ -101,9 +101,9 @@ export class BloggersController {
   async getBanedUser(@CurrentUserIdBlogger() userId: string,
                      @Param(`id`, IdValidationPipe) id: string,
                      @Query() paginationInputModel: PaginationDto) {
-    const blog = await this.blogsQueryRepositories.findBlogWithMap(id)
-    if(blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`)
-    return await this.blogsQueryRepositories.getBanedUserForBlog(id, paginationInputModel);
+    const blog = await this.blogsQueryRepositories.findBlogWithMap(id);
+    if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
+    return await this.blogsQueryRepositories.getBannedUsersForBlog(id, paginationInputModel);
   }
 
 
