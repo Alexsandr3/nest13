@@ -1,6 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { Trim } from "../../../../helpers/decorator-trim";
-import { Transform } from "class-transformer";
 
 export enum SortDirectionType {
   Asc = "asc",
@@ -24,17 +23,16 @@ export class PaginationUsersDto {
   /**
    *  pageNumber is number of portions that should be returned
    */
-  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @IsOptional()
-  pageNumber = 1;
+  pageNumber: number = 1;
   /**
    * pageSize is portions size that should be returned
    */
-  @Transform(({ value }) => parseInt(value))
+    //@Type(()=> Number)
   @IsNumber()
   @IsOptional()
-  pageSize = 10;
+  pageSize: number = 10;
   /**
    * Sort by parameters
    */
@@ -54,11 +52,11 @@ export class PaginationUsersDto {
    */
   @IsString()
   @IsOptional()
-  searchLoginTerm = "";
+  searchLoginTerm: string = "";
   /**
    *  Search term for user Email: Email should contains this term in any position
    */
   @IsString()
   @IsOptional()
-  searchEmailTerm = "";
+  searchEmailTerm: string = "";
 }
