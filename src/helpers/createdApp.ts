@@ -10,6 +10,7 @@ export const createdApp = (app: INestApplication) => {
     //forbidNonWhitelisted: true, //stopping create data
     transform: true, //transform data to correct
     stopAtFirstError: true,
+    transformOptions: {enableImplicitConversion: true},
     exceptionFactory: (errors) => {
       const errorsForRes = [];
       errors.forEach((e) => {

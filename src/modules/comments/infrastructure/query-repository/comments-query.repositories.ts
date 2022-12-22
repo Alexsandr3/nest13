@@ -20,10 +20,7 @@ export class CommentsQueryRepositories {
     private readonly likesStatusModel: Model<LikesStatusDocument>,
   ) {}
 
-  async findComment(
-    commentId: string,
-    userId: string | null,
-  ): Promise<CommentsViewType> {
+  async findComment(commentId: string, userId: string | null,): Promise<CommentsViewType> {
     //finding like status by userId and commentId
     let myStatus: string = LikeStatusType.None;
     if (userId) {
