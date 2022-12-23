@@ -1,4 +1,4 @@
-import { UpdateBanInfoForBlogDto } from "../../api/dtos/update-ban-info-for-blog-Dto-Model";
+import { UpdateBanInfoForBlogDto } from "../../api/input-dtos/update-ban-info-for-blog-Dto-Model";
 
 export class UpdateBanInfoForBlogCommand {
   constructor(
