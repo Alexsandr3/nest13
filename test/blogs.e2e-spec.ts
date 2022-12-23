@@ -11,7 +11,7 @@ import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-reposit
 
 jest.setTimeout(120000);
 
-describe.skip("Blogs (e2e)", () => {
+describe("Blogs (e2e)", () => {
 
   let app: INestApplication;
 

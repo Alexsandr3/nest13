@@ -16,7 +16,7 @@ import { BlogViewModel } from "../../blogs/infrastructure/query-repository/blog-
 import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
 import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { BindBlogCommand } from "../application/use-cases/bindBlogCommand";
-import { UpdateBanInfoForBlogDto } from "./dtos/update-ban-info-for-blog-Dto-Model";
+import { UpdateBanInfoForBlogDto } from "./input-dtos/update-ban-info-for-blog-Dto-Model";
 import { UpdateBanInfoForBlogCommand } from "../application/use-cases/updateBanInfoForBlogCommand";
 
 @UseGuards(BasicAuthGuard)
