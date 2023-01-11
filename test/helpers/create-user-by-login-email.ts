@@ -1,7 +1,7 @@
 import { INestApplication } from "@nestjs/common";
-import { UsersViewType } from "../../../src/modules/users/infrastructure/query-reposirory/user-View-Model";
+import { UsersViewType } from "../../src/modules/users/infrastructure/query-reposirory/user-View-Model";
 import request from "supertest";
-import { LikeStatusType } from "../../../src/modules/posts/domain/likesPost-schema-Model";
+import { LikeStatusType } from "../../src/modules/posts/domain/likePost-schema-Model";
 
 export const createUserByLoginEmail = async (count: number, app: INestApplication) => {
   const result: { userId: string, user: UsersViewType, accessToken: string, refreshToken: string }[] = [];
@@ -11,6 +11,30 @@ export const createUserByLoginEmail = async (count: number, app: INestApplicatio
       .auth(`admin`, `qwerty`, { type: "basic" })
       .send({ login: `asirius-${i}`, password: `asirius-12${i}`, email: `asirius${i}@jive.com` })
       .expect(201);
+
+    const responseToken = await request(app.getHttpServer())
+      .post(`/auth/login`)
+      .set(`User-Agent`, `for test`)
+      .send({ loginOrEmail: `asirius-${i}`, password: `asirius-12${i}` })
+      .expect(200);
+    result.push({
+      userId: response00.body.id,
+      user: response00.body,
+      accessToken: responseToken.body.accessToken,
+      refreshToken: responseToken.headers["set-cookie"]
+    });
+  }
+  return result;
+};
+export const createUniqUserByLoginEmail = async (count: number, uniq: string, app: INestApplication) => {
+  const result: { userId: string, user: UsersViewType, accessToken: string, refreshToken: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    const response00 = await request(app.getHttpServer())
+      .post(`/sa/users`)
+      .auth(`admin`, `qwerty`, { type: "basic" })
+      .send({ login: `log${uniq}-${i}`, password: `asirius-12${i}`, email: `asirius${i}@jive.com` })
+      .expect(201);
+
     const responseToken = await request(app.getHttpServer())
       .post(`/auth/login`)
       .set(`User-Agent`, `for test`)

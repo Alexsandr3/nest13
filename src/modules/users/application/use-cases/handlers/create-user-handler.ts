@@ -4,18 +4,19 @@ import { UsersRepositories } from "../../../infrastructure/users-repositories";
 import { UsersQueryRepositories } from "../../../infrastructure/query-reposirory/users-query.reposit";
 import { UsersViewType } from "../../../infrastructure/query-reposirory/user-View-Model";
 import { MailService } from "../../../../mail/mail.service";
-import { randomUUID } from "crypto";
 import { BadRequestExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
-import { add } from "date-fns";
-import { PreparationUserForDB } from "../../../domain/user-preparation-for-DB";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { CreateUserCommand } from "../create-user-command";
 import { UsersService } from "../../../domain/users.service";
+import { InjectModel } from "@nestjs/mongoose";
+import { UserDocument, User } from "../../../domain/users-schema-Model";
+import { Model } from "mongoose";
 
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly usersRepositories: UsersRepositories,
     private readonly usersQueryRepositories: UsersQueryRepositories,
     private readonly usersService: UsersService,
@@ -30,36 +31,17 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     //generation Hash
     const passwordHash = await this.usersService.generateHash(password);
     // preparation data User for DB
-    const user = new PreparationUserForDB(
-      {
-        login,
-        email,
-        passwordHash,
-        createdAt: new Date().toISOString()
-      },
-      {
-        confirmationCode: randomUUID(),
-        expirationDate: add(new Date(), { hours: 1 }),
-        isConfirmation: false
-      },
-      {
-        recoveryCode: randomUUID(),
-        expirationDate: add(new Date(), { hours: 1 }),
-        isConfirmation: false
-      },
-      {
-        isBanned: false,
-        banDate: null,
-        banReason: null
-      }
-    );
-    const userId = await this.usersRepositories.createUser(user);
+    const user = User.createUser(login, email, passwordHash, false);
+    //create instance
+    const createdUser = new this.userModel(user);
+    //saving created instance user
+    const userId = await this.usersRepositories.saveUser(createdUser);
     //finding user for View
-    const foundUser = await this.usersQueryRepositories.findUser(userId);
+    const viewUser = await this.usersQueryRepositories.findUser(userId);
     try {
       //send mail for confirmation
       await this.mailService.sendUserConfirmation(
-        foundUser.email,
+        user.accountData.email,
         user.emailConfirmation.confirmationCode
       );
     } catch (error) {
@@ -71,25 +53,22 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         421
       );
     }
-    return foundUser;
+    return viewUser;
   }
 
   private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
+    const { login, email } = userInputModel;
     //find user
-    const checkEmail = await this.usersRepositories.findByLoginOrEmail(
-      userInputModel.email
-    );
+    const checkEmail = await this.usersRepositories.findByLoginOrEmail(email);
     if (checkEmail)
       throw new BadRequestExceptionMY({
-        message: `${userInputModel.email}  already in use, do you need choose new data`,
+        message: `${email}  already in use, do you need choose new data`,
         field: `email`
-      });
-    const checkLogin = await this.usersRepositories.findByLoginOrEmail(
-      userInputModel.login
-    );
+      });``
+    const checkLogin = await this.usersRepositories.findByLoginOrEmail(login);
     if (checkLogin)
       throw new BadRequestExceptionMY({
-        message: `${userInputModel.login}  already in use, do you need choose new data`,
+        message: `${login}  already in use, do you need choose new data`,
         field: `login`
       });
     return true;

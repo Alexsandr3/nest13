@@ -11,7 +11,7 @@ import { BlogsRepositories } from '../blogs/infrastructure/blogs.repositories';
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 import { UpdateBanInfoForBlogHandler } from "./application/use-cases/handlers/update-ban-info-for-blog-handler";
 import { Post, PostSchema } from "../posts/domain/post-schema-Model";
-import { LikesPostsStatus, LikesPostsStatusSchema } from "../posts/domain/likesPost-schema-Model";
+import { LikePost, LikePostSchema } from "../posts/domain/likePost-schema-Model";
 import { PostsRepositories } from "../posts/infrastructure/posts-repositories";
 
 const handlers = [BindBlogHandler, UpdateBanInfoForBlogHandler];
@@ -26,7 +26,7 @@ const guards = [BasicAuthGuard];
       { name: Post.name, schema: PostSchema },
       //{ name: Comment.name, schema: CommentSchema },
       //{ name: LikesStatus.name, schema: LikesStatusSchema },
-       { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema }
+       { name: LikePost.name, schema: LikePostSchema }
     ]),
     CqrsModule,
   ],

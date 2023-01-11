@@ -12,7 +12,8 @@ export class BindBlogHandler implements ICommandHandler<BindBlogCommand> {
     const blog = await this.blogsRepositories.findBlog(blogId);
     if (!blog)
       throw new NotFoundExceptionMY(`not found blog with id: ${blogId}`);
-    await this.blogsRepositories.updateOwnerBlog(blogId, userId);
+    blog.updateOwner(userId)
+    await this.blogsRepositories.saveBlog(blog)
     return true;
   }
 }

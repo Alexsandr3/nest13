@@ -18,9 +18,10 @@ export class UpdateBanInfoForBlogHandler
     const foundBlog = await this.blogsRepositories.findBlog(blogId);
     if (!foundBlog) throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`);
     //update status ban for blog
-    const banStatus = await this.blogsRepositories.updateBanStatusForBlog(blogId, isBanned)
-    if (!banStatus) throw new Error("not save ban Status")
-    await this.postsRepositories.updateStatusBanPostForBlogger(blogId, isBanned)
+    foundBlog.updateBanStatus(isBanned);
+    //save updated status for blog
+    await this.blogsRepositories.saveBlog(foundBlog)
+    await this.postsRepositories.updateStatusBanPostForBlogger(blogId, isBanned);
     return true;
   }
 }

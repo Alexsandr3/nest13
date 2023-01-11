@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { DeleteCommentCommand } from '../delete-comment-command';
 import { CommentsRepositories } from '../../../infrastructure/comments.repositories';
-import { CommentsService } from '../../../domain/comments.service';
+import { ForbiddenExceptionMY, NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 
 @CommandHandler(DeleteCommentCommand)
 export class DeleteCommentHandler
@@ -9,14 +9,17 @@ export class DeleteCommentHandler
 {
   constructor(
     private readonly commentsRepositories: CommentsRepositories,
-    private readonly commentsService: CommentsService,
   ) {}
 
   async execute(command: DeleteCommentCommand): Promise<boolean> {
     const { id } = command;
     const { userId } = command;
-    //finding and checking comment
-    await this.commentsService.findComment(id, userId);
+    //finding comment by id from uri params
+    const comment = await this.commentsRepositories.findCommentsById(id);
+    if (!comment) throw new NotFoundExceptionMY(`Not found content`);
+    //checking comment
+    if (!comment.checkOwner(userId))
+      throw new ForbiddenExceptionMY(`You are not the owner of the comment`);
     //delete a comment from DB
     const result = await this.commentsRepositories.deleteCommentsById(id);
     if (!result) throw new Error(`not today`);

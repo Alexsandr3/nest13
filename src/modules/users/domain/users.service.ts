@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { BadRequestExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
-import { UsersDBType } from './user-DB-Type';
 
 @Injectable()
 export class UsersService {
@@ -10,8 +8,10 @@ export class UsersService {
   public generateHash(password: string) {
     return bcrypt.hash(password, 10);
   }
+}
 
-  public checkCodeConfirm(user: UsersDBType, code: string) {
+
+/*  public checkCodeConfirm(user: UserDocument, code: string) {
     if (user.emailConfirmation.isConfirmation)
       throw new BadRequestExceptionMY({
         message: `Code has confirmation already`,
@@ -42,6 +42,4 @@ export class UsersService {
         field: 'email',
       });
     return;
-  }
-
-}
+  }*/

@@ -8,11 +8,12 @@ import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-reposit
 import { PostViewModel } from "../src/modules/posts/infrastructure/query-repositories/post-View-Model";
 import { ObjectId } from "mongodb";
 import {
+  createUniqUserByLoginEmail,
   createUserByLoginEmail, postTestSchema,
   userTestSchema
-} from "./types/helpers/create-user-by-login-email";
+} from "./helpers/create-user-by-login-email";
 import { CommentsViewType } from "../src/modules/comments/infrastructure/query-repository/comments-View-Model";
-import { createBlogsForTest } from "./types/helpers/create-blog-for-test";
+import { createBlogsForTest } from "./helpers/create-blog-for-test";
 
 
 jest.setTimeout(120000);
@@ -37,6 +38,62 @@ describe(`checking 15 homework`, () => {
     await app.close();
   });
 
+  describe(`For test`, () => {
+    beforeAll(async () => {
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`).expect(204);
+    });
+    let user: UsersViewType;
+    it(`create users`, async () => {
+      await createUniqUserByLoginEmail(2, "S", app);
+      await createUserByLoginEmail(2, app);
+      const responseCreatedUser = await request(app.getHttpServer())
+        .post(`/sa/users`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({ login: "newUser", password: "newUser321", email: "newUser@me.me" })
+        .expect(201);
+      user = responseCreatedUser.body;
+
+      expect(user).toEqual({
+        id: expect.any(String),
+        login: "newUser",
+        email: "newUser@me.me",
+        createdAt: expect.any(String),
+        banInfo: {
+          isBanned: false,
+          banDate: null,
+          banReason: null
+        }
+      });
+
+      await request(app.getHttpServer())
+        .put(`/sa/users/${user.id}/ban`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .send({
+          "isBanned": true,
+          "banReason": "too much chatter, it's bad user"
+        })
+        .expect(204);
+
+      const resBanIfo = await request(app.getHttpServer())
+        .get(`/sa/users/`)
+        .auth("admin", "qwerty", { type: "basic" })
+        .query({ "pageSize": 4 })
+        .expect(200);
+
+      expect(resBanIfo.body.items).toHaveLength(3);
+      //need to be careful if there is sorting
+      expect(resBanIfo.body.items[0]).toEqual({ ...userTestSchema, login: "newUser" });
+      expect(resBanIfo.body).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 4,
+        totalCount: 3,
+        items: expect.arrayContaining([userTestSchema])
+      });
+    });
+
+  });
   describe(`Super admin Api > Users`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer())
@@ -99,6 +156,7 @@ describe(`checking 15 homework`, () => {
     });
     let user: UsersViewType;
     let user1: UsersViewType;
+    let user2: UsersViewType;
     let blog: BlogViewModel;
     let post: PostViewModel;
     let comment: CommentsViewType;
@@ -177,8 +235,10 @@ describe(`checking 15 homework`, () => {
 
     });
     it(`05-PUT -> "/sa/users/:id/ban": should ban user; status 204; used additional methods: POST => /sa/users, GET => /sa/users;`, async () => {
-      const res = await createUserByLoginEmail(1, app);
+      const res = await createUserByLoginEmail(2, app);
       user = res[0].user;
+      user2 = res[1].user;
+      console.log(user);
       await request(app.getHttpServer())
         .put(`/sa/users/${res[0].userId}/ban`)
         .auth("admin", "qwerty", { type: "basic" })
@@ -197,27 +257,27 @@ describe(`checking 15 homework`, () => {
         pagesCount: 1,
         page: 1,
         pageSize: 5,
-        totalCount: 1,
+        totalCount: 2,
         items: expect.any(Array)
       });
-      expect(resBanIfo.body.items).toHaveLength(1);
+      expect(resBanIfo.body.items).toHaveLength(2);
       expect(resBanIfo.body.items).toEqual(expect.arrayContaining([userTestSchema]));
-      expect(resBanIfo.body.items[0]).toEqual({ ...userTestSchema, login: "asirius-0" });
+      expect(resBanIfo.body.items[1]).toEqual({ ...userTestSchema, login: "asirius-0" });
     });
     it(`06-POST -> "/auth/login": Shouldn't login banned user. Should login unbanned user; status 401; used additional methods: POST => /sa/users, PUT => /sa/users/:id/ban;`, async () => {
       await request(app.getHttpServer())
-        .put(`/sa/users/${user.id}/ban`)
+        .put(`/sa/users/${user2.id}/ban`)
         .auth("admin", "qwerty", { type: "basic" })
         .send({
-          "isBanned": true,
-          "banReason": "too much chatter, it's bad user"
+          isBanned: true,
+          banReason: "too much chatter, it's bad user"
         })
         .expect(204);
 
       await request(app.getHttpServer())
         .post(`/auth/login`)
         .set(`User-Agent`, `for test`)
-        .send({ loginOrEmail: `${user.email}`, password: `asirius-0` })
+        .send({ loginOrEmail: `${user2.login}`, password: "asirius-121" })
         .expect(401);
 
       await request(app.getHttpServer())

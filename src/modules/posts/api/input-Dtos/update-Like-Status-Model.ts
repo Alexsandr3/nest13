@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional } from 'class-validator';
-import { LikeStatusType } from '../../domain/likesPost-schema-Model';
+import { LikeStatusType } from '../../domain/likePost-schema-Model';
 import { Trim } from "../../../../helpers/decorator-trim";
 
 export class UpdateLikeStatusDto {

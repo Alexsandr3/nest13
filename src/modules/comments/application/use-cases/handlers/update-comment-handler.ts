@@ -1,28 +1,29 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CommentsRepositories } from '../../../infrastructure/comments.repositories';
-import { CommentsService } from '../../../domain/comments.service';
-import { UpdateCommentCommand } from '../update-comment-command';
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { CommentsRepositories } from "../../../infrastructure/comments.repositories";
+import { UpdateCommentCommand } from "../update-comment-command";
+import { ForbiddenExceptionMY, NotFoundExceptionMY } from "../../../../../helpers/My-HttpExceptionFilter";
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentHandler
-  implements ICommandHandler<UpdateCommentCommand>
-{
+  implements ICommandHandler<UpdateCommentCommand> {
   constructor(
     private readonly commentsRepositories: CommentsRepositories,
-    private readonly commentsService: CommentsService,
-  ) {}
+  ) {
+  }
 
   async execute(command: UpdateCommentCommand) {
     const { id, userId } = command;
     const { content } = command.updateCommentInputModel;
-    //finding and checking comment
-    await this.commentsService.findComment(id, userId);
-    //updating a comment in DB
-    const result = await this.commentsRepositories.updateCommentsById(
-      id,
-      content,
-    );
-    if (!result) throw new Error(`not today`);
+    //finding comment by id from uri params
+    const comment = await this.commentsRepositories.findCommentsById(id);
+    if (!comment) throw new NotFoundExceptionMY(`Not found content`);
+    //checking comment
+    if (!comment.checkOwner(userId))
+      throw new ForbiddenExceptionMY(`You are not the owner of the comment`);
+    //updating a comment
+    comment.updateComment(content)
+    //save updated comment
+    await this.commentsRepositories.saveComment(comment)
     return true;
   }
 }

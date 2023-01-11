@@ -6,9 +6,9 @@ import { BlogsQueryRepositories } from './infrastructure/query-repository/blogs-
 import { Post, PostSchema } from '../posts/domain/post-schema-Model';
 import { PostsQueryRepositories } from '../posts/infrastructure/query-repositories/posts-query.reposit';
 import {
-  LikesPostsStatus,
-  LikesPostsStatusSchema,
-} from '../posts/domain/likesPost-schema-Model';
+  LikePost,
+  LikePostSchema,
+} from '../posts/domain/likePost-schema-Model';
 import { BasicStrategy } from '../../strategies/basic.strategy';
 import { JwtForGetGuard } from '../../guards/jwt-auth-bearer-for-get.guard';
 import { JwtService } from '../auth/application/jwt.service';
@@ -19,9 +19,9 @@ import {
   CommentSchema,
 } from '../comments/domain/comments-schema-Model';
 import {
-  LikesStatus,
-  LikesStatusSchema,
-} from '../comments/domain/likesStatus-schema-Model';
+  LikeComment,
+  LikeCommentSchema,
+} from '../comments/domain/likeComment-schema-Model';
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 
 const handlers = [];
@@ -33,8 +33,8 @@ const adapters = [BlogsQueryRepositories, PostsQueryRepositories, JwtService];
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
-      { name: LikesStatus.name, schema: LikesStatusSchema },
-      { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
+      { name: LikeComment.name, schema: LikeCommentSchema },
+      { name: LikePost.name, schema: LikePostSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
     CqrsModule,

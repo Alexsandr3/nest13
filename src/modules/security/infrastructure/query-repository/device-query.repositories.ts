@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { LeanDocument, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { Device, DeviceDocument } from '../../domain/device-schema-Model';
 import { DeviceViewModel } from './device-View-Model';
 
@@ -11,7 +11,7 @@ export class DeviceQueryRepositories {
     private readonly deviceModel: Model<DeviceDocument>,
   ) {}
 
-  private deviceForView(object: LeanDocument<DeviceDocument>): DeviceViewModel {
+  private deviceForView(object: DeviceDocument): DeviceViewModel {
     return new DeviceViewModel(
       object.ip,
       object.title,
@@ -21,7 +21,7 @@ export class DeviceQueryRepositories {
   }
 
   async findDevices(userId: string): Promise<DeviceViewModel[]> {
-    const devices = await this.deviceModel.find({ userId: userId }).lean();
+    const devices = await this.deviceModel.find({ userId: userId })
     if (!devices) {
       throw new Error('server all');
     } else {

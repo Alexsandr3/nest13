@@ -6,11 +6,13 @@ import { UsersViewType } from "../src/modules/users/infrastructure/query-reposir
 import { createdApp } from "../src/helpers/createdApp";
 import {
   createUserByLoginEmail,
-} from "./types/helpers/create-user-by-login-email";
+} from "./helpers/create-user-by-login-email";
 import { BlogViewModel } from "../src/modules/blogs/infrastructure/query-repository/blog-View-Model";
 import { PostViewModel } from "../src/modules/posts/infrastructure/query-repositories/post-View-Model";
-import { createBlogsForTest } from "./types/helpers/create-blog-for-test";
+import { createBlogsForTest } from "./helpers/create-blog-for-test";
 import { ObjectId } from "mongodb";
+import { MailService } from "../src/modules/mail/mail.service";
+import { MailServiceMock } from "./mock/mailService.mock";
 
 
 jest.setTimeout(120000);
@@ -23,7 +25,8 @@ describe(`Ban blog by super admin`, () => {
   beforeAll(async () => {
     // Create a NestJS application
     const module: TestingModule = await Test.createTestingModule({ imports: [AppModule] })
-      // .overrideProvider()
+      .overrideProvider(MailService)
+      .useClass(MailServiceMock)
       .compile();
     app = module.createNestApplication();
     //created me

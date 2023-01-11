@@ -9,7 +9,6 @@ import {
   BlogViewModel
 } from "./blog-View-Model";
 import { PaginationViewModel } from "./pagination-View-Model";
-import { BlogsDBType } from "../../../blogger/domain/blog-DB-Type";
 import { PaginationDto } from "../../api/input-Dtos/pagination-Dto-Model";
 import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
 import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
@@ -17,7 +16,6 @@ import {
   BanInfoType,
   UsersForBanBlogViewType
 } from "../../../users/infrastructure/query-reposirory/user-View-Model";
-import { BanStatusBlogDBType } from "../../../blogger/domain/ban-user-for-blog-preparation-for-DB";
 
 @Injectable()
 export class BlogsQueryRepositories {
@@ -27,9 +25,9 @@ export class BlogsQueryRepositories {
   ) {
   }
 
-  private mapperBlogForView(object: BlogsDBType): BlogViewModel {
+  private mapperBlogForView(object: BlogDocument): BlogViewModel {
     return new BlogViewModel(
-      object._id.toString(),
+      object.id,
       object.name,
       object.description,
       object.websiteUrl,
@@ -37,7 +35,7 @@ export class BlogsQueryRepositories {
     );
   }
 
-  private mapperBlogForSaView(object: BlogsDBType): BlogViewForSaModel {
+  private mapperBlogForSaView(object: BlogDocument): BlogViewForSaModel {
     const blogOwnerInfo = new BlogOwnerInfoType(
       object.userId,
       object.userLogin
@@ -47,7 +45,7 @@ export class BlogsQueryRepositories {
       object.banDate
     );
     return new BlogViewForSaModel(
-      object._id.toString(),
+      object.id,
       object.name,
       object.description,
       object.websiteUrl,
@@ -57,7 +55,7 @@ export class BlogsQueryRepositories {
     );
   }
 
-  private mapperBanInfo(object: BanStatusBlogDBType): UsersForBanBlogViewType {
+  private mapperBanInfo(object: BlogBanInfoDocument): UsersForBanBlogViewType {
     const banInfo = new BanInfoType(
       object.isBanned,
       object.banDate,
@@ -81,8 +79,7 @@ export class BlogsQueryRepositories {
       .find(filter)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .lean();
+      .sort({ [sortBy]: sortDirection });
     //mapped for View
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForView(blog));
     //counting blogs
@@ -106,8 +103,7 @@ export class BlogsQueryRepositories {
       .find(searchNameTerm ? { name: { $regex: searchNameTerm, $options: "i" } } : {})
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .lean();
+      .sort({ [sortBy]: sortDirection });
     //mapped for View
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForSaView(blog));
     //counting blogs
@@ -135,8 +131,7 @@ export class BlogsQueryRepositories {
       .find(filter)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
-      .sort({ [sortBy]: sortDirection })
-      .lean();
+      .sort({ [sortBy]: sortDirection });
     //mapped for View
     const mappedBlogs = foundBlogs.map((blog) => this.mapperBlogForView(blog));
     //counting blogs user
@@ -177,7 +172,6 @@ export class BlogsQueryRepositories {
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection })
-      .lean();
     //mapped for View
     const mappedBlogs = foundBanStatusForBlog.map((blog) => this.mapperBanInfo(blog));
     //counting blogs user

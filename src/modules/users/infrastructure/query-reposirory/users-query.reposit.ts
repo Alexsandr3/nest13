@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { FilterQuery, LeanDocument, Model } from "mongoose";
+import { FilterQuery, Model } from "mongoose";
 import { User, UserDocument } from "../../domain/users-schema-Model";
 import { ObjectId } from "mongodb";
 import { BanInfoType, UsersViewType } from "./user-View-Model";
@@ -19,14 +19,14 @@ export class UsersQueryRepositories {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>) {
   }
 
-  private async mappedForUser(user: LeanDocument<UserDocument>): Promise<UsersViewType> {
+  private async mappedForUser(user: UserDocument): Promise<UsersViewType> {
     const banInfo = new BanInfoType(
       user.banInfo.isBanned,
       user.banInfo.banDate,
       user.banInfo.banReason
     );
     return new UsersViewType(
-      user._id.toString(),
+      user.id,
       user.accountData.login,
       user.accountData.email,
       user.accountData.createdAt,
@@ -66,7 +66,6 @@ export class UsersQueryRepositories {
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [`accountData.${sortBy}`]: sortDirection })
-      .lean();
     //mapped user for View
     const mappedUsers = foundsUsers.map((user) => this.mappedForUser(user));
     const items = await Promise.all(mappedUsers);
@@ -91,7 +90,7 @@ export class UsersQueryRepositories {
       return new MeViewModel(
         user.accountData.email,
         user.accountData.login,
-        user._id.toString()
+        user.id
       );
     }
   }

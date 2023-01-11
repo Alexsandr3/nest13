@@ -10,13 +10,13 @@ import { Post, PostDocument } from '../posts/domain/post-schema-Model';
 import { User, UserDocument } from '../users/domain/users-schema-Model';
 import { Device, DeviceDocument } from '../security/domain/device-schema-Model';
 import {
-  LikesPostsStatus,
-  LikesPostsStatusDocument,
-} from '../posts/domain/likesPost-schema-Model';
+  LikePost,
+  LikePostDocument,
+} from '../posts/domain/likePost-schema-Model';
 import {
-  LikesStatus,
-  LikesStatusDocument,
-} from '../comments/domain/likesStatus-schema-Model';
+  LikeComment,
+  LikeCommentDocument,
+} from '../comments/domain/likeComment-schema-Model';
 import { BlogBanInfo, BlogBanInfoDocument } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 
 @Injectable()
@@ -29,10 +29,10 @@ export class TestingService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Device.name)
     private readonly deviceModel: Model<DeviceDocument>,
-    @InjectModel(LikesStatus.name)
-    private readonly likesStatusModel: Model<LikesStatusDocument>,
-    @InjectModel(LikesPostsStatus.name)
-    private readonly likesPostsStatusModel: Model<LikesPostsStatusDocument>,
+    @InjectModel(LikeComment.name)
+    private readonly likesStatusModel: Model<LikeCommentDocument>,
+    @InjectModel(LikePost.name)
+    private readonly likesPostsStatusModel: Model<LikePostDocument>,
     @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
   ) {}
   async deleteAll() {

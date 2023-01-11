@@ -4,9 +4,9 @@ import { PostsRepositories } from "../posts/infrastructure/posts-repositories";
 import { Post, PostSchema } from "../posts/domain/post-schema-Model";
 import { PostsQueryRepositories } from "../posts/infrastructure/query-repositories/posts-query.reposit";
 import {
-  LikesPostsStatus,
-  LikesPostsStatusSchema
-} from "../posts/domain/likesPost-schema-Model";
+  LikePost,
+  LikePostSchema
+} from "../posts/domain/likePost-schema-Model";
 import { JwtService } from "../auth/application/jwt.service";
 import { CreateBlogHandler } from "./application/use-cases/handlers/create-blog-handler";
 import { CqrsModule } from "@nestjs/cqrs";
@@ -20,7 +20,7 @@ import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
 import { BlogsQueryRepositories } from "../blogs/infrastructure/query-repository/blogs-query.repositories";
 import { Blog, BlogSchema } from "./domain/blog-schema-Model";
 import { Comment, CommentSchema } from "../comments/domain/comments-schema-Model";
-import { LikesStatus, LikesStatusSchema } from "../comments/domain/likesStatus-schema-Model";
+import { LikeComment, LikeCommentSchema } from "../comments/domain/likeComment-schema-Model";
 import { DeletePostHandler } from "./application/use-cases/handlers/delete-post-handler";
 import { UpdatePostHandler } from "./application/use-cases/handlers/update-post-handler";
 import { UsersQueryRepositories } from "../users/infrastructure/query-reposirory/users-query.reposit";
@@ -58,8 +58,8 @@ const guards = [JwtAuthGuard];
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
-      { name: LikesStatus.name, schema: LikesStatusSchema },
-      { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
+      { name: LikeComment.name, schema: LikeCommentSchema },
+      { name: LikePost.name, schema: LikePostSchema },
       { name: User.name, schema: UserSchema },
       //{ name: UserBanInfo.name, schema: UserBanInfoSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema }

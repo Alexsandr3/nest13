@@ -105,6 +105,4 @@ export class BloggersController {
     if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     return await this.blogsQueryRepositories.getBannedUsersForBlog(id, paginationInputModel);
   }
-
-
 }

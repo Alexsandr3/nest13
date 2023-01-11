@@ -6,9 +6,9 @@ import { Post, PostSchema } from './domain/post-schema-Model';
 import { PostsController } from './api/posts.controller';
 import { PostsQueryRepositories } from './infrastructure/query-repositories/posts-query.reposit';
 import {
-  LikesPostsStatus,
-  LikesPostsStatusSchema,
-} from './domain/likesPost-schema-Model';
+  LikePost,
+  LikePostSchema,
+} from './domain/likePost-schema-Model';
 import { BlogsQueryRepositories } from '../blogs/infrastructure/query-repository/blogs-query.repositories';
 import { Blog, BlogSchema } from '../blogger/domain/blog-schema-Model';
 import {
@@ -20,9 +20,9 @@ import { JwtAuthGuard } from '../../guards/jwt-auth-bearer.guard';
 import { CommentsRepositories } from '../comments/infrastructure/comments.repositories';
 import { UsersQueryRepositories } from '../users/infrastructure/query-reposirory/users-query.reposit';
 import {
-  LikesStatus,
-  LikesStatusSchema,
-} from '../comments/domain/likesStatus-schema-Model';
+  LikeComment,
+  LikeCommentSchema,
+} from '../comments/domain/likeComment-schema-Model';
 import { User, UserSchema } from '../users/domain/users-schema-Model';
 import { JwtService } from '../auth/application/jwt.service';
 import { BasicAuthGuard } from '../../guards/basic-auth.guard';
@@ -32,6 +32,7 @@ import { CreateCommentHandler } from './application/use-cases/handlers/create-co
 import { UpdateLikeStatusHandler } from './application/use-cases/handlers/update-like-status-handler';
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 import { BlogsRepositories } from "../blogs/infrastructure/blogs.repositories";
+import { UsersRepositories } from "../users/infrastructure/users-repositories";
 
 const handlers = [CreateCommentHandler, UpdateLikeStatusHandler];
 const adapters = [
@@ -41,6 +42,7 @@ const adapters = [
   BlogsQueryRepositories,
   CommentsRepositories,
   CommentsQueryRepositories,
+  UsersRepositories,
   UsersQueryRepositories,
   JwtService,
 ];
@@ -51,8 +53,8 @@ const guards = [JwtAuthGuard, BasicAuthGuard, JwtForGetGuard];
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
-      { name: LikesPostsStatus.name, schema: LikesPostsStatusSchema },
-      { name: LikesStatus.name, schema: LikesStatusSchema },
+      { name: LikePost.name, schema: LikePostSchema },
+      { name: LikeComment.name, schema: LikeCommentSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: User.name, schema: UserSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema },

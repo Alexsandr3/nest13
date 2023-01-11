@@ -4,20 +4,20 @@ import { Model } from 'mongoose';
 import { Comment, CommentDocument } from '../../domain/comments-schema-Model';
 import { ObjectId } from 'mongodb';
 import { CommentsViewType, LikesInfoViewModel } from './comments-View-Model';
-import { LikeStatusType } from '../../../posts/domain/likesPost-schema-Model';
+import { LikeStatusType } from '../../../posts/domain/likePost-schema-Model';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
 import {
-  LikesStatus,
-  LikesStatusDocument,
-} from '../../domain/likesStatus-schema-Model';
+  LikeComment,
+  LikeCommentDocument,
+} from '../../domain/likeComment-schema-Model';
 
 @Injectable()
 export class CommentsQueryRepositories {
   constructor(
     @InjectModel(Comment.name)
     private readonly commentsModel: Model<CommentDocument>,
-    @InjectModel(LikesStatus.name)
-    private readonly likesStatusModel: Model<LikesStatusDocument>,
+    @InjectModel(LikeComment.name)
+    private readonly likesStatusModel: Model<LikeCommentDocument>,
   ) {}
 
   async findComment(commentId: string, userId: string | null,): Promise<CommentsViewType> {
@@ -57,7 +57,7 @@ export class CommentsQueryRepositories {
       throw new NotFoundExceptionMY(`Not found for commentId: ${commentId}`);
     //returning comment for View
     return new CommentsViewType(
-      comment._id?.toString(),
+      comment.id,
       comment.content,
       comment.userId,
       comment.userLogin,

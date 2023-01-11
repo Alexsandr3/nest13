@@ -19,10 +19,10 @@ import { PaginationViewModel } from "../../blogs/infrastructure/query-repository
 import { IdValidationPipe } from "../../../validators/id-validation-pipe";
 import { BasicAuthGuard } from "../../../guards/basic-auth.guard";
 import { CommandBus } from "@nestjs/cqrs";
-import { CreateUserCommand } from "../application/use-cases/create-user-command";
 import { DeleteUserCommand } from "../application/use-cases/delete-user-command";
 import { UpdateBanInfoDto } from "./input-Dto/update-ban-info-Dto-Model";
 import { UpdateBanInfoCommand } from "../application/use-cases/updateBanInfoCommand";
+import { CreateUserSaCommand } from "../application/use-cases/create-user-sa-command";
 
 @Controller(`sa/users`)
 export class UsersController {
@@ -43,7 +43,7 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async createUser(@Body() userInputModel: CreateUserDto): Promise<UsersViewType> {
-    return this.commandBus.execute(new CreateUserCommand(userInputModel));
+    return this.commandBus.execute(new CreateUserSaCommand(userInputModel));
   }
 
   @UseGuards(BasicAuthGuard)
