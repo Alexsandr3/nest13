@@ -77,6 +77,7 @@ export class BlogsQueryRepositories {
     //search all blogs
     const foundBlogs = await this.blogsModel
       .find(filter)
+      // .find(filter)
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection });

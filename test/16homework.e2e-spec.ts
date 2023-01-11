@@ -78,6 +78,8 @@ describe(`Ban blog by super admin`, () => {
         .query({ pageSize: 6 })
         .expect(200);
 
+
+
       expect(resBlogs.body.items).toHaveLength(3);
 
       await request(app.getHttpServer())
@@ -205,7 +207,7 @@ describe(`Ban blog by super admin`, () => {
       accessToken1 = res[1].accessToken
       const resB = await createBlogsForTest(1, accessToken, app)
       blog = resB[0].blog
-      await request(app.getHttpServer())
+     await request(app.getHttpServer())
         .put(`/blogger/users/${user1.id}/ban`)
         .auth(accessToken, {type: "bearer"})
         .send({
@@ -466,7 +468,6 @@ describe(`Ban blog by super admin`, () => {
     });
 
   });
-
 });
 
 

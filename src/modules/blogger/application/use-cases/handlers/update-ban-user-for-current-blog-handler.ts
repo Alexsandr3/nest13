@@ -27,11 +27,19 @@ export class UpdateBanUserForCurrentBlogHandler
     const foundBlog = await this.blogsRepositories.findBlog(blogId);
     if (!foundBlog) throw new NotFoundExceptionMY(`Not found blog with id: ${id}`);
     if (!foundBlog.checkOwner(userId)) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
-    const foundBanStatus = await this.blogsRepositories.findStatusBan(userId, blogId);
+    const foundBanStatus = await this.blogsRepositories.findStatusBanBy(userId, blogId);
     if (!foundBanStatus) {
       const newBanStatus = BlogBanInfo.createBan(blogId, userId, foundUser.id, foundUser.getLogin(), foundUser.getEmail());
       const banStatus = new this.blogBanInfoModel(newBanStatus);
-      await this.blogsRepositories.saveBanStatus(banStatus);
+      const savedBanStatus = await this.blogsRepositories.saveBanStatus(banStatus);
+      if (isBanned === false) {
+        savedBanStatus.unlockBanStatus();
+        await this.blogsRepositories.saveBanStatus(savedBanStatus);
+      } else {
+        savedBanStatus.banBanStatus(banReason);
+        await this.blogsRepositories.saveBanStatus(savedBanStatus);
+      }
+      return true;
     }
     if (isBanned === false) {
       foundBanStatus.unlockBanStatus();

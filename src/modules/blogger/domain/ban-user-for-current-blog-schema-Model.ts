@@ -15,7 +15,7 @@ export class BlogBanInfo {
   login: string;
   @Prop({ type: String, required: true })
   email: string;
-  @Prop({ type: String, required: true, default: null })
+  @Prop({ type: String, required: true })
   createdAt: string;
   @Prop({ type: Boolean, default: false })
   isBanned: boolean;
@@ -34,6 +34,7 @@ export class BlogBanInfo {
     this.userId = userId;
     this.login = login;
     this.email = email;
+    this.createdAt = new Date().toISOString();
   }
 
   static createBan(blogId: string, ownerId: string, userId: string, login: string, email: string) {

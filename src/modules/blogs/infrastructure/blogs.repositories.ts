@@ -26,7 +26,13 @@ export class BlogsRepositories {
   }
 
   async findStatusBan(userId: string, blogId: string): Promise<BlogBanInfoDocument> {
-    const statusBan = await this.blogBanInfoModel.findOne({ blogId, userId });
+    const statusBan = await this.blogBanInfoModel.findOne({ blogId: blogId, userId: userId });
+    if (!statusBan) return null;
+    return statusBan;
+  }
+
+  async findStatusBanBy(userId: string, blogId: string): Promise<BlogBanInfoDocument> {
+    const statusBan = await this.blogBanInfoModel.findOne({ blogId: blogId, ownerId: userId });
     if (!statusBan) return null;
     return statusBan;
   }

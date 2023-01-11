@@ -34,7 +34,7 @@ export class Comment {
   }
 
   static createComment(postId: string, ownerId: string, content: string, userId: string, login: string) {
-    if (content.length > 300 && content.length < 20) {
+    if (content.length < 300 && content.length > 20) {
       return new Comment(postId, ownerId, content, userId, login);
     }
     throw new Error("Incorrect input data for create comment");
